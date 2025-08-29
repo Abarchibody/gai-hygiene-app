@@ -44,8 +44,8 @@ if ($_POST) {
         ];
         
         if ($user->update($id, $data)) {
-            $success = true;
-            $userData = $user->getById($id); // Recharger les données
+            header('Location: view.php?id=' . $id . '&updated=1');
+            exit;
         } else {
             $errors[] = "Erreur lors de la modification de l'utilisateur";
         }

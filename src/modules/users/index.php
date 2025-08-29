@@ -140,7 +140,11 @@ include '../../shared/layouts/header.php';
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <a href="edit.php?id=<?= $u['id'] ?>" class="text-gai-blue hover:text-blue-600 inline-flex items-center">
+                            <a href="view.php?id=<?= $u['id'] ?>" class="text-gai-blue hover:text-blue-600 inline-flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                Voir
+                            </a>
+                            <a href="edit.php?id=<?= $u['id'] ?>" class="text-gai-green hover:text-green-600 inline-flex items-center">
                                 <i data-lucide="edit" class="w-4 h-4 mr-1"></i>
                                 Modifier
                             </a>
