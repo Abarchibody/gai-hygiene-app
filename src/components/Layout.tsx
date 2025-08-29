@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, School, Bell, Calendar, Database, Clock, LogOut, User } from 'lucide-react';
+import { Home, Users, School, Bell, Calendar, Database, Clock, LogOut, User, BarChart3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ui/ThemeToggle';
 
@@ -109,6 +109,18 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
           >
             <Bell className="w-5 h-5 mr-3" />
             Notifications
+          </Link>
+          
+          <Link
+            to="/reports"
+            className={`flex items-center px-6 py-3 transition-colors ${
+              isActive('/reports')
+                ? 'bg-gai-blue text-white' 
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+            }`}
+          >
+            <BarChart3 className="w-5 h-5 mr-3" />
+            Rapports
           </Link>
           
           <div className="flex items-center px-6 py-3 text-gray-400 dark:text-gray-500 cursor-not-allowed">

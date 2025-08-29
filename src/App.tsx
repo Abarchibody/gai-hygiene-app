@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import { pwaService } from './utils/pwaService';
+import { backupService } from './utils/backupService';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UsersList from './pages/Users/UsersList';
@@ -23,13 +24,17 @@ import ReminderDetail from './pages/Reminders/ReminderDetail';
 import EditReminder from './pages/Reminders/EditReminder';
 import AssignReminder from './pages/Reminders/AssignReminder';
 import NotificationCenter from './pages/Notifications/NotificationCenter';
+import ReportsPage from './pages/Reports/ReportsPage';
 import DataManager from './pages/Admin/DataManager';
 import SystemStatus from './pages/Admin/SystemStatus';
+import BackupManager from './pages/Admin/BackupManager';
 
 function App() {
   useEffect(() => {
     // Enregistrer le Service Worker au démarrage
     pwaService.registerServiceWorker();
+    // Initialiser le service de sauvegarde
+    console.log('💾 Service de sauvegarde initialisé');
   }, []);
 
   return (
@@ -127,11 +132,17 @@ function App() {
             <NotificationCenter />
           </Layout>
         } />
+        <Route path="/reports" element={
+          <Layout pageTitle="Rapports & Analytics">
+            <ReportsPage />
+          </Layout>
+        } />
         <Route path="/admin" element={
           <Layout pageTitle="Administration">
             <div className="space-y-6">
               <SystemStatus />
               <DataManager />
+              <BackupManager />
             </div>
           </Layout>
         } />

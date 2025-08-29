@@ -72,7 +72,7 @@ export default function RemindersList() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-gray-600">Gestion des rappels d'hygiène automatisés</p>
+          <p className="text-gray-600 dark:text-gray-400">Gestion des rappels d'hygiène automatisés</p>
         </div>
         <Link to="/reminders/create">
           <Button>
@@ -83,7 +83,7 @@ export default function RemindersList() {
       </div>
 
       {/* Filtres */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -91,7 +91,7 @@ export default function RemindersList() {
               <input
                 type="text"
                 placeholder="Rechercher par titre ou description..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-gai-blue focus:border-gai-blue"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -99,7 +99,7 @@ export default function RemindersList() {
           </div>
           <div>
             <select
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-gai-blue focus:border-gai-blue"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
             >
@@ -112,7 +112,7 @@ export default function RemindersList() {
           </div>
           <div>
             <select
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-gai-blue focus:border-gai-blue"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -126,9 +126,9 @@ export default function RemindersList() {
       </div>
 
       {/* Liste des rappels */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
             <Bell className="w-5 h-5 mr-2 text-gai-orange" />
             Rappels d'hygiène ({filteredReminders.length})
           </h3>
@@ -137,49 +137,49 @@ export default function RemindersList() {
         {filteredReminders.length === 0 ? (
           <div className="p-12 text-center">
             <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 mb-2">Aucun rappel trouvé</p>
-            <p className="text-sm text-gray-400">
+            <p className="text-gray-500 dark:text-gray-400 mb-2">Aucun rappel trouvé</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
               {reminders.length === 0 ? 'Commencez par créer votre premier rappel d\'hygiène.' : 'Essayez de modifier vos critères de recherche.'}
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Rappel
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Catégorie
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Récurrence
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Statut
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Créateur
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredReminders.map((reminder) => (
-                  <tr key={reminder.id} className="hover:bg-gray-50">
+                  <tr key={reminder.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-8 h-8 bg-gai-orange rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
                           <Bell className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {reminder.titre}
                           </div>
-                          <div className="text-sm text-gray-500 flex items-center">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                             <Clock className="w-3 h-3 mr-1" />
                             {reminder.heure} - {reminder.date_debut.toLocaleDateString('fr-FR')}
                           </div>
@@ -191,7 +191,7 @@ export default function RemindersList() {
                         {reminder.categorie}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {reminder.recurrence}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -199,7 +199,7 @@ export default function RemindersList() {
                         {reminder.statut}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex items-center">
                         <User className="w-4 h-4 mr-1" />
                         {getCreatorName(reminder.createur_id)}
@@ -210,7 +210,7 @@ export default function RemindersList() {
                         <Link to={`/reminders/${reminder.id}`} className="text-gai-blue hover:text-blue-600">
                           <Eye className="w-4 h-4" />
                         </Link>
-                        <Link to={`/reminders/${reminder.id}/edit`} className="text-gray-600 hover:text-gray-800">
+                        <Link to={`/reminders/${reminder.id}/edit`} className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
                           <Edit className="w-4 h-4" />
                         </Link>
                         <button className="text-red-600 hover:text-red-800">

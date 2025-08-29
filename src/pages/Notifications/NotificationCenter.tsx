@@ -96,56 +96,56 @@ export default function NotificationCenter() {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-gray-600">Centre de gestion des notifications automatisées</p>
+        <p className="text-gray-600 dark:text-gray-400">Centre de gestion des notifications automatisées</p>
       </div>
 
       {/* Statistiques */}
       <div className="grid md:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <Bell className="w-6 h-6 text-gray-500 mr-2" />
             <div>
-              <p className="text-sm text-gray-600">Total</p>
-              <p className="text-xl font-bold text-gray-800">{stats.total}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
+              <p className="text-xl font-bold text-gray-800 dark:text-gray-200">{stats.total}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <Clock className="w-6 h-6 text-yellow-500 mr-2" />
             <div>
-              <p className="text-sm text-gray-600">En attente</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">En attente</p>
               <p className="text-xl font-bold text-yellow-600">{stats.pending}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <Bell className="w-6 h-6 text-blue-500 mr-2" />
             <div>
-              <p className="text-sm text-gray-600">Envoyées</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Envoyées</p>
               <p className="text-xl font-bold text-blue-600">{stats.sent}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <CheckCircle className="w-6 h-6 text-green-500 mr-2" />
             <div>
-              <p className="text-sm text-gray-600">Lues</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Lues</p>
               <p className="text-xl font-bold text-green-600">{stats.read}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <AlertCircle className="w-6 h-6 text-red-500 mr-2" />
             <div>
-              <p className="text-sm text-gray-600">Échecs</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Échecs</p>
               <p className="text-xl font-bold text-red-600">{stats.failed}</p>
             </div>
           </div>
@@ -153,9 +153,9 @@ export default function NotificationCenter() {
       </div>
 
       {/* Configuration */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
             <Settings className="w-5 h-5 mr-2 text-gai-blue" />
             Configuration des notifications
           </h3>
@@ -164,8 +164,8 @@ export default function NotificationCenter() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h4 className="font-medium text-gray-800">Permissions navigateur</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="font-medium text-gray-800 dark:text-gray-200">Permissions navigateur</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Statut : 
                 <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
                   permission === 'granted' ? 'bg-green-100 text-green-800' :
@@ -199,8 +199,8 @@ export default function NotificationCenter() {
             )}
           </div>
           
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <div className="flex items-center text-sm text-blue-800">
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="flex items-center text-sm text-blue-800 dark:text-blue-300">
               <Smartphone className="w-4 h-4 mr-2" />
               <span>
                 Service Worker : 
@@ -209,7 +209,7 @@ export default function NotificationCenter() {
                 </span>
               </span>
             </div>
-            <p className="text-xs text-blue-600 mt-1">
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
               {swRegistered ? 'Notifications en arrière-plan activées' : 'Notifications limitées à l\'onglet actif'}
             </p>
           </div>
@@ -217,9 +217,9 @@ export default function NotificationCenter() {
       </div>
 
       {/* Liste des notifications */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             Historique des notifications (50 dernières)
           </h3>
         </div>
@@ -227,24 +227,24 @@ export default function NotificationCenter() {
         {notifications.length === 0 ? (
           <div className="p-12 text-center">
             <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 mb-2">Aucune notification</p>
-            <p className="text-sm text-gray-400">
+            <p className="text-gray-500 dark:text-gray-400 mb-2">Aucune notification</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
               Les notifications apparaîtront ici une fois les rappels programmés.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {notifications.map((notification) => (
-              <div key={notification.id} className="p-6 hover:bg-gray-50">
+              <div key={notification.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start">
                     <div className="mr-3 mt-1">
                       {getStatusIcon(notification.status)}
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-800">{notification.title}</h4>
-                      <p className="text-gray-600 text-sm mt-1">{notification.message}</p>
-                      <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                      <h4 className="font-medium text-gray-800 dark:text-gray-200">{notification.title}</h4>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{notification.message}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
                         <span>Programmée : {notification.scheduled_at.toLocaleString('fr-FR')}</span>
                         {notification.sent_at && (
                           <span>Envoyée : {notification.sent_at.toLocaleString('fr-FR')}</span>

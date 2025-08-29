@@ -57,7 +57,7 @@ export default function ClassDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Chargement...</div>
+        <div className="text-gray-500 dark:text-gray-400">Chargement...</div>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function ClassDetail() {
   if (!classe) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Classe introuvable</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Classe introuvable</h2>
         <Link to="/classes" className="text-gai-blue hover:underline">
           Retour à la liste
         </Link>
@@ -103,14 +103,14 @@ export default function ClassDetail() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Informations principales */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gai-green rounded-full flex items-center justify-center text-white text-lg font-medium mr-4">
                   {classe.nom_classe.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                     {classe.nom_classe}
                   </h2>
                   <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -121,58 +121,58 @@ export default function ClassDetail() {
             </div>
 
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
                 Informations de la classe
               </h3>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nom de la classe
                   </label>
-                  <p className="text-gray-900">{classe.nom_classe}</p>
+                  <p className="text-gray-900 dark:text-gray-100">{classe.nom_classe}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Niveau
                   </label>
-                  <p className="text-gray-900">{classe.niveau}</p>
+                  <p className="text-gray-900 dark:text-gray-100">{classe.niveau}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <User className="w-4 h-4 inline mr-1" />
                     Enseignant responsable
                   </label>
-                  <p className="text-gray-900">
+                  <p className="text-gray-900 dark:text-gray-100">
                     {teacher ? `${teacher.nom} ${teacher.prenom}` : 
-                     <span className="text-gray-400 italic">Non assigné</span>}
+                     <span className="text-gray-400 dark:text-gray-500 italic">Non assigné</span>}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Users className="w-4 h-4 inline mr-1" />
                     Nombre d'élèves
                   </label>
-                  <p className="text-gray-900">{students.length} élève{students.length > 1 ? 's' : ''}</p>
+                  <p className="text-gray-900 dark:text-gray-100">{students.length} élève{students.length > 1 ? 's' : ''}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Créée le
                   </label>
-                  <p className="text-gray-900">
+                  <p className="text-gray-900 dark:text-gray-100">
                     {classe.created_at.toLocaleDateString('fr-FR')}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Modifiée le
                   </label>
-                  <p className="text-gray-900">
+                  <p className="text-gray-900 dark:text-gray-100">
                     {classe.updated_at.toLocaleDateString('fr-FR')}
                   </p>
                 </div>
@@ -183,9 +183,9 @@ export default function ClassDetail() {
 
         {/* Élèves de la classe */}
         <div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                 <Users className="w-5 h-5 mr-2 text-gai-blue" />
                 Élèves ({students.length})
               </h3>
@@ -201,21 +201,21 @@ export default function ClassDetail() {
               {students.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">Aucun élève assigné</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Aucun élève assigné</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {students.map((student) => (
-                    <div key={student.id} className="flex items-center p-3 border border-gray-200 rounded-lg">
+                    <div key={student.id} className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
                       <div className="w-8 h-8 bg-gai-blue rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
                         {student.prenom.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900 text-sm">
+                        <div className="font-medium text-gray-900 dark:text-gray-100 text-sm">
                           {student.nom} {student.prenom}
                         </div>
                         {student.email && (
-                          <div className="text-xs text-gray-500">{student.email}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{student.email}</div>
                         )}
                       </div>
                       <Link 
