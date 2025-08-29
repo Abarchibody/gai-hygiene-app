@@ -129,13 +129,7 @@ class NotificationService {
         icon: '/favicon.ico',
         badge: '/favicon.ico',
         tag: `reminder-${notification.reminder_id}`,
-        requireInteraction: true,
-        actions: [
-          {
-            action: 'mark-done',
-            title: 'Terminé'
-          }
-        ]
+        requireInteraction: true
       });
 
       // Marquer comme envoyée
