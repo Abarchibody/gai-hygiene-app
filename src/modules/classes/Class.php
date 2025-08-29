@@ -73,7 +73,7 @@ class ClassModel {
     
     public function getEleves($classeId) {
         $stmt = $this->conn->prepare("
-            SELECT u.id, u.nom, u.prenom, u.email, u.telephone, e.date_inscription
+            SELECT u.id, u.nom, u.prenom, u.email, u.telephone
             FROM eleves e
             JOIN utilisateurs u ON e.utilisateur_id = u.id
             WHERE e.classe_id = ?
@@ -93,6 +93,31 @@ class ClassModel {
         ");
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function getElevesDisponibles() {
+        $stmt = $this->conn->prepare("
+            SELECT u.id, u.nom, u.prenom, u.email
+            FROM utilisateurs u
+            LEFT JOIN eleves e ON u.id = e.utilisateur_id
+            WHERE u.type_utilisateur = 'Élève' AND e.classe_id IS NULL
+            ORDER BY u.nom, u.prenom
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function assignerEleve($classeId, $eleveId) {
+        $stmt = $this->conn->prepare("
+            INSERT INTO eleves (utilisateur_id, classe_id) VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE classe_id = VALUES(classe_id)
+        ");
+        return $stmt->execute([$eleveId, $classeId]);
+    }
+    
+    public function retirerEleve($eleveId) {
+        $stmt = $this->conn->prepare("DELETE FROM eleves WHERE utilisateur_id = ?");
+        return $stmt->execute([$eleveId]);
     }
 }
 ?>
