@@ -33,7 +33,7 @@ $isAdmin = strpos($currentPath, '/admin.php') !== false;
         <!-- Sidebar -->
         <div class="w-64 bg-white shadow-lg">
             <div class="p-6">
-                <a href="/" class="text-xl font-bold text-gai-blue">GAI Hygiène</a>
+                <a href="/dashboard.php" class="text-xl font-bold text-gai-blue">GAI Hygiène</a>
                 <p class="text-sm text-gray-500 mt-1">Complexe Scolaire</p>
             </div>
             
@@ -42,9 +42,9 @@ $isAdmin = strpos($currentPath, '/admin.php') !== false;
                     <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation</h3>
                 </div>
                 
-                <a href="/" class="flex items-center px-6 py-3 transition-colors <?= $isHome ? 'bg-gai-blue text-white' : 'text-gray-700 hover:bg-gai-blue hover:text-white' ?>">
+                <a href="/dashboard.php" class="flex items-center px-6 py-3 transition-colors <?= $isHome ? 'bg-gai-blue text-white' : 'text-gray-700 hover:bg-gai-blue hover:text-white' ?>">
                     <i data-lucide="home" class="w-5 h-5 mr-3"></i>
-                    Accueil
+                    Tableau de Bord
                 </a>
                 
                 <div class="px-6 py-2 mt-4">
