@@ -43,7 +43,7 @@ export default function RemindersList() {
         const childIds = children.map(c => c.utilisateur_id);
         
         if (childIds.length > 0) {
-          const assignments = await db.reminder_assignments
+          const assignments = await db.reminderAssignments
             .where('utilisateur_id')
             .anyOf(childIds)
             .toArray();
@@ -59,7 +59,7 @@ export default function RemindersList() {
         }
       } else if (user.type_utilisateur === 'Élève') {
         // Student sees reminders assigned to them
-        const assignments = await db.reminder_assignments
+        const assignments = await db.reminderAssignments
           .where('utilisateur_id')
           .equals(user.id)
           .toArray();
