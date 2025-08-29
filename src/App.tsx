@@ -31,6 +31,7 @@ import EventDetail from './pages/Events/EventDetail';
 import DataManager from './pages/Admin/DataManager';
 import SystemStatus from './pages/Admin/SystemStatus';
 import BackupManager from './pages/Admin/BackupManager';
+import SyncManager from './pages/Admin/SyncManager';
 
 function App() {
   useEffect(() => {
@@ -157,8 +158,9 @@ function App() {
         } />
         <Route path="/admin" element={
           <Layout pageTitle="Administration">
-            <div className="space-y-6">
+            <div className="space-y-6 p-6 bg-white dark:bg-gray-900 rounded-lg">
               <SystemStatus />
+              <SyncManager />
               <DataManager />
               <BackupManager />
             </div>

@@ -92,7 +92,7 @@ export default function DataManager() {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-gray-600">Gestion des données de l'application</p>
+        <p className="text-gray-600 dark:text-gray-300">Gestion des données de l'application</p>
       </div>
 
       {message && (
@@ -114,18 +114,18 @@ export default function DataManager() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Données de test */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
               <Sprout className="w-5 h-5 mr-2 text-gai-green" />
               Données de test
             </h3>
           </div>
           <div className="p-6">
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               Ajouter des données de test réalistes pour l'école GAI :
             </p>
-            <ul className="text-sm text-gray-500 mb-6 space-y-1">
+            <ul className="text-sm text-gray-500 dark:text-gray-400 mb-6 space-y-1">
               <li>• 3 Enseignants avec emails</li>
               <li>• 4 Parents avec contacts</li>
               <li>• 6 Élèves avec relations familiales</li>
@@ -144,16 +144,16 @@ export default function DataManager() {
         </div>
 
         {/* Export/Import */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
               <Database className="w-5 h-5 mr-2 text-gai-blue" />
               Sauvegarde
             </h3>
           </div>
           <div className="p-6 space-y-4">
             <div>
-              <p className="text-gray-600 mb-3">Exporter toutes les données :</p>
+              <p className="text-gray-600 dark:text-gray-300 mb-3">Exporter toutes les données :</p>
               <Button 
                 onClick={handleExportData} 
                 disabled={loading}
@@ -166,7 +166,7 @@ export default function DataManager() {
             </div>
 
             <div>
-              <p className="text-gray-600 mb-3">Importer des données :</p>
+              <p className="text-gray-600 dark:text-gray-300 mb-3">Importer des données :</p>
               <div className="relative">
                 <input
                   type="file"
@@ -190,15 +190,15 @@ export default function DataManager() {
 
         {/* Actions dangereuses */}
         <div className="md:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm border border-red-200">
-            <div className="px-6 py-4 border-b border-red-200">
-              <h3 className="text-lg font-semibold text-red-800 flex items-center">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-red-200 dark:border-red-700">
+            <div className="px-6 py-4 border-b border-red-200 dark:border-red-700">
+              <h3 className="text-lg font-semibold text-red-800 dark:text-red-400 flex items-center">
                 <AlertTriangle className="w-5 h-5 mr-2" />
                 Zone dangereuse
               </h3>
             </div>
             <div className="p-6">
-              <p className="text-red-600 mb-4">
+              <p className="text-red-600 dark:text-red-400 mb-4">
                 ⚠️ Ces actions sont irréversibles et supprimeront définitivement toutes les données.
               </p>
               <Button 

@@ -162,7 +162,7 @@ export default function UserDetail() {
                     Créé le
                   </label>
                   <p className="text-gray-900 dark:text-gray-100">
-                    {user.created_at.toLocaleDateString('fr-FR')}
+                    {user.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : 'N/A'}
                   </p>
                 </div>
 
@@ -172,7 +172,7 @@ export default function UserDetail() {
                     Modifié le
                   </label>
                   <p className="text-gray-900 dark:text-gray-100">
-                    {user.updated_at.toLocaleDateString('fr-FR')}
+                    {user.updated_at ? new Date(user.updated_at).toLocaleDateString('fr-FR') : 'N/A'}
                   </p>
                 </div>
               </div>

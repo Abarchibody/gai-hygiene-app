@@ -117,9 +117,9 @@ export default function SystemStatus() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
           <Activity className="w-5 h-5 mr-2 text-gai-blue" />
           État du Système
           <span className={`ml-3 px-2 py-1 text-xs font-medium rounded-full ${getHealthColor(overallHealth)}`}>
@@ -134,37 +134,37 @@ export default function SystemStatus() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="text-center">
             <Users className="w-6 h-6 text-gai-blue mx-auto mb-1" />
-            <div className="text-lg font-bold text-gray-800">{stats.totalUsers}</div>
-            <div className="text-xs text-gray-500">Utilisateurs</div>
+            <div className="text-lg font-bold text-gray-800 dark:text-white">{stats.totalUsers}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Utilisateurs</div>
           </div>
           <div className="text-center">
             <School className="w-6 h-6 text-gai-green mx-auto mb-1" />
-            <div className="text-lg font-bold text-gray-800">{stats.totalClasses}</div>
-            <div className="text-xs text-gray-500">Classes</div>
+            <div className="text-lg font-bold text-gray-800 dark:text-white">{stats.totalClasses}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Classes</div>
           </div>
           <div className="text-center">
             <Bell className="w-6 h-6 text-gai-orange mx-auto mb-1" />
-            <div className="text-lg font-bold text-gray-800">{stats.totalReminders}</div>
-            <div className="text-xs text-gray-500">Rappels</div>
+            <div className="text-lg font-bold text-gray-800 dark:text-white">{stats.totalReminders}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Rappels</div>
           </div>
           <div className="text-center">
             <CheckCircle className="w-6 h-6 text-green-500 mx-auto mb-1" />
-            <div className="text-lg font-bold text-gray-800">{stats.activeReminders}</div>
-            <div className="text-xs text-gray-500">Actifs</div>
+            <div className="text-lg font-bold text-gray-800 dark:text-white">{stats.activeReminders}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Actifs</div>
           </div>
           <div className="text-center">
             <Database className="w-6 h-6 text-purple-500 mx-auto mb-1" />
-            <div className="text-lg font-bold text-gray-800">{stats.totalNotifications}</div>
-            <div className="text-xs text-gray-500">Notifications</div>
+            <div className="text-lg font-bold text-gray-800 dark:text-white">{stats.totalNotifications}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Notifications</div>
           </div>
         </div>
 
         {/* État des composants */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
             <div className="flex items-center">
-              <Database className="w-5 h-5 text-gray-600 mr-3" />
-              <span className="font-medium">Base de données IndexedDB</span>
+              <Database className="w-5 h-5 text-gray-600 dark:text-gray-300 mr-3" />
+              <span className="font-medium text-gray-800 dark:text-white">Base de données IndexedDB</span>
             </div>
             <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center ${getHealthColor(health.database)}`}>
               {getHealthIcon(health.database)}
@@ -172,10 +172,10 @@ export default function SystemStatus() {
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
             <div className="flex items-center">
-              <Bell className="w-5 h-5 text-gray-600 mr-3" />
-              <span className="font-medium">Système de notifications</span>
+              <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300 mr-3" />
+              <span className="font-medium text-gray-800 dark:text-white">Système de notifications</span>
             </div>
             <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center ${getHealthColor(health.notifications)}`}>
               {getHealthIcon(health.notifications)}
@@ -183,10 +183,10 @@ export default function SystemStatus() {
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
             <div className="flex items-center">
-              <CheckCircle className="w-5 h-5 text-gray-600 mr-3" />
-              <span className="font-medium">Permissions navigateur</span>
+              <CheckCircle className="w-5 h-5 text-gray-600 dark:text-gray-300 mr-3" />
+              <span className="font-medium text-gray-800 dark:text-white">Permissions navigateur</span>
             </div>
             <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center ${getHealthColor(health.permissions)}`}>
               {getHealthIcon(health.permissions)}
@@ -194,10 +194,10 @@ export default function SystemStatus() {
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
             <div className="flex items-center">
-              <Activity className="w-5 h-5 text-gray-600 mr-3" />
-              <span className="font-medium">Stockage local</span>
+              <Activity className="w-5 h-5 text-gray-600 dark:text-gray-300 mr-3" />
+              <span className="font-medium text-gray-800 dark:text-white">Stockage local</span>
             </div>
             <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center ${getHealthColor(health.storage)}`}>
               {getHealthIcon(health.storage)}

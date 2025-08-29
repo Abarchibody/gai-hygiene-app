@@ -49,7 +49,7 @@ export default function Dashboard() {
       </div>
 
       {/* Statistiques principales */}
-      <div className="grid md:grid-cols-6 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-6 mb-6 lg:mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex items-center">
             <div className="text-gai-blue mr-3">

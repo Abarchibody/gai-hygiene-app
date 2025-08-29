@@ -73,23 +73,24 @@ export default function EventsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Programmation</h1>
-          <p className="text-gray-600 dark:text-gray-400">Gestion des événements et activités d'hygiène</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100">Programmation</h1>
+          <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">Gestion des événements et activités d'hygiène</p>
         </div>
         <Link to="/events/create">
-          <Button className="flex items-center space-x-2">
+          <Button className="flex items-center justify-center space-x-2 w-full sm:w-auto">
             <Plus className="w-4 h-4" />
-            <span>Nouvel événement</span>
+            <span className="hidden sm:inline">Nouvel événement</span>
+            <span className="sm:hidden">Nouveau</span>
           </Button>
         </Link>
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 flex-1">
+      <div className="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-lg shadow-sm">
+        <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
+          <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 flex-1">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" />
               <input
@@ -103,7 +104,7 @@ export default function EventsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="sm:w-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full sm:w-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">Tous les statuts</option>
               <option value="Planifié">Planifié</option>
@@ -114,7 +115,7 @@ export default function EventsPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="sm:w-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full sm:w-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">Tous les types</option>
               <option value="Sensibilisation">Sensibilisation</option>
@@ -124,20 +125,21 @@ export default function EventsPage() {
               <option value="Personnalisé">Personnalisé</option>
             </select>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
             <Button
               variant={viewMode === 'list' ? 'primary' : 'secondary'}
               onClick={() => setViewMode('list')}
-              className="px-3 py-2"
+              className="flex-1 sm:flex-none px-3 py-2"
             >
               Liste
             </Button>
             <Button
               variant={viewMode === 'calendar' ? 'primary' : 'secondary'}
               onClick={() => setViewMode('calendar')}
-              className="px-3 py-2"
+              className="flex-1 sm:flex-none px-3 py-2"
             >
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Calendrier</span>
             </Button>
           </div>
         </div>
@@ -162,29 +164,31 @@ export default function EventsPage() {
           ) : (
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredEvents.map((event) => (
-                <div key={event.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div key={event.id} className="p-4 lg:p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
+                      <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3 mb-3">
                         <Link
                           to={`/events/${event.id}`}
-                          className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-gai-blue"
+                          className="text-base lg:text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-gai-blue"
                         >
                           {event.titre}
                         </Link>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(event.statut)}`}>
-                          {event.statut}
-                        </span>
-                        <span className="px-2 py-1 text-xs font-medium bg-gai-blue text-white rounded-full">
-                          {event.type_activite}
-                        </span>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(event.statut)}`}>
+                            {event.statut}
+                          </span>
+                          <span className="px-2 py-1 text-xs font-medium bg-gai-blue text-white rounded-full">
+                            {event.type_activite}
+                          </span>
+                        </div>
                       </div>
                       
                       {event.description && (
                         <p className="text-gray-600 dark:text-gray-400 mb-3">{event.description}</p>
                       )}
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex flex-col space-y-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:space-y-0 text-xs lg:text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center space-x-1">
                           <Calendar className="w-4 h-4" />
                           <span>
