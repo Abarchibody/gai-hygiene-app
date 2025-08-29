@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, TrendingUp, Users, Calendar, BarChart3, Heart } from 'lucide-react';
-import { db } from '../db/schema';
-import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services';
 import type { Reminder, Notification } from '../types';
 
 interface DashboardStats {
@@ -18,7 +17,7 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const user = authService.getCurrentUser();
   const [stats, setStats] = useState<DashboardStats>({
     activeReminders: 0,
     todayNotifications: 0,
@@ -43,102 +42,27 @@ export default function Dashboard() {
       let notifications: Notification[] = [];
       let events: any[] = [];
 
-      // Filter data based on user role and context
-      if (user.role.canAccessAdmin) {
-        // Admin sees all data
-        [reminders, notifications, events] = await Promise.all([
-          db.reminders.where('statut').equals('Actif').toArray(),
-          db.notifications.toArray(),
-          db.events?.toArray() || []
-        ]);
-      } else if (user.type_utilisateur === 'Enseignant') {
-        // Teacher sees their created reminders and class-related data
-        [reminders, notifications, events] = await Promise.all([
-          db.reminders.where('createur_id').equals(user.id).and(r => r.statut === 'Actif').toArray(),
-          db.notifications.where('destinataire_id').equals(user.id).toArray(),
-          db.events?.toArray() || []
-        ]);
-      } else if (user.type_utilisateur === 'Parent') {
-        // Parent sees notifications for their children
-        const children = await db.students.where('parent_id').equals(user.id).toArray();
-        const childIds = children.map(c => c.utilisateur_id);
-        
-        notifications = await db.notifications
-          .where('destinataire_id')
-          .anyOf([user.id, ...childIds])
-          .toArray();
-        
-        // Get reminders assigned to their children
-        const assignments = await db.reminder_assignments
-          .where('utilisateur_id')
-          .anyOf(childIds)
-          .toArray();
-        const reminderIds = assignments.map(a => a.rappel_id);
-        
-        if (reminderIds.length > 0) {
-          reminders = await db.reminders
-            .where('id')
-            .anyOf(reminderIds)
-            .and(r => r.statut === 'Actif')
-            .toArray();
-        }
-      } else if (user.type_utilisateur === 'Élève') {
-        // Student sees their own notifications and assigned reminders
-        notifications = await db.notifications.where('destinataire_id').equals(user.id).toArray();
-        
-        const assignments = await db.reminder_assignments.where('utilisateur_id').equals(user.id).toArray();
-        const reminderIds = assignments.map(a => a.rappel_id);
-        
-        if (reminderIds.length > 0) {
-          reminders = await db.reminders
-            .where('id')
-            .anyOf(reminderIds)
-            .and(r => r.statut === 'Actif')
-            .toArray();
-        }
-      }
-
-      const today = new Date();
-      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const weekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-      const todayNotifications = notifications.filter(n => 
-        new Date(n.scheduled_time) >= todayStart
-      ).length;
-
-      const weeklyNotifications = notifications.filter(n => 
-        new Date(n.scheduled_time) >= weekStart
-      );
-      const readThisWeek = weeklyNotifications.filter(n => n.status === 'read').length;
-      const weeklyProgress = weeklyNotifications.length > 0 
-        ? Math.round((readThisWeek / weeklyNotifications.length) * 100) 
-        : 0;
-
-      const remindersByCategory = reminders.reduce((acc, reminder) => {
-        acc[reminder.categorie] = (acc[reminder.categorie] || 0) + 1;
-        return acc;
-      }, {} as { [key: string]: number });
-
-      const recentActivity = notifications
-        .slice(-5)
-        .reverse()
-        .map(n => ({
-          type: 'notification',
-          message: `Rappel "${n.title}" programmé`,
-          time: new Date(n.scheduled_time).toLocaleTimeString('fr-FR', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          })
-        }));
-
+      // Placeholder data for now - will be replaced with service calls
       setStats({
-        activeReminders: reminders.length,
-        todayNotifications,
-        weeklyProgress,
-        upcomingEvents: events.length,
-        remindersByCategory,
-        recentActivity
+        activeReminders: 8,
+        todayNotifications: 3,
+        weeklyProgress: 75,
+        upcomingEvents: 2,
+        remindersByCategory: {
+          'Lavage mains': 3,
+          'Brossage dents': 2,
+          'Hygiène corporelle': 2,
+          'Personnalisé': 1
+        },
+        recentActivity: [
+          { type: 'notification', message: 'Rappel "Lavage des mains" envoyé', time: '14:30' },
+          { type: 'notification', message: 'Rappel "Brossage des dents" programmé', time: '08:00' }
+        ]
       });
+      setLoading(false);
+      return;
+
+
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
     } finally {
@@ -158,7 +82,7 @@ export default function Dashboard() {
     <div>
       <div className="mb-8">
         <p className="text-gray-600 dark:text-gray-400">
-          {user?.type_utilisateur === 'Admin' || user?.role.canAccessAdmin
+          {user?.type_utilisateur === 'Admin'
             ? 'Vue d\'ensemble du système GAI Hygiène'
             : user?.type_utilisateur === 'Enseignant'
             ? 'Suivi de vos rappels et classes'

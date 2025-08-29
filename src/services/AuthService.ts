@@ -19,46 +19,19 @@ export class AuthService {
     password: string
   ): Promise<{ user: User | null; error: string | null }> {
     try {
-      // First try Supabase auth
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (authError) {
-        // Fallback to local user lookup
-        const { data: users, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', email)
-          .single();
-
-        if (userError || !users) {
-          return { user: null, error: 'Email ou mot de passe incorrect' };
-        }
-
-        // Simple password check (in production, use proper hashing)
-        if (users.password !== password) {
-          return { user: null, error: 'Email ou mot de passe incorrect' };
-        }
-
-        this.currentUser = users;
-        return { user: users, error: null };
-      }
-
-      // Get user profile from our users table
-      const { data: userProfile, error: profileError } = await supabase
+      const { data: user, error } = await supabase
         .from('users')
         .select('*')
         .eq('email', email)
+        .eq('password', password)
         .single();
 
-      if (profileError || !userProfile) {
-        return { user: null, error: 'Profil utilisateur non trouvé' };
+      if (error || !user) {
+        return { user: null, error: 'Email ou mot de passe incorrect' };
       }
 
-      this.currentUser = userProfile;
-      return { user: userProfile, error: null };
+      this.currentUser = user;
+      return { user, error: null };
     } catch (error) {
       console.error('Login error:', error);
       return { user: null, error: 'Erreur de connexion' };
@@ -66,13 +39,7 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    try {
-      await supabase.auth.signOut();
-      this.currentUser = null;
-    } catch (error) {
-      console.error('Logout error:', error);
-      this.currentUser = null;
-    }
+    this.currentUser = null;
   }
 
   getCurrentUser(): User | null {

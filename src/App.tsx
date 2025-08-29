@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
-import { AuthProvider } from './contexts/AuthContext';
+
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
@@ -49,7 +49,6 @@ function App() {
 
   return (
     <ThemeProvider>
-      <AuthProvider>
         <Router>
           <Routes>
             <Route path='/login' element={<Login />} />
@@ -300,7 +299,6 @@ function App() {
             />
           </Routes>
         </Router>
-      </AuthProvider>
     </ThemeProvider>
   );
 }

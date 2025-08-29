@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Users, School, Bell, Calendar, Database, Clock, LogOut, User, BarChart3, Menu, X, MessageSquare } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services';
 import ThemeToggle from './ui/ThemeToggle';
 
 interface LayoutProps {
@@ -12,8 +12,14 @@ interface LayoutProps {
 
 export default function Layout({ children, pageTitle = 'Tableau de bord', breadcrumb }: LayoutProps) {
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const user = authService.getCurrentUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await authService.logout();
+    navigate('/login');
+  };
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -83,7 +89,7 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             </h3>
           </div>
           
-          {user?.role.canViewUsers && (
+          {(user?.type_utilisateur === 'Admin' || user?.type_utilisateur === 'Enseignant') && (
             <Link
               to="/users"
               onClick={() => setSidebarOpen(false)}
@@ -98,7 +104,7 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             </Link>
           )}
           
-          {user?.role.canViewClasses && (
+          {(user?.type_utilisateur === 'Admin' || user?.type_utilisateur === 'Enseignant') && (
             <Link
               to="/classes"
               onClick={() => setSidebarOpen(false)}
@@ -139,7 +145,7 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             <span className="text-sm lg:text-base">Notifications</span>
           </Link>
           
-          {user?.role.canViewReports && (
+          {(user?.type_utilisateur === 'Admin' || user?.type_utilisateur === 'Enseignant') && (
             <Link
               to="/reports"
               onClick={() => setSidebarOpen(false)}
@@ -154,7 +160,7 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             </Link>
           )}
           
-          {user?.role.canViewEvents && (
+          {(user?.type_utilisateur === 'Admin' || user?.type_utilisateur === 'Enseignant') && (
             <Link
               to="/events"
               onClick={() => setSidebarOpen(false)}
@@ -170,7 +176,7 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
           )}
           
           
-          {user?.role.canAccessAdmin && (
+          {user?.type_utilisateur === 'Admin' && (
             <>
               <div className="px-6 py-2 mt-4">
                 <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -239,7 +245,7 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
                     </span>
                   </Link>
                   <button
-                    onClick={logout}
+                    onClick={handleLogout}
                     className="flex items-center px-2 lg:px-3 py-2 text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                     title="Se déconnecter"
                   >

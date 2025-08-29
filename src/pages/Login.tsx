@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -9,7 +9,6 @@ import ThemeToggle from '../components/ui/ThemeToggle';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -24,11 +23,11 @@ export default function Login() {
     setError('');
 
     try {
-      const success = await login(formData.email, formData.password);
-      if (success) {
+      const { user, error: loginError } = await authService.login(formData.email, formData.password);
+      if (user) {
         navigate('/');
       } else {
-        setError('Email ou mot de passe incorrect');
+        setError(loginError || 'Erreur de connexion');
       }
     } catch (error) {
       setError('Erreur de connexion');
@@ -57,8 +56,6 @@ export default function Login() {
             <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
           </div>
         )}
-
-
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
