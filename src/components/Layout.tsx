@@ -83,31 +83,35 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             </h3>
           </div>
           
-          <Link
-            to="/users"
-            onClick={() => setSidebarOpen(false)}
-            className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
-              isActive('/users')
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
-            }`}
-          >
-            <Users className="w-5 h-5 mr-3" />
-            <span className="text-sm lg:text-base">Utilisateurs</span>
-          </Link>
+          {user?.role.canViewUsers && (
+            <Link
+              to="/users"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
+                isActive('/users')
+                  ? 'bg-gai-blue text-white' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+              }`}
+            >
+              <Users className="w-5 h-5 mr-3" />
+              <span className="text-sm lg:text-base">Utilisateurs</span>
+            </Link>
+          )}
           
-          <Link
-            to="/classes"
-            onClick={() => setSidebarOpen(false)}
-            className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
-              isActive('/classes')
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
-            }`}
-          >
-            <School className="w-5 h-5 mr-3" />
-            <span className="text-sm lg:text-base">Classes</span>
-          </Link>
+          {user?.role.canViewClasses && (
+            <Link
+              to="/classes"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
+                isActive('/classes')
+                  ? 'bg-gai-blue text-white' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+              }`}
+            >
+              <School className="w-5 h-5 mr-3" />
+              <span className="text-sm lg:text-base">Classes</span>
+            </Link>
+          )}
           
           <Link
             to="/reminders"
@@ -161,24 +165,29 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             <span className="text-sm lg:text-base">Programmation</span>
           </Link>
           
-          <div className="px-6 py-2 mt-4">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Administration
-            </h3>
-          </div>
           
-          <Link
-            to="/admin"
-            onClick={() => setSidebarOpen(false)}
-            className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
-              isActive('/admin')
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
-            }`}
-          >
-            <Database className="w-5 h-5 mr-3" />
-            <span className="text-sm lg:text-base">Base de données</span>
-          </Link>
+          {user?.role.canAccessAdmin && (
+            <>
+              <div className="px-6 py-2 mt-4">
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Administration
+                </h3>
+              </div>
+              
+              <Link
+                to="/admin"
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
+                  isActive('/admin')
+                    ? 'bg-gai-blue text-white' 
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+                }`}
+              >
+                <Database className="w-5 h-5 mr-3" />
+                <span className="text-sm lg:text-base">Base de données</span>
+              </Link>
+            </>
+          )}
         </nav>
       </div>
       

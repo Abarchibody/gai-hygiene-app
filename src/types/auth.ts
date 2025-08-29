@@ -9,9 +9,13 @@ export interface AuthUser {
 
 export interface UserRole {
   canCreateUsers: boolean;
+  canEditUsers: boolean;
+  canViewUsers: boolean;
   canManageClasses: boolean;
+  canViewClasses: boolean;
   canCreateReminders: boolean;
   canViewReports: boolean;
+  canAccessAdmin: boolean;
   canManageSystem: boolean;
 }
 
@@ -20,41 +24,61 @@ export const getRoleByUserType = (type: string): UserRole => {
     case 'Admin':
       return {
         canCreateUsers: true,
+        canEditUsers: true,
+        canViewUsers: true,
         canManageClasses: true,
+        canViewClasses: true,
         canCreateReminders: true,
         canViewReports: true,
+        canAccessAdmin: true,
         canManageSystem: true
       };
     case 'Enseignant':
       return {
         canCreateUsers: false,
+        canEditUsers: false,
+        canViewUsers: true,
         canManageClasses: true,
+        canViewClasses: true,
         canCreateReminders: true,
         canViewReports: true,
+        canAccessAdmin: false,
         canManageSystem: false
       };
     case 'Parent':
       return {
         canCreateUsers: false,
+        canEditUsers: false,
+        canViewUsers: false,
         canManageClasses: false,
+        canViewClasses: false,
         canCreateReminders: false,
         canViewReports: false,
+        canAccessAdmin: false,
         canManageSystem: false
       };
     case 'Élève':
       return {
         canCreateUsers: false,
+        canEditUsers: false,
+        canViewUsers: false,
         canManageClasses: false,
+        canViewClasses: false,
         canCreateReminders: false,
         canViewReports: false,
+        canAccessAdmin: false,
         canManageSystem: false
       };
     default:
       return {
         canCreateUsers: false,
+        canEditUsers: false,
+        canViewUsers: false,
         canManageClasses: false,
+        canViewClasses: false,
         canCreateReminders: false,
         canViewReports: false,
+        canAccessAdmin: false,
         canManageSystem: false
       };
   }

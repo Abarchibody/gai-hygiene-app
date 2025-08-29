@@ -27,7 +27,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const savedUser = localStorage.getItem('gai_auth_user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      // Update role to latest structure
+      parsedUser.role = getRoleByUserType(parsedUser.type_utilisateur);
+      setUser(parsedUser);
+      // Save updated user back to localStorage
+      localStorage.setItem('gai_auth_user', JSON.stringify(parsedUser));
     }
     setIsLoading(false);
   }, []);
