@@ -18,6 +18,25 @@ $breadcrumb = '<a href="/" class="hover:text-gai-blue">Accueil</a> / <span class
 include '../../shared/layouts/header.php';
 ?>
 
+<!-- Message de suppression -->
+<?php if (isset($_GET['deleted'])): ?>
+    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+        <div class="flex items-center">
+            <i data-lucide="check-circle" class="w-5 h-5 text-green-400 mr-3"></i>
+            <p class="text-green-800 font-medium">Utilisateur supprimé avec succès!</p>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['error']) && $_GET['error'] === 'delete_failed'): ?>
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+        <div class="flex items-center">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 mr-3"></i>
+            <p class="text-red-800 font-medium">Échec de la suppression de l'utilisateur</p>
+        </div>
+    </div>
+<?php endif; ?>
+
 <div class="flex justify-between items-center mb-8">
     <div>
         <p class="text-gray-600">Gérez les élèves, parents et enseignants du complexe scolaire</p>
@@ -125,11 +144,11 @@ include '../../shared/layouts/header.php';
                                 <i data-lucide="edit" class="w-4 h-4 mr-1"></i>
                                 Modifier
                             </a>
-                            <a href="delete.php?id=<?= $u['id'] ?>" class="text-red-600 hover:text-red-800 inline-flex items-center" 
-                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                            <button onclick="openDeleteModal(<?= $u['id'] ?>, '<?= htmlspecialchars($u['nom'] . ' ' . $u['prenom'], ENT_QUOTES) ?>', '<?= $u['type_utilisateur'] ?>')" 
+                                    class="text-red-600 hover:text-red-800 inline-flex items-center">
                                 <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
                                 Supprimer
-                            </a>
+                            </button>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -138,5 +157,8 @@ include '../../shared/layouts/header.php';
         </div>
     <?php endif; ?>
 </div>
+
+<!-- Modal de confirmation de suppression -->
+<?php include '../../shared/components/delete-modal.php'; ?>
 
 <?php include '../../shared/layouts/footer.php'; ?>
