@@ -1,10 +1,10 @@
 ---
 project:
-  title: "Application mobile de rappel d’hygiène au Complexe Scolaire GAI"
+  title: "Application GAI - Rappels d'Hygiène Automatisés"
   description: >
-    Une application mobile éducative visant à renforcer les pratiques d’hygiène
-    chez les élèves du Complexe Scolaire GAI grâce à des rappels programmés,
-    des notifications automatiques et une journalisation des activités.
+    Application web éducative pour automatiser et améliorer les pratiques d'hygiène
+    au Complexe Scolaire GAI grâce à un système de rappels programmés,
+    notifications automatiques et suivi individualisé des activités.
   context:
     domain: "Éducation et hygiène scolaire"
     location: "Complexe Scolaire GAI, Limete, Kinshasa (RDC)"
@@ -12,93 +12,149 @@ project:
     mission:
       - "Former des élèves équilibrés et instruits"
       - "Transmettre des valeurs morales et humaines"
-      - "Favoriser la santé et la discipline à travers l’hygiène"
+      - "Favoriser la santé et la discipline à travers l'hygiène"
   objectives:
-    global: "Concevoir et réaliser une application mobile automatisant les rappels d’hygiène"
+    global: "Système complet de gestion et d'automatisation des rappels d'hygiène"
     specific:
-      - "Analyser les besoins en matière de sensibilisation et de suivi des pratiques d’hygiène"
-      - "Concevoir un système structuré pour gérer et envoyer des rappels"
-      - "Développer une application mobile avec notifications régulières"
-      - "Mettre en place une base de données centralisée"
-      - "Tester et valider l’application"
+      - "Gestion centralisée des utilisateurs (élèves, parents, enseignants) ✓"
+      - "Organisation des classes et relations familiales ✓"
+      - "Création et programmation de rappels d'hygiène personnalisés"
+      - "Système de notifications automatisées multi-canaux"
+      - "Suivi et traçabilité des activités d'hygiène"
+      - "Tableaux de bord et rapports d'efficacité"
   problematique: >
-    Le suivi de l’hygiène est encore basé sur des rappels oraux et affiches, sans outil moderne
-    ni suivi individualisé. Les élèves oublient facilement et il n’existe aucune traçabilité.
-  hypothesis: >
-    La mise en place d’une application mobile constitue une solution adéquate
-    pour automatiser les rappels et améliorer les bonnes pratiques d’hygiène.
+    Le suivi de l'hygiène manque d'outils modernes et de traçabilité.
+    Les rappels oraux et affiches sont insuffisants pour un suivi individualisé efficace.
+  solution_actuelle: >
+    Système web complet avec gestion d'utilisateurs, classes, et prêt pour
+    l'intégration du module de rappels d'hygiène automatisés.
 
-documents_utilises:
-  - name: "Fiche de rappel"
-    role: "Enregistrer les rappels d’hygiène"
-    attributes:
-      - {code: "IdRap", designation: "Identifiant rappel", type: "AN", size: 10, identifiant: true}
-      - {code: "TitreRap", designation: "Intitulé du rappel", type: "AN", size: 30}
-      - {code: "DescRap", designation: "Description du rappel", type: "AN", size: 100}
-      - {code: "DateRap", designation: "Date prévue", type: "Date"}
-      - {code: "HeureRap", designation: "Heure prévue", type: "Heure"}
-      - {code: "ResponsableRap", designation: "Élève/Parent/Enseignant", type: "AN", size: 30}
-  - name: "Programmation"
-    role: "Planifier des activités ou événements d’hygiène"
-    attributes:
-      - {code: "IdProg", designation: "Identifiant programmation", type: "AN", size: 10, identifiant: true}
-      - {code: "TitreProg", designation: "Intitulé activité", type: "AN", size: 50}
-      - {code: "TypeActProg", designation: "Type activité", type: "AN", size: 20}
-      - {code: "DateDebProg", designation: "Date de début", type: "Date"}
-      - {code: "HeureDebProg", designation: "Heure de début", type: "Heure"}
-      - {code: "DateFinProg", designation: "Date de fin", type: "Date"}
-      - {code: "HeureFinProg", designation: "Heure de fin", type: "Heure"}
-      - {code: "RespProg", designation: "Responsable activité", type: "AN", size: 30}
-  - name: "Notification"
-    role: "Informer automatiquement les utilisateurs"
-    attributes:
-      - {code: "IdNotif", designation: "Identifiant notification", type: "AN", size: 10, identifiant: true}
-      - {code: "ContenuNotif", designation: "Message notification", type: "AN", size: 200}
-      - {code: "TypeNotif", designation: "Type (alerte, rappel...)", type: "AN", size: 20}
-      - {code: "DestNotif", designation: "Destinataire", type: "AN", size: 30}
-      - {code: "StatutNotif", designation: "Statut (envoyé, lu...)", type: "AN", size: 20}
-  - name: "Journal d’événements"
-    role: "Tracer l’historique des notifications"
-    attributes:
-      - {code: "IdEvt", designation: "Identifiant événement", type: "AN", size: 10, identifiant: true}
-      - {code: "ContenuEvt", designation: "Description", type: "AN", size: 50}
-      - {code: "StatutEvt", designation: "Statut (succès/échec)", type: "AN", size: 20}
-      - {code: "DateEvt", designation: "Date", type: "Date"}
-      - {code: "HeureEvt", designation: "Heure", type: "Heure"}
+architecture_actuelle:
+  modules_implementes:
+    - name: "Gestion Utilisateurs"
+      status: "TERMINÉ ✓"
+      fonctionnalites:
+        - "CRUD complet (Créer, Lire, Modifier, Supprimer)"
+        - "Types: Élèves, Parents, Enseignants"
+        - "Recherche et filtres avancés"
+        - "Pages de profil détaillées"
+    - name: "Gestion Classes"
+      status: "TERMINÉ ✓"
+      fonctionnalites:
+        - "CRUD complet avec assignation d'enseignants"
+        - "Attribution/retrait d'élèves aux classes"
+        - "Vue détaillée avec liste des élèves"
+        - "Statistiques en temps réel"
+    - name: "Relations Parent-Élève"
+      status: "TERMINÉ ✓"
+      fonctionnalites:
+        - "Assignation de parents aux élèves"
+        - "Interface intuitive pour gérer les relations"
+        - "Affichage des liens dans les profils"
+    - name: "Tableau de Bord"
+      status: "TERMINÉ ✓"
+      fonctionnalites:
+        - "Statistiques globales du système"
+        - "Répartition par types d'utilisateurs"
+        - "État des relations et assignations"
+        - "Actions rapides pour navigation"
 
-dependances_fonctionnelles:
-  - "IdRap -> {TitreRap, DescRap, DateRap, HeureRap, ResponsableRap}"
-  - "IdProg -> {TitreProg, TypeActProg, DateDebProg, HeureDebProg, DateFinProg, HeureFinProg, RespProg}"
-  - "IdNotif -> {ContenuNotif, TypeNotif, DestNotif, StatutNotif}"
-  - "IdEvt -> {ContenuEvt, StatutEvt, DateEvt, HeureEvt, IdNotif}"
-  - "DestNotif -> {TypeUtilisateur (Élève, Parent, Enseignant)}"
+modules_a_developper:
+  - name: "Rappels d'Hygiène"
+    role: "Créer et gérer les rappels automatisés"
+    priorite: "PHASE 2 - PRIORITÉ 1"
+    attributes:
+      - {code: "id", designation: "Identifiant rappel", type: "INT", auto_increment: true}
+      - {code: "titre", designation: "Intitulé du rappel", type: "VARCHAR", size: 100}
+      - {code: "description", designation: "Description détaillée", type: "TEXT"}
+      - {code: "categorie", designation: "Catégorie d'hygiène", type: "ENUM"}
+      - {code: "recurrence", designation: "Type de récurrence", type: "ENUM"}
+      - {code: "date_debut", designation: "Date de début", type: "DATE"}
+      - {code: "heure", designation: "Heure d'exécution", type: "TIME"}
+      - {code: "statut", designation: "Statut (actif/inactif)", type: "ENUM"}
+      - {code: "createur_id", designation: "Utilisateur créateur", type: "INT"}
+  - name: "Assignations Rappels"
+    role: "Lier rappels aux utilisateurs/classes"
+    attributes:
+      - {code: "rappel_id", designation: "Référence rappel", type: "INT"}
+      - {code: "utilisateur_id", designation: "Utilisateur cible", type: "INT"}
+      - {code: "classe_id", designation: "Classe cible", type: "INT"}
+  - name: "Notifications"
+    role: "Gérer l'envoi des notifications"
+    attributes:
+      - {code: "id", designation: "Identifiant notification", type: "INT"}
+      - {code: "rappel_id", designation: "Rappel source", type: "INT"}
+      - {code: "destinataire_id", designation: "Utilisateur destinataire", type: "INT"}
+      - {code: "message", designation: "Contenu du message", type: "TEXT"}
+      - {code: "type", designation: "Type de notification", type: "ENUM"}
+      - {code: "statut", designation: "Statut d'envoi", type: "ENUM"}
+      - {code: "date_envoi", designation: "Date d'envoi", type: "DATETIME"}
+  - name: "Journal d'événements"
+    role: "Tracer l'historique complet"
+    attributes:
+      - {code: "id", designation: "Identifiant événement", type: "INT"}
+      - {code: "type_evenement", designation: "Type d'événement", type: "VARCHAR"}
+      - {code: "description", designation: "Description", type: "TEXT"}
+      - {code: "utilisateur_id", designation: "Utilisateur concerné", type: "INT"}
+      - {code: "statut", designation: "Succès/Échec", type: "ENUM"}
+      - {code: "timestamp", designation: "Date et heure", type: "DATETIME"}
 
-regles_de_gestion:
-  - "Un utilisateur (élève/parent/enseignant) peut créer une ou plusieurs fiches de rappel."
-  - "Une programmation est définie par l’école et peut générer plusieurs rappels."
-  - "Une fiche ou programmation peut générer une ou plusieurs notifications."
-  - "Chaque notification doit être enregistrée dans un journal d’événements."
-  - "Une notification est destinée à un ou plusieurs utilisateurs."
-  - "Chaque activité de programmation est suivie par un responsable désigné."
+dependances_fonctionnelles_actuelles:
+  - "utilisateur_id -> {nom, prenom, email, telephone, type_utilisateur}"
+  - "classe_id -> {nom_classe, niveau, enseignant_id}"
+  - "eleve_id -> {utilisateur_id, classe_id, parent_id}"
+  
+dependances_fonctionnelles_futures:
+  - "rappel_id -> {titre, description, categorie, recurrence, statut, createur_id}"
+  - "notification_id -> {rappel_id, destinataire_id, message, type, statut}"
+  - "evenement_id -> {type_evenement, description, utilisateur_id, statut}"
 
-objets:
-  - "Élève"
-  - "Parent"
-  - "Enseignant"
-  - "Fiche de rappel"
-  - "Programmation"
+regles_de_gestion_implementees:
+  - "Un utilisateur peut être de type Élève, Parent ou Enseignant ✓"
+  - "Un élève peut être assigné à une seule classe ✓"
+  - "Un parent peut avoir plusieurs enfants élèves ✓"
+  - "Un enseignant peut être responsable de plusieurs classes ✓"
+  - "Une classe peut avoir plusieurs élèves ✓"
+  
+regles_de_gestion_futures:
+  - "Un enseignant peut créer des rappels personnalisés pour ses classes"
+  - "Un rappel peut être assigné à des utilisateurs individuels ou des classes entières"
+  - "Les rappels récurrents génèrent automatiquement des notifications"
+  - "Chaque notification envoyée est tracée dans le journal d'événements"
+  - "Les parents reçoivent les notifications concernant leurs enfants"
+  - "Les statistiques de participation sont calculées automatiquement"
+
+objets_implementes:
+  - "Utilisateur (Élève/Parent/Enseignant) ✓"
+  - "Classe ✓"
+  - "Relation Élève-Classe ✓"
+  - "Relation Parent-Élève ✓"
+  - "Tableau de Bord ✓"
+  
+objets_a_implementer:
+  - "Rappel d'Hygiène"
+  - "Catégorie d'Hygiène"
+  - "Assignation Rappel"
   - "Notification"
-  - "Journal d’événements"
+  - "Journal d'événements"
+  - "Statistiques de Participation"
 
-relations:
-  - "Parent ⇄ Élève : un parent peut être responsable de plusieurs élèves"
-  - "Classe ⇄ Élève : un élève appartient à une classe"
-  - "Enseignant ⇄ Classe : un enseignant encadre une ou plusieurs classes"
-  - "Enseignant ⇄ Programmation : un enseignant crée plusieurs programmations"
-  - "Programmation ⇄ Fiche de rappel : une programmation génère des fiches"
-  - "Fiche de rappel ⇄ Élève : un rappel peut concerner plusieurs élèves"
-  - "Fiche de rappel ⇄ Parent : un parent peut recevoir plusieurs rappels"
-  - "Fiche de rappel ⇄ Enseignant : un enseignant peut créer un rappel direct"
-  - "Fiche de rappel ⇄ Notification : un rappel déclenche des notifications"
+relations_implementees:
+  - "Parent ⇄ Élève : un parent peut avoir plusieurs enfants ✓"
+  - "Classe ⇄ Élève : un élève appartient à une classe ✓"
+  - "Enseignant ⇄ Classe : un enseignant peut être responsable de plusieurs classes ✓"
+  - "Utilisateur ⇄ Profil : chaque utilisateur a un profil détaillé ✓"
+  
+relations_futures:
+  - "Enseignant ⇄ Rappel : un enseignant crée plusieurs rappels personnalisés"
+  - "Rappel ⇄ Assignation : un rappel peut être assigné à plusieurs cibles"
+  - "Rappel ⇄ Notification : un rappel génère des notifications automatiques"
   - "Notification ⇄ Utilisateur : notifications envoyées aux destinataires"
-  - "Notification ⇄ Journal d’événements : une notification est tracée dans le journal"
+  - "Notification ⇄ Journal : chaque notification est tracée"
+  - "Classe ⇄ Rappel : rappels collectifs pour toute une classe"
+  
+statut_projet:
+  phase_1: "TERMINÉE - Fondation solide établie"
+  phase_2: "PRÊTE - Module rappels d'hygiène à développer"
+  infrastructure: "Docker + MariaDB + PHP + Tailwind CSS"
+  acces: "http://localhost:8080/dashboard.php"

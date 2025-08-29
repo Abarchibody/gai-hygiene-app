@@ -129,15 +129,49 @@ plan_developpement:
       phase_6: "2-3 semaines (Avancées)"
 
   avancement:
-    phase_1:
-      gestion_utilisateurs: "TERMINÉ ✓"
-      gestion_classes: "EN COURS - Liste et création implémentées"
-      relations_utilisateurs: "A FAIRE"
+    phase_1: "TERMINÉ ✓ - 100%"
+    details_phase_1:
+      gestion_utilisateurs:
+        - "CRUD complet (Créer, Lire, Modifier, Supprimer) ✓"
+        - "Types: Élèves, Parents, Enseignants ✓"
+        - "Recherche et filtres avancés ✓"
+        - "Pages de profil détaillées ✓"
+      gestion_classes:
+        - "CRUD complet avec assignation d'enseignants ✓"
+        - "Attribution/retrait d'élèves aux classes ✓"
+        - "Vue détaillée avec liste des élèves ✓"
+        - "Statistiques en temps réel ✓"
+      relations_parent_eleve:
+        - "Assignation de parents aux élèves ✓"
+        - "Interface intuitive pour gérer les relations ✓"
+        - "Affichage des liens dans les profils ✓"
+      tableau_bord:
+        - "Statistiques globales du système ✓"
+        - "Répartition par types d'utilisateurs ✓"
+        - "État des relations et assignations ✓"
+        - "Actions rapides pour navigation ✓"
+      infrastructure:
+        - "Base de données MariaDB avec Docker ✓"
+        - "Architecture modulaire PHP/Tailwind CSS ✓"
+        - "Système de navigation avec sidebar ✓"
+        - "Composants réutilisables (modals, layouts) ✓"
   
-  prochaine_etape:
-    phase: "Phase 1.2"
-    nom: "Finaliser Gestion des Classes"
-    taches:
-      - "Compléter les pages edit.php et view.php"
-      - "Implémenter l'attribution d'élèves aux classes"
-      - "Développer les relations utilisateurs"
+  phase_actuelle:
+    phase: "Phase 2"
+    nom: "Module Rappels d'Hygiène (Cœur Métier)"
+    statut: "PRÊT À DÉMARRER"
+    objectif: "Développer le système de rappels d'hygiène automatisés"
+    
+  prochaines_taches_phase_2:
+    priorite_1:
+      - "Créer la structure de base de données pour les rappels"
+      - "Développer le modèle Rappel avec catégories prédéfinies"
+      - "Interface de création de rappels personnalisés"
+    priorite_2:
+      - "Système de récurrence (quotidien, hebdomadaire, mensuel)"
+      - "Assignation de rappels aux utilisateurs/classes"
+      - "Gestion des statuts (actif, inactif, terminé)"
+    priorite_3:
+      - "Intégration avec le système d'utilisateurs existant"
+      - "Tests et validation des fonctionnalités"
+      - "Interface utilisateur cohérente avec Phase 1"
