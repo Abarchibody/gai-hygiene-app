@@ -54,6 +54,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           };
           setUser(authUser);
           localStorage.setItem('gai_auth_user', JSON.stringify(authUser));
+          
+          // Auto-sync data from cloud after successful login
+          try {
+            const { syncService } = await import('../utils/syncService');
+            await syncService.syncFromCloud();
+            console.log('✅ Data synced from cloud after login');
+          } catch (syncError) {
+            console.log('⚠️ Could not sync data from cloud:', syncError);
+          }
+          
           return true;
         }
       } catch (supabaseError) {
