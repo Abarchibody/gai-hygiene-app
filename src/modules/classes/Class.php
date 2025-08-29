@@ -119,5 +119,23 @@ class ClassModel {
         $stmt = $this->conn->prepare("DELETE FROM eleves WHERE utilisateur_id = ?");
         return $stmt->execute([$eleveId]);
     }
+    
+    public function getParentsDisponibles() {
+        $stmt = $this->conn->prepare("
+            SELECT id, nom, prenom, email
+            FROM utilisateurs
+            WHERE type_utilisateur = 'Parent'
+            ORDER BY nom, prenom
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function assignerParent($eleveId, $parentId) {
+        $stmt = $this->conn->prepare("
+            UPDATE eleves SET parent_id = ? WHERE utilisateur_id = ?
+        ");
+        return $stmt->execute([$parentId, $eleveId]);
+    }
 }
 ?>
