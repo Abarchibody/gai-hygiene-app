@@ -84,13 +84,29 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             Classes
           </Link>
           
-          <div className="flex items-center px-6 py-3 text-gray-400 cursor-not-allowed">
+          <Link
+            to="/reminders"
+            className={`flex items-center px-6 py-3 transition-colors ${
+              isActive('/reminders')
+                ? 'bg-gai-blue text-white' 
+                : 'text-gray-700 hover:bg-gai-blue hover:text-white'
+            }`}
+          >
             <Bell className="w-5 h-5 mr-3" />
             Rappels
-            <span className="ml-auto text-xs bg-gai-orange text-white px-2 py-1 rounded-full">
-              Bientôt
-            </span>
-          </div>
+          </Link>
+          
+          <Link
+            to="/notifications"
+            className={`flex items-center px-6 py-3 transition-colors ${
+              isActive('/notifications')
+                ? 'bg-gai-blue text-white' 
+                : 'text-gray-700 hover:bg-gai-blue hover:text-white'
+            }`}
+          >
+            <Bell className="w-5 h-5 mr-3" />
+            Notifications
+          </Link>
           
           <div className="flex items-center px-6 py-3 text-gray-400 cursor-not-allowed">
             <Calendar className="w-5 h-5 mr-3" />
