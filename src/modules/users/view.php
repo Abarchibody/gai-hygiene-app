@@ -67,6 +67,15 @@ include '../../shared/layouts/header.php';
     </div>
 <?php endif; ?>
 
+<?php if (isset($_GET['parent_assigned'])): ?>
+    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+        <div class="flex items-center">
+            <i data-lucide="heart" class="w-5 h-5 text-green-400 mr-3"></i>
+            <p class="text-green-800 font-medium">Parent assigné avec succès!</p>
+        </div>
+    </div>
+<?php endif; ?>
+
 <div class="flex items-center justify-between mb-8">
     <div class="flex items-center">
         <a href="index.php" class="text-gai-blue hover:text-blue-600 mr-4 flex items-center">
@@ -164,7 +173,12 @@ include '../../shared/layouts/header.php';
                             <span class="text-gray-900"><?= htmlspecialchars($infos_supplementaires['parent_nom'] . ' ' . $infos_supplementaires['parent_prenom']) ?></span>
                         </div>
                     <?php else: ?>
-                        <span class="text-gray-400 italic">Non renseigné</span>
+                        <div class="flex items-center">
+                            <span class="text-gray-400 italic mr-2">Non renseigné</span>
+                            <a href="assign-parent.php?eleve_id=<?= $utilisateur['id'] ?>" class="text-gai-blue hover:underline text-sm">
+                                Assigner un parent
+                            </a>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
