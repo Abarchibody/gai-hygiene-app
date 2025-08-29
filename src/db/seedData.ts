@@ -21,7 +21,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Mukendi',
     prenom: 'Jean-Pierre',
-    email: 'jp.mukendi@gai-school.cd',
+    email: 'jp.mukendi@gai.cd',
     telephone: '+243 81 234 5678',
     password: 'teacher123',
     type_utilisateur: 'Enseignant',
@@ -31,7 +31,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Kabongo',
     prenom: 'Marie-Claire',
-    email: 'mc.kabongo@gai-school.cd',
+    email: 'mc.kabongo@gai.cd',
     telephone: '+243 82 345 6789',
     password: 'teacher456',
     type_utilisateur: 'Enseignant',
@@ -41,7 +41,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Tshilanda',
     prenom: 'Paul',
-    email: 'p.tshilanda@gai-school.cd',
+    email: 'p.tshilanda@gai.cd',
     telephone: '+243 83 456 7890',
     password: 'teacher789',
     type_utilisateur: 'Enseignant',
@@ -53,7 +53,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Mbuyi',
     prenom: 'Françoise',
-    email: 'f.mbuyi@gmail.com',
+    email: 'f.mbuyi@gai.cd',
     telephone: '+243 84 567 8901',
     password: 'parent123',
     type_utilisateur: 'Parent',
@@ -63,7 +63,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Kasongo',
     prenom: 'Robert',
-    email: 'r.kasongo@yahoo.fr',
+    email: 'r.kasongo@ygai.cd',
     telephone: '+243 85 678 9012',
     password: 'parent456',
     type_utilisateur: 'Parent',
@@ -73,7 +73,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ngandu',
     prenom: 'Célestine',
-    email: 'c.ngandu@hotmail.com',
+    email: 'c.ngandu@hgai.cd',
     telephone: '+243 86 789 0123',
     password: 'parent789',
     type_utilisateur: 'Parent',
@@ -83,7 +83,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ilunga',
     prenom: 'Joseph',
-    email: 'j.ilunga@gmail.com',
+    email: 'j.ilunga@gai.cd',
     telephone: '+243 87 890 1234',
     password: 'parent000',
     type_utilisateur: 'Parent',
@@ -95,7 +95,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Mbuyi',
     prenom: 'Grace',
-    email: 'grace.mbuyi@gai-school.cd',
+    email: 'grace.mbuyi@gai.cd',
     telephone: '',
     password: 'student123',
     type_utilisateur: 'Élève',
@@ -105,7 +105,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Mbuyi',
     prenom: 'David',
-    email: 'david.mbuyi@gai-school.cd',
+    email: 'david.mbuyi@gai.cd',
     telephone: '',
     password: 'student456',
     type_utilisateur: 'Élève',
@@ -115,7 +115,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Kasongo',
     prenom: 'Sarah',
-    email: 'sarah.kasongo@gai-school.cd',
+    email: 'sarah.kasongo@gai.cd',
     telephone: '',
     password: 'student789',
     type_utilisateur: 'Élève',
@@ -125,7 +125,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ngandu',
     prenom: 'Emmanuel',
-    email: 'emmanuel.ngandu@gai-school.cd',
+    email: 'emmanuel.ngandu@gai.cd',
     telephone: '',
     password: 'student000',
     type_utilisateur: 'Élève',
@@ -135,7 +135,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ngandu',
     prenom: 'Esther',
-    email: 'esther.ngandu@gai-school.cd',
+    email: 'esther.ngandu@gai.cd',
     telephone: '',
     password: 'student111',
     type_utilisateur: 'Élève',
@@ -145,7 +145,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ilunga',
     prenom: 'Samuel',
-    email: 'samuel.ilunga@gai-school.cd',
+    email: 'samuel.ilunga@gai.cd',
     telephone: '',
     password: 'student222',
     type_utilisateur: 'Élève',
@@ -196,20 +196,33 @@ export const seedDatabase = async () => {
     console.log(`✅ ${userIds.length} utilisateurs ajoutés`);
 
     // Récupérer les IDs des enseignants pour les assigner aux classes
-    const teachers = await db.users.where('type_utilisateur').equals('Enseignant').toArray();
-    
-    // Ajouter les classes avec enseignants assignés
-    const classesWithTeachers: Omit<Class, 'id'>[] = sampleClasses.map((classe, index) => ({
-      ...classe,
-      enseignant_id: teachers[index % teachers.length]?.id
-    }));
+    const teachers = await db.users
+      .where('type_utilisateur')
+      .equals('Enseignant')
+      .toArray();
 
-    const classIds = await db.classes.bulkAdd(classesWithTeachers, { allKeys: true });
+    // Ajouter les classes avec enseignants assignés
+    const classesWithTeachers: Omit<Class, 'id'>[] = sampleClasses.map(
+      (classe, index) => ({
+        ...classe,
+        enseignant_id: teachers[index % teachers.length]?.id
+      })
+    );
+
+    const classIds = await db.classes.bulkAdd(classesWithTeachers, {
+      allKeys: true
+    });
     console.log(`✅ ${classIds.length} classes ajoutées`);
 
     // Créer les relations parent-élève et élève-classe
-    const parents = await db.users.where('type_utilisateur').equals('Parent').toArray();
-    const students = await db.users.where('type_utilisateur').equals('Élève').toArray();
+    const parents = await db.users
+      .where('type_utilisateur')
+      .equals('Parent')
+      .toArray();
+    const students = await db.users
+      .where('type_utilisateur')
+      .equals('Élève')
+      .toArray();
     const classes = await db.classes.toArray();
 
     const studentRelations = [];
@@ -218,7 +231,7 @@ export const seedDatabase = async () => {
     for (const student of students) {
       const parent = parents.find(p => p.nom === student.nom);
       const assignedClass = classes[Math.floor(Math.random() * classes.length)];
-      
+
       studentRelations.push({
         utilisateur_id: student.id!,
         classe_id: assignedClass.id!,
@@ -228,7 +241,9 @@ export const seedDatabase = async () => {
     }
 
     await db.students.bulkAdd(studentRelations);
-    console.log(`✅ ${studentRelations.length} relations élève-classe-parent créées`);
+    console.log(
+      `✅ ${studentRelations.length} relations élève-classe-parent créées`
+    );
 
     // Ajouter les rappels d'hygiène de test
     const reminderResult = await seedReminders();
@@ -239,7 +254,7 @@ export const seedDatabase = async () => {
     console.log(`✅ ${eventResult.events} événements de programmation ajoutés`);
 
     console.log('🎉 Seeding terminé avec succès !');
-    
+
     return {
       users: userIds.length,
       classes: classIds.length,
@@ -256,7 +271,7 @@ export const seedDatabase = async () => {
 export const clearDatabase = async () => {
   try {
     console.log('🗑️ Suppression de toutes les données...');
-    
+
     await db.notifications.clear();
     await db.reminderAssignments.clear();
     await db.reminders.clear();
@@ -264,7 +279,7 @@ export const clearDatabase = async () => {
     await db.students.clear();
     await db.classes.clear();
     await db.users.clear();
-    
+
     console.log('✅ Base de données vidée');
   } catch (error) {
     console.error('❌ Erreur lors de la suppression:', error);

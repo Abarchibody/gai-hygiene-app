@@ -56,7 +56,7 @@ git --version
 
 ```bash
 # Cloner le repository
-git clone https://github.com/votre-org/gai-hygiene-app.git
+git clone https://github.com/Abarchibody/gai-hygiene-app.git
 cd gai-hygiene-app
 
 # Ou télécharger et extraire l'archive ZIP
