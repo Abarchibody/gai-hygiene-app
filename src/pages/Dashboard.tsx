@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, School, GraduationCap, Heart, Rocket, Bell } from 'lucide-react';
 import { getStatistics } from '../utils/dataManager';
-import TestPanel from '../components/TestPanel';
-import UITestSuite from '../components/UITestSuite';
+
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -94,24 +93,20 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Panel de test */}
-      <TestPanel />
+
       
-      {/* Suite de tests UI */}
-      <UITestSuite />
-      
-      {/* Phase suivante */}
-      <div className="bg-gradient-to-r from-gai-blue to-blue-600 rounded-lg shadow-md p-6 text-white mt-8">
+      {/* Tests E2E */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg shadow-md p-6 text-white mt-8">
         <h3 className="text-xl font-semibold mb-2 flex items-center">
           <Rocket className="w-6 h-6 mr-2" />
-          Phase 2 - Rappels d'Hygiène
+          Tests E2E Puppeteer
         </h3>
         <p className="mb-4 opacity-90">
-          Module rappels d'hygiène en développement. 
-          Création et gestion des rappels automatisés.
+          Démonstration automatique avec navigateur réel.
         </p>
-        <div className="flex items-center">
-          <span className="text-green-300 font-medium">✅ Infrastructure - TERMINÉE</span>
+        <div className="flex items-center space-x-4">
+          <span className="text-green-300 font-medium">✅ Application - OPÉRATIONNELLE</span>
+          <code className="bg-black bg-opacity-30 px-2 py-1 rounded text-sm">npm run test:e2e</code>
         </div>
       </div>
     </div>
