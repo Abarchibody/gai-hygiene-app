@@ -1,0 +1,256 @@
+import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Edit, Trash2, Mail, Phone, Calendar, Heart, School } from 'lucide-react';
+import { db } from '../../db/schema';
+import type { User } from '../../types';
+import Button from '../../components/ui/Button';
+
+export default function UserDetail() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      loadUser(parseInt(id));
+    }
+  }, [id]);
+
+  const loadUser = async (userId: number) => {
+    try {
+      const userData = await db.users.get(userId);
+      setUser(userData || null);
+    } catch (error) {
+      console.error('Erreur lors du chargement:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!user || !confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      return;
+    }
+
+    try {
+      await db.users.delete(user.id!);
+      navigate('/users?deleted=1');
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+    }
+  };
+
+  const getUserTypeColor = (type: string) => {
+    switch (type) {
+      case 'Élève': return 'bg-blue-100 text-blue-800';
+      case 'Parent': return 'bg-green-100 text-green-800';
+      case 'Enseignant': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500">Chargement...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Utilisateur introuvable</h2>
+        <Link to="/users" className="text-gai-blue hover:underline">
+          Retour à la liste
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center">
+          <Link 
+            to="/users" 
+            className="text-gai-blue hover:text-blue-600 mr-4 flex items-center"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour à la liste
+          </Link>
+        </div>
+        <div className="flex space-x-3">
+          <Link to={`/users/${user.id}/edit`}>
+            <Button variant="secondary">
+              <Edit className="w-4 h-4 mr-2" />
+              Modifier
+            </Button>
+          </Link>
+          <Button variant="danger" onClick={handleDelete}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Supprimer
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Informations principales */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gai-blue rounded-full flex items-center justify-center text-white text-lg font-medium mr-4">
+                  {user.prenom.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    {user.nom} {user.prenom}
+                  </h2>
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getUserTypeColor(user.type_utilisateur)}`}>
+                    {user.type_utilisateur}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Informations personnelles
+              </h3>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom complet
+                  </label>
+                  <p className="text-gray-900">{user.nom} {user.prenom}</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type d'utilisateur
+                  </label>
+                  <p className="text-gray-900">{user.type_utilisateur}</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Mail className="w-4 h-4 inline mr-1" />
+                    Email
+                  </label>
+                  <p className="text-gray-900">
+                    {user.email || <span className="text-gray-400 italic">Non renseigné</span>}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Phone className="w-4 h-4 inline mr-1" />
+                    Téléphone
+                  </label>
+                  <p className="text-gray-900">
+                    {user.telephone || <span className="text-gray-400 italic">Non renseigné</span>}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Calendar className="w-4 h-4 inline mr-1" />
+                    Créé le
+                  </label>
+                  <p className="text-gray-900">
+                    {user.created_at.toLocaleDateString('fr-FR')}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Calendar className="w-4 h-4 inline mr-1" />
+                    Modifié le
+                  </label>
+                  <p className="text-gray-900">
+                    {user.updated_at.toLocaleDateString('fr-FR')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Relations et actions */}
+        <div className="space-y-6">
+          {user.type_utilisateur === 'Élève' && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <Heart className="w-5 h-5 mr-2 text-green-500" />
+                  Parent
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center">
+                  <span className="text-gray-400 italic mr-2">Non renseigné</span>
+                  <Link to={`/users/${user.id}/assign-parent`}>
+                    <Button size="sm">
+                      Assigner un parent
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {user.type_utilisateur === 'Élève' && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <School className="w-5 h-5 mr-2 text-blue-500" />
+                  Classe
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center">
+                  <span className="text-gray-400 italic mr-2">Non assigné</span>
+                  <Button size="sm">
+                    Assigner à une classe
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {user.type_utilisateur === 'Parent' && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <Heart className="w-5 h-5 mr-2 text-green-500" />
+                  Enfants
+                </h3>
+              </div>
+              <div className="p-6">
+                <p className="text-gray-400 italic">Aucun enfant assigné</p>
+              </div>
+            </div>
+          )}
+
+          {user.type_utilisateur === 'Enseignant' && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <School className="w-5 h-5 mr-2 text-blue-500" />
+                  Classes enseignées
+                </h3>
+              </div>
+              <div className="p-6">
+                <p className="text-gray-400 italic">Aucune classe assignée</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

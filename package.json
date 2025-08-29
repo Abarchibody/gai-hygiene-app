@@ -1,10 +1,29 @@
 {
   "name": "gai-hygiene-app",
-  "version": "1.0.0",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "build-css": "tailwindcss -i ./src/assets/css/style.css -o ./src/assets/css/output.css --watch"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.26.1",
+    "dexie": "^4.0.8",
+    "zustand": "^4.4.7",
+    "lucide-react": "^0.439.0"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.0"
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "tailwindcss": "^3.3.6",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
   }
 }
