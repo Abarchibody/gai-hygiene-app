@@ -1,6 +1,7 @@
 import { db } from './schema';
 import type { User, Class } from '../types';
 import { seedReminders } from './sampleReminders';
+import { seedEvents } from './sampleEvents';
 
 // Données de test pour les utilisateurs
 const sampleUsers: Omit<User, 'id'>[] = [
@@ -233,13 +234,18 @@ export const seedDatabase = async () => {
     const reminderResult = await seedReminders();
     console.log(`✅ ${reminderResult.reminders} rappels d'hygiène ajoutés`);
 
+    // Ajouter les événements de programmation
+    const eventResult = await seedEvents();
+    console.log(`✅ ${eventResult.events} événements de programmation ajoutés`);
+
     console.log('🎉 Seeding terminé avec succès !');
     
     return {
       users: userIds.length,
       classes: classIds.length,
       relations: studentRelations.length,
-      reminders: reminderResult.reminders
+      reminders: reminderResult.reminders,
+      events: eventResult.events
     };
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);
@@ -254,6 +260,7 @@ export const clearDatabase = async () => {
     await db.notifications.clear();
     await db.reminderAssignments.clear();
     await db.reminders.clear();
+    await db.events.clear();
     await db.students.clear();
     await db.classes.clear();
     await db.users.clear();

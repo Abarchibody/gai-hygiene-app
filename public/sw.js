@@ -1,18 +1,9 @@
 const CACHE_NAME = 'gai-hygiene-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/assets/index.css',
-  '/assets/index.js',
-  '/favicon.ico'
-];
+const urlsToCache = [];
 
 // Installation du Service Worker
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
+  self.skipWaiting();
 });
 
 // Activation du Service Worker

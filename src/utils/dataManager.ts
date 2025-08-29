@@ -1,5 +1,5 @@
 import { db } from '../db/schema';
-import type { User, Class, Student, Reminder, ReminderAssignment } from '../types';
+import type { User, Class, Student, Reminder, ReminderAssignment, Event } from '../types';
 
 export interface DatabaseExport {
   users: User[];
@@ -7,6 +7,7 @@ export interface DatabaseExport {
   students: Student[];
   reminders: Reminder[];
   reminderAssignments: ReminderAssignment[];
+  events: Event[];
   exportDate: string;
   version: string;
 }
@@ -18,6 +19,7 @@ export const exportData = async (): Promise<void> => {
     const students = await db.students.toArray();
     const reminders = await db.reminders.toArray();
     const reminderAssignments = await db.reminderAssignments.toArray();
+    const events = await db.events.toArray();
 
     const exportData: DatabaseExport = {
       users,
@@ -25,6 +27,7 @@ export const exportData = async (): Promise<void> => {
       students,
       reminders,
       reminderAssignments,
+      events,
       exportDate: new Date().toISOString(),
       version: '1.0'
     };
@@ -60,9 +63,10 @@ export const importData = async (file: File): Promise<void> => {
     }
 
     // Vider la base de données
-    await db.transaction('rw', [db.users, db.classes, db.students, db.reminders, db.reminderAssignments], async () => {
+    await db.transaction('rw', [db.users, db.classes, db.students, db.reminders, db.reminderAssignments, db.events], async () => {
       await db.reminderAssignments.clear();
       await db.reminders.clear();
+      await db.events.clear();
       await db.students.clear();
       await db.classes.clear();
       await db.users.clear();
@@ -73,6 +77,7 @@ export const importData = async (file: File): Promise<void> => {
       await db.students.bulkAdd(data.students);
       if (data.reminders) await db.reminders.bulkAdd(data.reminders);
       if (data.reminderAssignments) await db.reminderAssignments.bulkAdd(data.reminderAssignments);
+      if (data.events) await db.events.bulkAdd(data.events);
     });
 
     console.log('✅ Données importées avec succès');
@@ -92,7 +97,8 @@ export const getStatistics = async () => {
       totalClasses,
       totalRelations,
       totalReminders,
-      activeReminders
+      activeReminders,
+      totalEvents
     ] = await Promise.all([
       db.users.count(),
       db.users.where('type_utilisateur').equals('Élève').count(),
@@ -101,7 +107,8 @@ export const getStatistics = async () => {
       db.classes.count(),
       db.students.count(),
       db.reminders.count(),
-      db.reminders.where('statut').equals('Actif').count()
+      db.reminders.where('statut').equals('Actif').count(),
+      db.events.count()
     ]);
 
     return {
@@ -112,7 +119,8 @@ export const getStatistics = async () => {
       totalClasses,
       totalRelations,
       totalReminders,
-      activeReminders
+      activeReminders,
+      totalEvents
     };
   } catch (error) {
     console.error('❌ Erreur lors du calcul des statistiques:', error);
@@ -124,7 +132,8 @@ export const getStatistics = async () => {
       totalClasses: 0,
       totalRelations: 0,
       totalReminders: 0,
-      activeReminders: 0
+      activeReminders: 0,
+      totalEvents: 0
     };
   }
 };

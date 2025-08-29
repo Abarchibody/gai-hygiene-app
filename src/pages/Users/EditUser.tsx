@@ -106,7 +106,7 @@ export default function EditUser() {
   if (initialLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Chargement...</div>
+        <div className="text-gray-500 dark:text-gray-400">Chargement...</div>
       </div>
     );
   }
@@ -127,17 +127,17 @@ export default function EditUser() {
       </div>
 
       {errors.submit && (
-        <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-          <p className="text-red-800">{errors.submit}</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-6">
+          <p className="text-red-800 dark:text-red-200">{errors.submit}</p>
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             Modifier l'utilisateur
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Modifiez les informations de l'utilisateur
           </p>
         </div>
@@ -185,8 +185,8 @@ export default function EditUser() {
             />
           </div>
 
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200 mt-6">
-            <div className="text-sm text-gray-500">
+          <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               Les champs marqués d'un * sont obligatoires
             </div>
             <div className="flex space-x-3">

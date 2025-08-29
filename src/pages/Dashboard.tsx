@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, School, GraduationCap, Heart, Rocket, Bell, Database } from 'lucide-react';
+import { Users, School, GraduationCap, Heart, Rocket, Bell, Database, Calendar } from 'lucide-react';
 import { getStatistics } from '../utils/dataManager';
 import { seedDatabase } from '../db/seedData';
 import Button from '../components/ui/Button';
@@ -14,7 +14,8 @@ export default function Dashboard() {
     totalClasses: 0,
     totalRelations: 0,
     totalReminders: 0,
-    activeReminders: 0
+    activeReminders: 0,
+    totalEvents: 0
   });
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +49,7 @@ export default function Dashboard() {
       </div>
 
       {/* Statistiques principales */}
-      <div className="grid md:grid-cols-5 gap-6 mb-8">
+      <div className="grid md:grid-cols-6 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex items-center">
             <div className="text-gai-blue mr-3">
@@ -105,6 +106,18 @@ export default function Dashboard() {
             <div>
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Rappels d'Hygiène</h3>
               <p className="text-2xl font-bold text-gai-orange">{stats.totalReminders}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="flex items-center">
+            <div className="text-indigo-500 mr-3">
+              <Calendar className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Événements</h3>
+              <p className="text-2xl font-bold text-indigo-500">{stats.totalEvents}</p>
             </div>
           </div>
         </div>

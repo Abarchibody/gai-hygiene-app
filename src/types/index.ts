@@ -71,3 +71,24 @@ export interface Notification {
   read_at?: Date;
   created_at: Date;
 }
+
+export type EventType = 'Sensibilisation' | 'Formation' | 'Contrôle' | 'Activité collective' | 'Personnalisé';
+export type EventStatus = 'Planifié' | 'En cours' | 'Terminé' | 'Annulé';
+
+export interface Event {
+  id?: number;
+  titre: string;
+  description?: string;
+  type_activite: EventType;
+  date_debut: Date;
+  heure_debut: string;
+  date_fin: Date;
+  heure_fin: string;
+  lieu?: string;
+  responsable_id: number;
+  statut: EventStatus;
+  participants?: number[];
+  classes_concernees?: number[];
+  created_at: Date;
+  updated_at: Date;
+}

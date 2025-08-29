@@ -123,13 +123,17 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             Rapports
           </Link>
           
-          <div className="flex items-center px-6 py-3 text-gray-400 dark:text-gray-500 cursor-not-allowed">
+          <Link
+            to="/events"
+            className={`flex items-center px-6 py-3 transition-colors ${
+              isActive('/events')
+                ? 'bg-gai-blue text-white' 
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+            }`}
+          >
             <Calendar className="w-5 h-5 mr-3" />
             Programmation
-            <span className="ml-auto text-xs bg-gai-orange text-white px-2 py-1 rounded-full">
-              Bientôt
-            </span>
-          </div>
+          </Link>
           
           <div className="px-6 py-2 mt-4">
             <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">

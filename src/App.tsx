@@ -25,6 +25,9 @@ import EditReminder from './pages/Reminders/EditReminder';
 import AssignReminder from './pages/Reminders/AssignReminder';
 import NotificationCenter from './pages/Notifications/NotificationCenter';
 import ReportsPage from './pages/Reports/ReportsPage';
+import EventsPage from './pages/Events/EventsPage';
+import CreateEvent from './pages/Events/CreateEvent';
+import EventDetail from './pages/Events/EventDetail';
 import DataManager from './pages/Admin/DataManager';
 import SystemStatus from './pages/Admin/SystemStatus';
 import BackupManager from './pages/Admin/BackupManager';
@@ -135,6 +138,21 @@ function App() {
         <Route path="/reports" element={
           <Layout pageTitle="Rapports & Analytics">
             <ReportsPage />
+          </Layout>
+        } />
+        <Route path="/events" element={
+          <Layout pageTitle="Programmation">
+            <EventsPage />
+          </Layout>
+        } />
+        <Route path="/events/create" element={
+          <Layout pageTitle="Nouvel événement">
+            <CreateEvent />
+          </Layout>
+        } />
+        <Route path="/events/:id" element={
+          <Layout pageTitle="Détail événement">
+            <EventDetail />
           </Layout>
         } />
         <Route path="/admin" element={
