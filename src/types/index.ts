@@ -92,3 +92,28 @@ export interface Event {
   created_at: Date;
   updated_at: Date;
 }
+
+export type SyncDirection = 'to_cloud' | 'from_cloud' | 'bidirectional';
+
+export interface SyncStatus {
+  id?: number;
+  table_name: string;
+  last_sync_at?: Date;
+  last_sync_direction?: SyncDirection;
+  sync_count: number;
+  last_error?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export type SettingCategory = 'general' | 'ui' | 'notifications' | 'sync' | 'backup';
+
+export interface AppSetting {
+  id?: number;
+  key: string;
+  value: any;
+  category: SettingCategory;
+  description?: string;
+  created_at: Date;
+  updated_at: Date;
+}

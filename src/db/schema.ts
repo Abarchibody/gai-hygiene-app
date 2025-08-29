@@ -29,6 +29,15 @@ export class GAIDatabase extends Dexie {
       notifications: '++id, type, status, recipient_id, reminder_id, scheduled_at, created_at',
       events: '++id, titre, type_activite, date_debut, responsable_id, created_at'
     });
+    this.version(3).stores({
+      users: '++id, nom, prenom, email, password, type_utilisateur, created_at',
+      classes: '++id, nom_classe, niveau, enseignant_id, created_at',
+      students: '++id, utilisateur_id, classe_id, parent_id, created_at',
+      reminders: '++id, titre, categorie, statut, createur_id, created_at',
+      reminderAssignments: '++id, rappel_id, utilisateur_id, classe_id, created_at',
+      notifications: '++id, type, status, recipient_id, reminder_id, scheduled_at, created_at',
+      events: '++id, titre, type_activite, date_debut, responsable_id, created_at'
+    });
   }
 }
 

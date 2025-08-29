@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import { db } from '../../db/schema';
+import { dbWrapper } from '../../utils/dbWrapper';
 import type { Reminder, ReminderCategory, ReminderRecurrence, User } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -109,7 +110,7 @@ export default function CreateReminder() {
         updated_at: new Date()
       };
 
-      const reminderId = await db.reminders.add(newReminder);
+      const reminderId = await dbWrapper.createReminder(newReminder);
       
       // Programmer automatiquement les notifications si le rappel est actif
       if (newReminder.statut === 'Actif') {

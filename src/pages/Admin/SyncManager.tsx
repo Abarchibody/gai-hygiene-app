@@ -10,12 +10,21 @@ export default function SyncManager() {
   const [config, setConfig] = useState<SyncConfig>(syncService.getConfig());
   const [loading, setLoading] = useState(false);
   const [testResult, setTestResult] = useState<boolean | null>(null);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    const loadLastSync = async () => {
+      const lastSync = await syncService.getLastSyncTime();
+      setLastSyncTime(lastSync);
+    };
+    
+    loadLastSync();
+    
     const interval = setInterval(() => {
       setStatus(syncService.getStatus());
       setConfig(syncService.getConfig());
-    }, 1000);
+      loadLastSync();
+    }, 5000); // Check every 5 seconds instead of every second
 
     return () => clearInterval(interval);
   }, []);
@@ -44,7 +53,16 @@ export default function SyncManager() {
   const handleManualSync = async () => {
     setLoading(true);
     try {
-      await syncService.smartSync();
+      console.log('Starting manual sync...');
+      const result = await syncService.smartSync();
+      console.log('Sync result:', result);
+      
+      // Refresh last sync time after successful sync
+      setTimeout(async () => {
+        const lastSync = await syncService.getLastSyncTime();
+        console.log('Refreshed last sync time:', lastSync);
+        setLastSyncTime(lastSync);
+      }, 1000);
     } catch (error) {
       console.error('Erreur sync manuelle:', error);
     } finally {
@@ -64,9 +82,14 @@ export default function SyncManager() {
     }
   };
 
-  const handleConfigChange = (field: keyof SyncConfig, value: any) => {
+  const handleConfigChange = async (field: keyof SyncConfig, value: any) => {
     const newConfig = { ...config, [field]: value };
     setConfig(newConfig);
+    
+    // Save sync interval to cloud settings
+    if (field === 'syncInterval') {
+      await syncService.setSetting('sync_interval', value, 'sync');
+    }
     
     if (config.enabled) {
       syncService.enableSync(newConfig);
@@ -131,7 +154,7 @@ export default function SyncManager() {
               <RefreshCw className={`w-5 h-5 ${status.syncInProgress ? 'animate-spin text-blue-500' : 'text-gray-400'}`} />
             </div>
             <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-1">
-              {status.lastSync ? status.lastSync.toLocaleTimeString('fr-FR') : 'Jamais'}
+              {lastSyncTime ? lastSyncTime.toLocaleString('fr-FR') : 'Jamais'}
             </p>
           </div>
 
