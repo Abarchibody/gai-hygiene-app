@@ -149,7 +149,7 @@ export default function ClassesList() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {classe.created_at.toLocaleDateString('fr-FR')}
+                      {classe.created_at ? new Date(classe.created_at).toLocaleDateString('fr-FR') : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">

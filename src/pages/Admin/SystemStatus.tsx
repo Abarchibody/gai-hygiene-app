@@ -122,7 +122,7 @@ export default function SystemStatus() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
           <Activity className="w-5 h-5 mr-2 text-gai-blue" />
           État du Système
-          <span className={`ml-3 px-2 py-1 text-xs font-medium rounded-full ${getHealthColor(overallHealth)}`}>
+          <span className={`ml-3 px-2 py-1 text-xs font-medium rounded-full flex items-center ${getHealthColor(overallHealth)}`}>
             {getHealthIcon(overallHealth)}
             <span className="ml-1">{getHealthText(overallHealth)}</span>
           </span>
