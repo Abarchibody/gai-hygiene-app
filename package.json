@@ -1,0 +1,10 @@
+{
+  "name": "gai-hygiene-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build-css": "tailwindcss -i ./src/assets/css/style.css -o ./src/assets/css/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}
