@@ -3,6 +3,7 @@
 $currentPath = $_SERVER['REQUEST_URI'];
 $isHome = $currentPath === '/' || $currentPath === '/index.php';
 $isUsers = strpos($currentPath, '/modules/users/') !== false;
+$isClasses = strpos($currentPath, '/modules/classes/') !== false;
 $isAdmin = strpos($currentPath, '/admin.php') !== false;
 ?>
 <!DOCTYPE html>
@@ -53,6 +54,11 @@ $isAdmin = strpos($currentPath, '/admin.php') !== false;
                 <a href="/modules/users/" class="flex items-center px-6 py-3 transition-colors <?= $isUsers ? 'bg-gai-blue text-white' : 'text-gray-700 hover:bg-gai-blue hover:text-white' ?>">
                     <i data-lucide="users" class="w-5 h-5 mr-3"></i>
                     Utilisateurs
+                </a>
+                
+                <a href="/modules/classes/" class="flex items-center px-6 py-3 transition-colors <?= $isClasses ? 'bg-gai-blue text-white' : 'text-gray-700 hover:bg-gai-blue hover:text-white' ?>">
+                    <i data-lucide="school" class="w-5 h-5 mr-3"></i>
+                    Classes
                 </a>
                 
                 <a href="#" class="flex items-center px-6 py-3 text-gray-400 cursor-not-allowed">

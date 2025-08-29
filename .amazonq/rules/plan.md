@@ -128,10 +128,16 @@ plan_developpement:
       phase_5: "1-2 semaines (Dashboard)"
       phase_6: "2-3 semaines (Avancées)"
 
+  avancement:
+    phase_1:
+      gestion_utilisateurs: "TERMINÉ ✓"
+      gestion_classes: "EN COURS - Liste et création implémentées"
+      relations_utilisateurs: "A FAIRE"
+  
   prochaine_etape:
-    phase: "Phase 1.1"
-    nom: "Gestion des Utilisateurs"
+    phase: "Phase 1.2"
+    nom: "Finaliser Gestion des Classes"
     taches:
-      - "Créer l'interface de liste des utilisateurs"
-      - "Développer les formulaires CRUD"
-      - "Implémenter la recherche et les filtres"
+      - "Compléter les pages edit.php et view.php"
+      - "Implémenter l'attribution d'élèves aux classes"
+      - "Développer les relations utilisateurs"
