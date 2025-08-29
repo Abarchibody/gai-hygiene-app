@@ -93,7 +93,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // Sync local changes to cloud before logout
+    try {
+      const { syncService } = await import('../utils/syncService');
+      await syncService.syncToCloud();
+      console.log('✅ Data synced to cloud before logout');
+    } catch (syncError) {
+      console.log('⚠️ Could not sync data to cloud:', syncError);
+    }
+    
     setUser(null);
     localStorage.removeItem('gai_auth_user');
     window.location.href = '/login';
