@@ -54,115 +54,89 @@ plan_developpement:
         - "Cache temporaire"
 
   phases:
-    migration:
+    phase_1_migration:
       nom: "Migration vers React + IndexedDB"
-      duree: "2.5-3.5 semaines"
-      priorite: 1
-      etapes:
-        setup_infrastructure:
-          duree: "3-4 jours"
-          taches:
-            - "Initialisation projet React + TypeScript + Vite"
-            - "Configuration Tailwind CSS + Headless UI"
-            - "Setup IndexedDB avec Dexie.js"
-            - "Architecture routing et state management"
-        
-        base_donnees_locale:
-          duree: "1 jour"
-          taches:
-            - "Schéma IndexedDB (utilisateurs, classes, relations)"
-            - "Fonctions CRUD de base"
-            - "Migration des données existantes"
-        
-        composants_ui:
-          duree: "3-4 jours"
-          taches:
-            - "Layout principal + sidebar responsive"
-            - "Composants réutilisables (forms, modals, buttons)"
-            - "Système de thème et icônes"
-        
-        modules_metier:
-          duree: "5-7 jours"
-          taches:
-            - "Module gestion utilisateurs (CRUD complet)"
-            - "Module gestion classes (avec relations)"
-            - "Système relations parent-élève"
-            - "Tableau de bord avec statistiques"
-        
-        finalisation:
-          duree: "2-3 jours"
-          taches:
-            - "Tests et débogage"
-            - "Optimisations performance"
-            - "Export/Import des données"
-            - "Déploiement statique"
+      duree: "3 semaines"
+      statut: "TERMINÉ ✓"
+      modules:
+        - "Setup projet React + TypeScript + Vite ✓"
+        - "Configuration Tailwind CSS + Lucide React ✓"
+        - "Architecture IndexedDB avec Dexie.js ✓"
+        - "Module Users complet (CRUD + relations) ✓"
+        - "Module Classes complet (CRUD + assignations) ✓"
+        - "Système relations parent-élève ✓"
+        - "Dashboard avec statistiques temps réel ✓"
+        - "Layout responsive + navigation ✓"
 
-    phase_2:
+    phase_2_rappels:
       nom: "Module Rappels d'Hygiène (Cœur Métier)"
-      duree: "2-3 semaines"
-      priorite: 2
+      duree: "2 semaines"
+      statut: "TERMINÉ ✓"
       modules:
-        types_rappels:
-          - "Catégories prédéfinies: Lavage mains, Brossage dents, Hygiène corporelle"
-          - "Rappels personnalisés par enseignant"
-        gestion_rappels:
-          - "Création rappel (titre, description, date/heure, responsable)"
-          - "Assignation à utilisateurs/classes"
-          - "Récurrence (quotidien, hebdomadaire, mensuel)"
-          - "Statut (actif, inactif, terminé)"
+        - "Types et catégories prédéfinies ✓"
+        - "CRUD complet rappels avec récurrence ✓"
+        - "Assignation utilisateurs/classes ✓"
+        - "Interface création et gestion ✓"
+        - "Données de test réalistes ✓"
 
-    phase_3:
-      nom: "Module Programmation"
-      duree: "1-2 semaines"
-      priorite: 3
+    phase_3_programmation:
+      nom: "Module Programmation & Événements"
+      duree: "1 semaine"
+      statut: "TERMINÉ ✓"
       modules:
-        calendrier_activites:
-          - "Vue calendrier mensuelle/hebdomadaire"
-          - "Création d'événements d'hygiène"
-          - "Activités récurrentes (séances sensibilisation)"
-        planification:
-          - "Templates d'activités réutilisables"
-          - "Conflits de planning détection"
+        - "CRUD complet événements ✓"
+        - "Interface création/gestion événements ✓"
+        - "Système de planification ✓"
+        - "Intégration avec rappels ✓"
 
-    phase_4:
-      nom: "Système de Notifications"
-      duree: "2-3 semaines"
-      priorite: 4
+    phase_4_notifications:
+      nom: "Système de Notifications & PWA"
+      duree: "1 semaine"
+      statut: "TERMINÉ ✓"
       modules:
-        notifications_locales:
-          - "Notifications navigateur (Web Notifications API)"
-          - "Rappels programmés avec Service Workers"
-          - "Personnalisation messages"
-        gestion_envois:
-          - "File d'attente notifications locales"
-          - "Statuts (programmé, affiché, lu)"
-          - "Historique complet"
+        - "Service de notifications Web API ✓"
+        - "Centre de notifications avec statistiques ✓"
+        - "Programmation automatique ✓"
+        - "Service Worker pour notifications persistantes ✓"
+        - "Manifest PWA pour installation ✓"
+        - "Cache offline avec Service Worker ✓"
 
-    phase_5:
-      nom: "PWA & Fonctionnalités Avancées"
-      duree: "2-3 semaines"
-      priorite: 5
+    phase_5_avancees:
+      nom: "Fonctionnalités Avancées"
+      duree: "2 semaines"
+      statut: "TERMINÉ ✓"
       modules:
-        pwa:
-          - "Progressive Web App (manifest, service worker)"
-          - "Mode hors-ligne complet"
-          - "Installation sur desktop/mobile"
-        fonctionnalites_avancees:
-          - "Export/Import données (JSON, CSV)"
-          - "Sauvegarde automatique"
-          - "Thèmes personnalisables"
+        - "Thèmes personnalisables clair/sombre ✓"
+        - "Rapports et analytics avec graphiques ✓"
+        - "Système de sauvegarde automatique ✓"
+        - "Interface BackupManager complète ✓"
+        - "Mobile-first responsive design ✓"
+        - "Supabase cloud sync (hybride) ✓"
+        - "Authentication & role-based access ✓"
+        - "User-oriented data filtering ✓"
+
+    phase_6_finalisation:
+      nom: "Finalisation & Déploiement"
+      duree: "1 semaine"
+      statut: "EN COURS (15%)"
+      modules:
+        - "Tests automatisés E2E complets"
+        - "Documentation utilisateur détaillée"
+        - "Guide d'installation et déploiement"
+        - "Optimisations finales performance"
+        - "Configuration production (build optimisé)"
 
   avancement:
-    phase_1_php: "TERMINÉ ✓ - 100% (Version PHP archivée)"
-    migration_react: "TERMINÉ ✓ - 100%"
+    phase_1_migration: "TERMINÉ ✓ - 100%"
     phase_2_rappels: "TERMINÉ ✓ - 100%"
-    phase_3_notifications: "TERMINÉ ✓ - 100%"
-    phase_4_avancees: "TERMINÉ ✓ - 100%"
+    phase_3_programmation: "TERMINÉ ✓ - 100%"
+    phase_4_notifications: "TERMINÉ ✓ - 100%"
+    phase_5_avancees: "TERMINÉ ✓ - 100%"
     
   phase_actuelle:
-    phase: "Phase 5"
+    phase: "Phase 6"
     nom: "Finalisation & Déploiement"
-    statut: "PRÊT À DÉMARRER"
+    statut: "EN COURS (15%)"
     objectif: "Tests finaux, documentation et préparation déploiement production"
     
   justification_migration:
@@ -179,42 +153,50 @@ plan_developpement:
       - "Setup projet React + TypeScript + Vite ✓"
       - "Configuration Tailwind CSS + Lucide React ✓"
       - "Architecture IndexedDB avec Dexie.js ✓"
-    interface:
-      - "Layout principal + sidebar responsive ✓"
-      - "Composants réutilisables (Button, Input, Select) ✓"
+      - "Layout mobile-first responsive ✓"
+      - "Composants réutilisables (Button, Input, Select, ConfirmDialog) ✓"
       - "Système de navigation avec routing ✓"
+    
     modules_metier:
       - "Module Users complet (CRUD + relations) ✓"
       - "Module Classes complet (CRUD + assignations) ✓"
+      - "Module Rappels complet (CRUD + récurrence + assignations) ✓"
+      - "Module Événements/Programmation complet ✓"
       - "Système relations parent-élève ✓"
       - "Dashboard avec statistiques temps réel ✓"
-    rappels_hygiene:
-      - "Types et catégories prédéfinies ✓"
-      - "CRUD complet rappels avec récurrence ✓"
-      - "Assignation utilisateurs/classes ✓"
-      - "Interface création et gestion ✓"
-    notifications:
+    
+    notifications_pwa:
       - "Service de notifications Web API ✓"
       - "Centre de notifications avec statistiques ✓"
       - "Programmation automatique ✓"
       - "Service Worker pour notifications persistantes ✓"
-    pwa:
       - "Manifest PWA pour installation ✓"
       - "Cache offline avec Service Worker ✓"
-      - "Notifications en arrière-plan ✓"
-    donnees:
-      - "Données de test réalistes (École GAI) ✓"
-      - "Système export/import JSON ✓"
-      - "Interface d'administration complète ✓"
-      - "Seed database avec relations automatiques ✓"
-    phase_4_avancees:
+    
+    fonctionnalites_avancees:
       - "Thèmes personnalisables clair/sombre ✓"
       - "Rapports et analytics avec graphiques ✓"
       - "Système de sauvegarde automatique ✓"
       - "Interface BackupManager complète ✓"
-      - "Optimisations performance ✓"
+      - "Export/Import données JSON ✓"
+      - "Interface d'administration complète ✓"
+    
+    architecture_moderne:
+      - "Supabase cloud sync (hybride local-first) ✓"
+      - "Authentication & role-based access control ✓"
+      - "User-oriented data filtering ✓"
+      - "Mobile-first responsive design ✓"
+      - "Custom confirm dialogs ✓"
+      - "Password management system ✓"
+    
+    donnees_test:
+      - "Données de test réalistes (École GAI) ✓"
+      - "13 utilisateurs (3 enseignants, 4 parents, 6 élèves) ✓"
+      - "4 classes avec enseignants assignés ✓"
+      - "Relations parent-élève fonctionnelles ✓"
+      - "6 rappels d'hygiène avec assignations ✓"
   
-  prochaines_taches_phase_5:
+  prochaines_taches_phase_6:
     priorite_1:
       - "Tests automatisés E2E complets"
       - "Documentation utilisateur détaillée"
@@ -227,11 +209,20 @@ plan_developpement:
       - "Formation utilisateurs finaux"
       - "Plan de maintenance et support"
       - "Déploiement production final"
+  
+  corrections_recentes:
+    - "Correction icônes navigation (Bell vs MessageSquare) ✓"
+    - "Fix table name reminderAssignments dans RemindersList ✓"
+    - "Dark mode styling fixes across all pages ✓"
+    - "Navigation visual states improvement ✓"
+    - "UI consistency improvements ✓"
 
   chronologie_totale:
-    migration: "TERMINÉ ✓ (3 semaines)"
+    phase_1_migration: "TERMINÉ ✓ (3 semaines)"
     phase_2_rappels: "TERMINÉ ✓ (2 semaines)"
-    phase_3_notifications: "TERMINÉ ✓ (1 semaine)"
-    phase_4_avancees: "TERMINÉ ✓ (2 semaines)"
-    phase_5_finalisation: "1 semaine (À venir)"
-    total_restant: "1 semaine"
+    phase_3_programmation: "TERMINÉ ✓ (1 semaine)"
+    phase_4_notifications: "TERMINÉ ✓ (1 semaine)"
+    phase_5_avancees: "TERMINÉ ✓ (2 semaines)"
+    phase_6_finalisation: "1 semaine (En cours - 15%)"
+    total_developpe: "9 semaines"
+    total_restant: "0.85 semaine"

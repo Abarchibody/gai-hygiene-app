@@ -253,6 +253,11 @@ fonctionnalites_futures:
     - "Documentation utilisateur détaillée"
     - "Guide d'installation et déploiement"
     - "Formation utilisateurs finaux"
+  
+  corrections_appliquees:
+    - "Navigation: Icônes distinctes pour Rappels et Notifications ✓"
+    - "Base de données: Correction noms de tables (reminderAssignments) ✓"
+    - "Interface: Amélioration UX navigation sidebar ✓"
 
 avantages_realises:
   simplicite:
@@ -288,10 +293,13 @@ limitations_resolues:
     - "Confirmations pour actions destructives ✓"
 
 statut_projet:
-  phase_actuelle: "Phase 5 - Finalisation & Déploiement (0% terminé)"
+  phase_actuelle: "Phase 5 - Finalisation & Déploiement (10% terminé)"
   infrastructure: "React + TypeScript + Vite + IndexedDB + PWA + Thèmes + Analytics + Backup (Opérationnel)"
   prochaine_etape: "Tests finaux et documentation"
   objectif_court_terme: "Tests E2E complets et guide utilisateur"
+  corrections_recentes:
+    - "Icônes navigation différenciées (Rappels: Bell, Notifications: MessageSquare) ✓"
+    - "Correction table reminderAssignments dans filtrage utilisateurs ✓"
   
   donnees_disponibles:
     utilisateurs: "13 utilisateurs de test (3 enseignants, 4 parents, 6 élèves)"
