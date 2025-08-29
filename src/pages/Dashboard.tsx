@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Users, School, GraduationCap, Heart, Rocket, Bell } from 'lucide-react';
+import { Users, School, GraduationCap, Heart, Rocket, Bell, Database } from 'lucide-react';
 import { getStatistics } from '../utils/dataManager';
+import { seedDatabase } from '../db/seedData';
+import Button from '../components/ui/Button';
 
 
 export default function Dashboard() {
@@ -14,6 +16,7 @@ export default function Dashboard() {
     totalReminders: 0,
     activeReminders: 0
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadStats();
@@ -22,6 +25,20 @@ export default function Dashboard() {
   const loadStats = async () => {
     const statistics = await getStatistics();
     setStats(statistics);
+  };
+
+  const handleSeedDatabase = async () => {
+    setLoading(true);
+    try {
+      await seedDatabase();
+      await loadStats();
+      alert('Données de test chargées avec succès !');
+    } catch (error) {
+      console.error('Erreur lors du chargement:', error);
+      alert('Erreur lors du chargement des données');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,11 +112,32 @@ export default function Dashboard() {
 
 
       
+      {/* Chargement des données */}
+      {stats.totalUsers === 0 && (
+        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg shadow-md p-6 text-white mb-8">
+          <h3 className="text-xl font-semibold mb-2 flex items-center">
+            <Database className="w-6 h-6 mr-2" />
+            Base de données vide
+          </h3>
+          <p className="mb-4 opacity-90">
+            Aucune donnée détectée. Chargez les données de test pour commencer.
+          </p>
+          <Button 
+            onClick={handleSeedDatabase}
+            disabled={loading}
+            className="bg-white text-orange-600 hover:bg-gray-100"
+          >
+            <Database className="w-4 h-4 mr-2" />
+            {loading ? 'Chargement...' : 'Charger les données de test'}
+          </Button>
+        </div>
+      )}
+
       {/* Tests E2E */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg shadow-md p-6 text-white mt-8">
         <h3 className="text-xl font-semibold mb-2 flex items-center">
           <Rocket className="w-6 h-6 mr-2" />
-          Tests E2E Puppeteer
+          Tests E2E Playwright
         </h3>
         <p className="mb-4 opacity-90">
           Démonstration automatique avec navigateur réel.

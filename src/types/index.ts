@@ -1,11 +1,12 @@
-export type UserType = 'Élève' | 'Parent' | 'Enseignant';
+export type UserType = 'Élève' | 'Parent' | 'Enseignant' | 'Admin';
 
 export interface User {
   id?: number;
   nom: string;
   prenom: string;
-  email?: string;
+  email: string;
   telephone?: string;
+  password: string;
   type_utilisateur: UserType;
   created_at: Date;
   updated_at: Date;

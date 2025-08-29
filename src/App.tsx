@@ -1,5 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UsersList from './pages/Users/UsersList';
 import CreateUser from './pages/Users/CreateUser';
@@ -22,23 +25,29 @@ import SystemStatus from './pages/Admin/SystemStatus';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={
-          <Layout pageTitle="Tableau de Bord">
-            <Dashboard />
-          </Layout>
-        } />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Layout pageTitle="Tableau de Bord">
+                <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          } />
         <Route path="/users" element={
           <Layout pageTitle="Utilisateurs">
             <UsersList />
           </Layout>
         } />
-        <Route path="/users/create" element={
-          <Layout pageTitle="Créer un utilisateur">
-            <CreateUser />
-          </Layout>
-        } />
+          <Route path="/users/create" element={
+            <ProtectedRoute requiredPermission="canCreateUsers">
+              <Layout pageTitle="Créer un utilisateur">
+                <CreateUser />
+              </Layout>
+            </ProtectedRoute>
+          } />
         <Route path="/users/:id" element={
           <Layout pageTitle="Détail utilisateur">
             <UserDetail />
@@ -117,8 +126,9 @@ function App() {
             </div>
           </Layout>
         } />
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </AuthProvider>
   )
 }
 

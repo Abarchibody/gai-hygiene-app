@@ -16,6 +16,7 @@ export default function CreateUser() {
     prenom: '',
     email: '',
     telephone: '',
+    password: '',
     type_utilisateur: '' as UserType | ''
   });
 
@@ -23,7 +24,8 @@ export default function CreateUser() {
     { value: '', label: 'Sélectionner un type' },
     { value: 'Élève', label: 'Élève' },
     { value: 'Parent', label: 'Parent' },
-    { value: 'Enseignant', label: 'Enseignant' }
+    { value: 'Enseignant', label: 'Enseignant' },
+    { value: 'Admin', label: 'Administrateur' }
   ];
 
   const validateForm = () => {
@@ -35,11 +37,18 @@ export default function CreateUser() {
     if (!formData.prenom.trim()) {
       newErrors.prenom = 'Le prénom est requis';
     }
+    if (!formData.email.trim()) {
+      newErrors.email = 'L\'email est requis';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Format d\'email invalide';
+    }
+    if (!formData.password.trim()) {
+      newErrors.password = 'Le mot de passe est requis';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+    }
     if (!formData.type_utilisateur) {
       newErrors.type_utilisateur = 'Le type d\'utilisateur est requis';
-    }
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Format d\'email invalide';
     }
 
     setErrors(newErrors);
@@ -141,6 +150,16 @@ export default function CreateUser() {
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
               error={errors.email}
+              required
+            />
+
+            <Input
+              label="Mot de passe"
+              type="password"
+              value={formData.password}
+              onChange={(e) => handleChange('password', e.target.value)}
+              error={errors.password}
+              required
             />
 
             <Input

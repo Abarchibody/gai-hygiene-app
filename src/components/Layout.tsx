@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, School, Bell, Calendar, Database, Clock } from 'lucide-react';
+import { Home, Users, School, Bell, Calendar, Database, Clock, LogOut, User } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,6 +11,7 @@ interface LayoutProps {
 
 export default function Layout({ children, pageTitle = 'Tableau de bord', breadcrumb }: LayoutProps) {
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -154,6 +156,25 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
                 <div className="flex items-center text-sm text-gray-500">
                   <Clock className="w-4 h-4 mr-2" />
                   {formatDateTime()}
+                </div>
+                
+                {/* User Info & Logout */}
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <User className="w-4 h-4 mr-2" />
+                    <span>{user?.prenom} {user?.nom}</span>
+                    <span className="ml-2 px-2 py-1 bg-gai-blue text-white text-xs rounded-full">
+                      {user?.type_utilisateur}
+                    </span>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                    title="Se déconnecter"
+                  >
+                    <LogOut className="w-4 h-4 mr-1" />
+                    Déconnexion
+                  </button>
                 </div>
               </div>
             </div>

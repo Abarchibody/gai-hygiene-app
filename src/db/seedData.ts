@@ -4,12 +4,25 @@ import { seedReminders } from './sampleReminders';
 
 // Données de test pour les utilisateurs
 const sampleUsers: Omit<User, 'id'>[] = [
+  // Administrateur
+  {
+    nom: 'Administrateur',
+    prenom: 'GAI',
+    email: 'admin@gai.cd',
+    telephone: '+243 80 000 0000',
+    password: 'admin',
+    type_utilisateur: 'Admin',
+    created_at: new Date('2024-01-01'),
+    updated_at: new Date('2024-01-01')
+  },
+
   // Enseignants
   {
     nom: 'Mukendi',
     prenom: 'Jean-Pierre',
     email: 'jp.mukendi@gai-school.cd',
     telephone: '+243 81 234 5678',
+    password: 'teacher123',
     type_utilisateur: 'Enseignant',
     created_at: new Date('2024-01-15'),
     updated_at: new Date('2024-01-15')
@@ -19,6 +32,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
     prenom: 'Marie-Claire',
     email: 'mc.kabongo@gai-school.cd',
     telephone: '+243 82 345 6789',
+    password: 'teacher456',
     type_utilisateur: 'Enseignant',
     created_at: new Date('2024-01-20'),
     updated_at: new Date('2024-01-20')
@@ -28,6 +42,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
     prenom: 'Paul',
     email: 'p.tshilanda@gai-school.cd',
     telephone: '+243 83 456 7890',
+    password: 'teacher789',
     type_utilisateur: 'Enseignant',
     created_at: new Date('2024-02-01'),
     updated_at: new Date('2024-02-01')
@@ -39,6 +54,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
     prenom: 'Françoise',
     email: 'f.mbuyi@gmail.com',
     telephone: '+243 84 567 8901',
+    password: 'parent123',
     type_utilisateur: 'Parent',
     created_at: new Date('2024-02-10'),
     updated_at: new Date('2024-02-10')
@@ -48,6 +64,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
     prenom: 'Robert',
     email: 'r.kasongo@yahoo.fr',
     telephone: '+243 85 678 9012',
+    password: 'parent456',
     type_utilisateur: 'Parent',
     created_at: new Date('2024-02-15'),
     updated_at: new Date('2024-02-15')
@@ -57,6 +74,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
     prenom: 'Célestine',
     email: 'c.ngandu@hotmail.com',
     telephone: '+243 86 789 0123',
+    password: 'parent789',
     type_utilisateur: 'Parent',
     created_at: new Date('2024-02-20'),
     updated_at: new Date('2024-02-20')
@@ -66,6 +84,7 @@ const sampleUsers: Omit<User, 'id'>[] = [
     prenom: 'Joseph',
     email: 'j.ilunga@gmail.com',
     telephone: '+243 87 890 1234',
+    password: 'parent000',
     type_utilisateur: 'Parent',
     created_at: new Date('2024-03-01'),
     updated_at: new Date('2024-03-01')
@@ -75,8 +94,9 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Mbuyi',
     prenom: 'Grace',
-    email: '',
+    email: 'grace.mbuyi@gai-school.cd',
     telephone: '',
+    password: 'student123',
     type_utilisateur: 'Élève',
     created_at: new Date('2024-03-05'),
     updated_at: new Date('2024-03-05')
@@ -84,8 +104,9 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Mbuyi',
     prenom: 'David',
-    email: '',
+    email: 'david.mbuyi@gai-school.cd',
     telephone: '',
+    password: 'student456',
     type_utilisateur: 'Élève',
     created_at: new Date('2024-03-05'),
     updated_at: new Date('2024-03-05')
@@ -93,8 +114,9 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Kasongo',
     prenom: 'Sarah',
-    email: '',
+    email: 'sarah.kasongo@gai-school.cd',
     telephone: '',
+    password: 'student789',
     type_utilisateur: 'Élève',
     created_at: new Date('2024-03-10'),
     updated_at: new Date('2024-03-10')
@@ -102,8 +124,9 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ngandu',
     prenom: 'Emmanuel',
-    email: '',
+    email: 'emmanuel.ngandu@gai-school.cd',
     telephone: '',
+    password: 'student000',
     type_utilisateur: 'Élève',
     created_at: new Date('2024-03-12'),
     updated_at: new Date('2024-03-12')
@@ -111,8 +134,9 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ngandu',
     prenom: 'Esther',
-    email: '',
+    email: 'esther.ngandu@gai-school.cd',
     telephone: '',
+    password: 'student111',
     type_utilisateur: 'Élève',
     created_at: new Date('2024-03-12'),
     updated_at: new Date('2024-03-12')
@@ -120,8 +144,9 @@ const sampleUsers: Omit<User, 'id'>[] = [
   {
     nom: 'Ilunga',
     prenom: 'Samuel',
-    email: '',
+    email: 'samuel.ilunga@gai-school.cd',
     telephone: '',
+    password: 'student222',
     type_utilisateur: 'Élève',
     created_at: new Date('2024-03-15'),
     updated_at: new Date('2024-03-15')
