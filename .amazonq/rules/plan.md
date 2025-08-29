@@ -155,12 +155,14 @@ plan_developpement:
   avancement:
     phase_1_php: "TERMINÉ ✓ - 100% (Version PHP archivée)"
     migration_react: "TERMINÉ ✓ - 100%"
+    phase_2_rappels: "TERMINÉ ✓ - 100%"
+    phase_3_notifications: "TERMINÉ ✓ - 100%"
     
   phase_actuelle:
-    phase: "Phase 2"
-    nom: "Module Rappels d'Hygiène (Cœur Métier)"
+    phase: "Phase 4"
+    nom: "PWA & Fonctionnalités Avancées"
     statut: "PRÊT À DÉMARRER"
-    objectif: "Développer le système de rappels d'hygiène automatisés"
+    objectif: "Finaliser l'application avec fonctionnalités avancées et optimisations"
     
   justification_migration:
     avantages:
@@ -185,29 +187,43 @@ plan_developpement:
       - "Module Classes complet (CRUD + assignations) ✓"
       - "Système relations parent-élève ✓"
       - "Dashboard avec statistiques temps réel ✓"
+    rappels_hygiene:
+      - "Types et catégories prédéfinies ✓"
+      - "CRUD complet rappels avec récurrence ✓"
+      - "Assignation utilisateurs/classes ✓"
+      - "Interface création et gestion ✓"
+    notifications:
+      - "Service de notifications Web API ✓"
+      - "Centre de notifications avec statistiques ✓"
+      - "Programmation automatique ✓"
+      - "Service Worker pour notifications persistantes ✓"
+    pwa:
+      - "Manifest PWA pour installation ✓"
+      - "Cache offline avec Service Worker ✓"
+      - "Notifications en arrière-plan ✓"
     donnees:
       - "Données de test réalistes (École GAI) ✓"
       - "Système export/import JSON ✓"
       - "Interface d'administration complète ✓"
       - "Seed database avec relations automatiques ✓"
   
-  prochaines_taches_phase_2:
+  prochaines_taches_phase_4:
     priorite_1:
-      - "Types & Schema pour les rappels d'hygiène"
-      - "Catégories prédéfinies (Lavage mains, Brossage dents, etc.)"
-      - "Interface création rappels personnalisés"
+      - "Thèmes personnalisables (clair/sombre)"
+      - "Rapports et analytics avancés"
+      - "Optimisations performance"
     priorite_2:
-      - "Système de récurrence (quotidien, hebdomadaire, mensuel)"
-      - "Assignation rappels aux utilisateurs/classes"
-      - "Gestion des statuts (actif, inactif, terminé)"
+      - "Système de sauvegarde automatique"
+      - "Gestion des conflits de données"
+      - "Interface d'administration avancée"
     priorite_3:
-      - "Intégration avec modules existants"
-      - "Tests et validation des fonctionnalités"
-      - "Interface utilisateur cohérente"
+      - "Tests automatisés complets"
+      - "Documentation utilisateur"
+      - "Préparation déploiement production"
 
   chronologie_totale:
     migration: "TERMINÉ ✓ (3 semaines)"
-    phase_2_rappels: "2-3 semaines (À venir)"
-    phase_3_notifications: "2-3 semaines"
-    phase_4_pwa: "2-3 semaines"
-    total_restant: "6-9 semaines"
+    phase_2_rappels: "TERMINÉ ✓ (2 semaines)"
+    phase_3_notifications: "TERMINÉ ✓ (1 semaine)"
+    phase_4_avancees: "2-3 semaines (À venir)"
+    total_restant: "2-3 semaines"

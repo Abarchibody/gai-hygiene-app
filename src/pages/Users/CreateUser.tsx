@@ -107,12 +107,12 @@ export default function CreateUser() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             Créer un nouvel utilisateur
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Remplissez les informations pour créer un nouvel utilisateur
           </p>
         </div>
@@ -170,8 +170,8 @@ export default function CreateUser() {
             />
           </div>
 
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200 mt-6">
-            <div className="text-sm text-gray-500">
+          <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               Les champs marqués d'un * sont obligatoires
             </div>
             <div className="flex space-x-3">

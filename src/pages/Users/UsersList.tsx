@@ -45,7 +45,7 @@ export default function UsersList() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-gray-600">Gestion des utilisateurs du système</p>
+          <p className="text-gray-600 dark:text-gray-400">Gestion des utilisateurs du système</p>
         </div>
         <Link to="/users/create">
           <Button>
@@ -56,7 +56,7 @@ export default function UsersList() {
       </div>
 
       {/* Filtres */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -64,7 +64,7 @@ export default function UsersList() {
               <input
                 type="text"
                 placeholder="Rechercher par nom, prénom ou email..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-gai-blue focus:border-gai-blue"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -72,7 +72,7 @@ export default function UsersList() {
           </div>
           <div>
             <select
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-gai-blue focus:border-gai-blue"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
             >
@@ -86,9 +86,9 @@ export default function UsersList() {
       </div>
 
       {/* Liste des utilisateurs */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
             <Users className="w-5 h-5 mr-2 text-gai-blue" />
             Utilisateurs ({filteredUsers.length})
           </h3>
@@ -97,15 +97,15 @@ export default function UsersList() {
         {filteredUsers.length === 0 ? (
           <div className="p-12 text-center">
             <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 mb-2">Aucun utilisateur trouvé</p>
-            <p className="text-sm text-gray-400">
+            <p className="text-gray-500 dark:text-gray-400 mb-2">Aucun utilisateur trouvé</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
               {users.length === 0 ? 'Commencez par créer votre premier utilisateur.' : 'Essayez de modifier vos critères de recherche.'}
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Utilisateur
@@ -124,7 +124,7 @@ export default function UsersList() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -133,7 +133,7 @@ export default function UsersList() {
                           {user.prenom.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {user.nom} {user.prenom}
                           </div>
                         </div>
@@ -144,13 +144,13 @@ export default function UsersList() {
                         {user.type_utilisateur}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div>
                         {user.email && <div>{user.email}</div>}
                         {user.telephone && <div>{user.telephone}</div>}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {user.created_at.toLocaleDateString('fr-FR')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -158,7 +158,7 @@ export default function UsersList() {
                         <Link to={`/users/${user.id}`} className="text-gai-blue hover:text-blue-600">
                           <Eye className="w-4 h-4" />
                         </Link>
-                        <Link to={`/users/${user.id}/edit`} className="text-gray-600 hover:text-gray-800">
+                        <Link to={`/users/${user.id}/edit`} className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
                           <Edit className="w-4 h-4" />
                         </Link>
                         <button className="text-red-600 hover:text-red-800">

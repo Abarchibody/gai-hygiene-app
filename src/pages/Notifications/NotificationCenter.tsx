@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Bell, CheckCircle, Clock, AlertCircle, Settings } from 'lucide-react';
+import { Bell, CheckCircle, Clock, AlertCircle, Settings, Smartphone, Download } from 'lucide-react';
 import { db } from '../../db/schema';
 import { notificationService } from '../../utils/notificationService';
+import { pwaService } from '../../utils/pwaService';
 import type { Notification } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -15,11 +16,20 @@ export default function NotificationCenter() {
     read: 0,
     failed: 0
   });
+  const [pwaInstallable, setPwaInstallable] = useState(false);
+  const [swRegistered, setSwRegistered] = useState(false);
 
   useEffect(() => {
     loadNotifications();
     checkPermission();
+    checkPWAStatus();
   }, []);
+
+  const checkPWAStatus = async () => {
+    setPwaInstallable(pwaService.isInstallable());
+    const registered = await pwaService.registerServiceWorker();
+    setSwRegistered(registered);
+  };
 
   const loadNotifications = async () => {
     try {
@@ -31,14 +41,9 @@ export default function NotificationCenter() {
       
       setNotifications(allNotifications);
 
-      // Calculer les statistiques
-      const total = await db.notifications.count();
-      const pending = await db.notifications.where('status').equals('pending').count();
-      const sent = await db.notifications.where('status').equals('sent').count();
-      const read = await db.notifications.where('status').equals('read').count();
-      const failed = await db.notifications.where('status').equals('failed').count();
-
-      setStats({ total, pending, sent, read, failed });
+      // Utiliser la nouvelle méthode du service
+      const statsData = await notificationService.getNotificationStats();
+      setStats(statsData);
     } catch (error) {
       console.error('Erreur lors du chargement des notifications:', error);
     }
@@ -179,13 +184,34 @@ export default function NotificationCenter() {
             )}
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex flex-wrap gap-3">
             <Button variant="secondary" onClick={testNotification} disabled={permission !== 'granted'}>
               Tester une notification
             </Button>
             <Button onClick={startScheduler}>
               Démarrer le planificateur
             </Button>
+            {pwaInstallable && (
+              <Button variant="secondary">
+                <Download className="w-4 h-4 mr-2" />
+                Installer l'app
+              </Button>
+            )}
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center text-sm text-blue-800">
+              <Smartphone className="w-4 h-4 mr-2" />
+              <span>
+                Service Worker : 
+                <span className={swRegistered ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                  {swRegistered ? 'Actif' : 'Inactif'}
+                </span>
+              </span>
+            </div>
+            <p className="text-xs text-blue-600 mt-1">
+              {swRegistered ? 'Notifications en arrière-plan activées' : 'Notifications limitées à l\'onglet actif'}
+            </p>
           </div>
         </div>
       </div>

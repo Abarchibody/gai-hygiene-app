@@ -209,6 +209,42 @@ class NotificationService {
 
     console.log('📅 Planificateur de notifications démarré');
   }
+
+  async scheduleBackgroundNotification(reminder: Reminder, scheduledTime: Date): Promise<void> {
+    // Programmer une notification via Service Worker si disponible
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      try {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'SCHEDULE_NOTIFICATION',
+          data: {
+            title: `Rappel d'hygiène : ${reminder.titre}`,
+            body: reminder.description || `Il est temps de : ${reminder.titre}`,
+            scheduledTime: scheduledTime.getTime(),
+            reminderId: reminder.id
+          }
+        });
+      } catch (error) {
+        console.error('Erreur programmation notification background:', error);
+      }
+    }
+  }
+
+  async getNotificationStats() {
+    try {
+      const [total, pending, sent, read, failed] = await Promise.all([
+        db.notifications.count(),
+        db.notifications.where('status').equals('pending').count(),
+        db.notifications.where('status').equals('sent').count(),
+        db.notifications.where('status').equals('read').count(),
+        db.notifications.where('status').equals('failed').count()
+      ]);
+
+      return { total, pending, sent, read, failed };
+    } catch (error) {
+      console.error('Erreur calcul statistiques notifications:', error);
+      return { total: 0, pending: 0, sent: 0, read: 0, failed: 0 };
+    }
+  }
 }
 
 export const notificationService = new NotificationService();

@@ -53,7 +53,7 @@ export default function UserDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Chargement...</div>
+        <div className="text-gray-500 dark:text-gray-400">Chargement...</div>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function UserDetail() {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Utilisateur introuvable</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Utilisateur introuvable</h2>
         <Link to="/users" className="text-gai-blue hover:underline">
           Retour à la liste
         </Link>
@@ -99,14 +99,14 @@ export default function UserDetail() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Informations principales */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gai-blue rounded-full flex items-center justify-center text-white text-lg font-medium mr-4">
                   {user.prenom.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                     {user.nom} {user.prenom}
                   </h2>
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getUserTypeColor(user.type_utilisateur)}`}>
@@ -117,61 +117,61 @@ export default function UserDetail() {
             </div>
 
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
                 Informations personnelles
               </h3>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nom complet
                   </label>
-                  <p className="text-gray-900">{user.nom} {user.prenom}</p>
+                  <p className="text-gray-900 dark:text-gray-100">{user.nom} {user.prenom}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Type d'utilisateur
                   </label>
-                  <p className="text-gray-900">{user.type_utilisateur}</p>
+                  <p className="text-gray-900 dark:text-gray-100">{user.type_utilisateur}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Mail className="w-4 h-4 inline mr-1" />
                     Email
                   </label>
-                  <p className="text-gray-900">
-                    {user.email || <span className="text-gray-400 italic">Non renseigné</span>}
+                  <p className="text-gray-900 dark:text-gray-100">
+                    {user.email || <span className="text-gray-400 dark:text-gray-500 italic">Non renseigné</span>}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Phone className="w-4 h-4 inline mr-1" />
                     Téléphone
                   </label>
-                  <p className="text-gray-900">
-                    {user.telephone || <span className="text-gray-400 italic">Non renseigné</span>}
+                  <p className="text-gray-900 dark:text-gray-100">
+                    {user.telephone || <span className="text-gray-400 dark:text-gray-500 italic">Non renseigné</span>}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Calendar className="w-4 h-4 inline mr-1" />
                     Créé le
                   </label>
-                  <p className="text-gray-900">
+                  <p className="text-gray-900 dark:text-gray-100">
                     {user.created_at.toLocaleDateString('fr-FR')}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Calendar className="w-4 h-4 inline mr-1" />
                     Modifié le
                   </label>
-                  <p className="text-gray-900">
+                  <p className="text-gray-900 dark:text-gray-100">
                     {user.updated_at.toLocaleDateString('fr-FR')}
                   </p>
                 </div>
@@ -183,16 +183,16 @@ export default function UserDetail() {
         {/* Relations et actions */}
         <div className="space-y-6">
           {user.type_utilisateur === 'Élève' && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                   <Heart className="w-5 h-5 mr-2 text-green-500" />
                   Parent
                 </h3>
               </div>
               <div className="p-6">
                 <div className="flex items-center">
-                  <span className="text-gray-400 italic mr-2">Non renseigné</span>
+                  <span className="text-gray-400 dark:text-gray-500 italic mr-2">Non renseigné</span>
                   <Link to={`/users/${user.id}/assign-parent`}>
                     <Button size="sm">
                       Assigner un parent
@@ -204,16 +204,16 @@ export default function UserDetail() {
           )}
 
           {user.type_utilisateur === 'Élève' && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                   <School className="w-5 h-5 mr-2 text-blue-500" />
                   Classe
                 </h3>
               </div>
               <div className="p-6">
                 <div className="flex items-center">
-                  <span className="text-gray-400 italic mr-2">Non assigné</span>
+                  <span className="text-gray-400 dark:text-gray-500 italic mr-2">Non assigné</span>
                   <Button size="sm">
                     Assigner à une classe
                   </Button>
@@ -223,29 +223,29 @@ export default function UserDetail() {
           )}
 
           {user.type_utilisateur === 'Parent' && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                   <Heart className="w-5 h-5 mr-2 text-green-500" />
                   Enfants
                 </h3>
               </div>
               <div className="p-6">
-                <p className="text-gray-400 italic">Aucun enfant assigné</p>
+                <p className="text-gray-400 dark:text-gray-500 italic">Aucun enfant assigné</p>
               </div>
             </div>
           )}
 
           {user.type_utilisateur === 'Enseignant' && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                   <School className="w-5 h-5 mr-2 text-blue-500" />
                   Classes enseignées
                 </h3>
               </div>
               <div className="p-6">
-                <p className="text-gray-400 italic">Aucune classe assignée</p>
+                <p className="text-gray-400 dark:text-gray-500 italic">Aucune classe assignée</p>
               </div>
             </div>
           )}

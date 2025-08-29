@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import { pwaService } from './utils/pwaService';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UsersList from './pages/Users/UsersList';
@@ -24,9 +27,15 @@ import DataManager from './pages/Admin/DataManager';
 import SystemStatus from './pages/Admin/SystemStatus';
 
 function App() {
+  useEffect(() => {
+    // Enregistrer le Service Worker au démarrage
+    pwaService.registerServiceWorker();
+  }, []);
+
   return (
-    <AuthProvider>
-      <Router>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={
@@ -127,8 +136,9 @@ function App() {
           </Layout>
         } />
         </Routes>
-      </Router>
-    </AuthProvider>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 
