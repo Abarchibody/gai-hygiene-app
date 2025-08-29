@@ -121,7 +121,7 @@ export default function AssignReminder() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Chargement...</div>
+        <div className="text-gray-500 dark:text-gray-400">Chargement...</div>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export default function AssignReminder() {
   if (!reminder) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Rappel introuvable</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Rappel introuvable</h2>
         <Link to="/reminders" className="text-gai-blue hover:underline">
           Retour à la liste
         </Link>
@@ -152,26 +152,26 @@ export default function AssignReminder() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
             <UserPlus className="w-5 h-5 mr-2 text-gai-blue" />
             Assigner le rappel : {reminder.titre}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Sélectionnez les utilisateurs et/ou classes qui recevront ce rappel
           </p>
         </div>
 
         {/* Onglets */}
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex">
             <button
               onClick={() => setActiveTab('users')}
               className={`px-6 py-3 text-sm font-medium border-b-2 ${
                 activeTab === 'users'
                   ? 'border-gai-blue text-gai-blue'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               <Users className="w-4 h-4 inline mr-2" />
@@ -182,7 +182,7 @@ export default function AssignReminder() {
               className={`px-6 py-3 text-sm font-medium border-b-2 ${
                 activeTab === 'classes'
                   ? 'border-gai-blue text-gai-blue'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               <School className="w-4 h-4 inline mr-2" />
@@ -194,20 +194,20 @@ export default function AssignReminder() {
         <form onSubmit={handleSubmit} className="p-6">
           {activeTab === 'users' && (
             <div>
-              <h3 className="text-md font-semibold text-gray-800 mb-4">
+              <h3 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-4">
                 Sélectionner les utilisateurs
               </h3>
               {users.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">Aucun utilisateur disponible</p>
+                  <p className="text-gray-500 dark:text-gray-400">Aucun utilisateur disponible</p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 rounded-md p-3">
+                <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-md p-3">
                   {users.map((user) => (
                     <label 
                       key={user.id} 
-                      className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                      className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                     >
                       <input
                         type="checkbox"
@@ -219,10 +219,10 @@ export default function AssignReminder() {
                         {user.prenom.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">
                           {user.nom} {user.prenom}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           {user.type_utilisateur}
                           {user.email && ` • ${user.email}`}
                         </div>
@@ -236,20 +236,20 @@ export default function AssignReminder() {
 
           {activeTab === 'classes' && (
             <div>
-              <h3 className="text-md font-semibold text-gray-800 mb-4">
+              <h3 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-4">
                 Sélectionner les classes
               </h3>
               {classes.length === 0 ? (
                 <div className="text-center py-8">
                   <School className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">Aucune classe disponible</p>
+                  <p className="text-gray-500 dark:text-gray-400">Aucune classe disponible</p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 rounded-md p-3">
+                <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-md p-3">
                   {classes.map((classe) => (
                     <label 
                       key={classe.id} 
-                      className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                      className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                     >
                       <input
                         type="checkbox"
@@ -261,10 +261,10 @@ export default function AssignReminder() {
                         {classe.nom_classe.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">
                           {classe.nom_classe}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           {classe.niveau}
                         </div>
                       </div>
@@ -275,8 +275,8 @@ export default function AssignReminder() {
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200 mt-6">
-            <div className="text-sm text-gray-500 flex items-center">
+          <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
+            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
               <AlertCircle className="w-4 h-4 mr-1" />
               {selectedUserIds.length} utilisateur{selectedUserIds.length > 1 ? 's' : ''} et {selectedClassIds.length} classe{selectedClassIds.length > 1 ? 's' : ''} sélectionné{selectedUserIds.length + selectedClassIds.length > 1 ? 's' : ''}
             </div>

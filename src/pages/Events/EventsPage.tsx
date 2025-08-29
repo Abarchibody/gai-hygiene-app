@@ -75,7 +75,6 @@ export default function EventsPage() {
       {/* Header */}
       <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
         <div>
-          <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100">Programmation</h1>
           <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">Gestion des événements et activités d'hygiène</p>
         </div>
         <Link to="/events/create">

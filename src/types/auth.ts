@@ -15,6 +15,8 @@ export interface UserRole {
   canViewClasses: boolean;
   canCreateReminders: boolean;
   canViewReports: boolean;
+  canViewEvents: boolean;
+  canCreateEvents: boolean;
   canAccessAdmin: boolean;
   canManageSystem: boolean;
 }
@@ -30,6 +32,8 @@ export const getRoleByUserType = (type: string): UserRole => {
         canViewClasses: true,
         canCreateReminders: true,
         canViewReports: true,
+        canViewEvents: true,
+        canCreateEvents: true,
         canAccessAdmin: true,
         canManageSystem: true
       };
@@ -42,6 +46,8 @@ export const getRoleByUserType = (type: string): UserRole => {
         canViewClasses: true,
         canCreateReminders: true,
         canViewReports: true,
+        canViewEvents: true,
+        canCreateEvents: true,
         canAccessAdmin: false,
         canManageSystem: false
       };
@@ -53,7 +59,9 @@ export const getRoleByUserType = (type: string): UserRole => {
         canManageClasses: false,
         canViewClasses: false,
         canCreateReminders: false,
-        canViewReports: false,
+        canViewReports: true,
+        canViewEvents: false,
+        canCreateEvents: false,
         canAccessAdmin: false,
         canManageSystem: false
       };
@@ -66,6 +74,8 @@ export const getRoleByUserType = (type: string): UserRole => {
         canViewClasses: false,
         canCreateReminders: false,
         canViewReports: false,
+        canViewEvents: false,
+        canCreateEvents: false,
         canAccessAdmin: false,
         canManageSystem: false
       };
@@ -78,6 +88,8 @@ export const getRoleByUserType = (type: string): UserRole => {
         canViewClasses: false,
         canCreateReminders: false,
         canViewReports: false,
+        canViewEvents: false,
+        canCreateEvents: false,
         canAccessAdmin: false,
         canManageSystem: false
       };

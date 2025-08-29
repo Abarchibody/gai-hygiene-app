@@ -61,7 +61,7 @@ function App() {
             <Route
               path='/users'
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredPermission='canViewUsers'>
                   <Layout pageTitle='Utilisateurs'>
                     <UsersList />
                   </Layout>
@@ -121,7 +121,7 @@ function App() {
             <Route
               path='/classes'
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredPermission='canViewClasses'>
                   <Layout pageTitle='Classes'>
                     <ClassesList />
                   </Layout>
@@ -141,7 +141,7 @@ function App() {
             <Route
               path='/classes/:id'
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredPermission='canViewClasses'>
                   <Layout pageTitle='Détail classe'>
                     <ClassDetail />
                   </Layout>
@@ -172,7 +172,7 @@ function App() {
               path='/reminders'
               element={
                 <ProtectedRoute>
-                  <Layout pageTitle="Rappels d'hygiène">
+                  <Layout pageTitle='Rappels'>
                     <RemindersList />
                   </Layout>
                 </ProtectedRoute>
@@ -222,7 +222,7 @@ function App() {
               path='/notifications'
               element={
                 <ProtectedRoute>
-                  <Layout pageTitle='Centre de notifications'>
+                  <Layout pageTitle='Notifications'>
                     <NotificationCenter />
                   </Layout>
                 </ProtectedRoute>
@@ -231,8 +231,8 @@ function App() {
             <Route
               path='/reports'
               element={
-                <ProtectedRoute>
-                  <Layout pageTitle='Rapports & Analytics'>
+                <ProtectedRoute requiredPermission='canViewReports'>
+                  <Layout pageTitle='Rapports'>
                     <ReportsPage />
                   </Layout>
                 </ProtectedRoute>
@@ -241,7 +241,7 @@ function App() {
             <Route
               path='/events'
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredPermission='canViewEvents'>
                   <Layout pageTitle='Programmation'>
                     <EventsPage />
                   </Layout>
@@ -251,7 +251,7 @@ function App() {
             <Route
               path='/events/create'
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredPermission='canCreateEvents'>
                   <Layout pageTitle='Nouvel événement'>
                     <CreateEvent />
                   </Layout>
@@ -261,7 +261,7 @@ function App() {
             <Route
               path='/events/:id'
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredPermission='canViewEvents'>
                   <Layout pageTitle='Détail événement'>
                     <EventDetail />
                   </Layout>
@@ -283,7 +283,7 @@ function App() {
               element={
                 <ProtectedRoute requiredPermission='canAccessAdmin'>
                   <Layout pageTitle='Administration'>
-                    <div className='space-y-6 p-6 bg-white dark:bg-gray-900 rounded-lg'>
+                    <div className='space-y-6'>
                       <SystemStatus />
                       <SyncManager />
                       <DataManager />

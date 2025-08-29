@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Bell, Eye, Edit, Trash2, Clock, User } from 'lucide-react';
 import { db } from '../../db/schema';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Reminder, User as UserType } from '../../types';
 import Button from '../../components/ui/Button';
 
 export default function RemindersList() {
+  const { user } = useAuth();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [users, setUsers] = useState<UserType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,14 +15,66 @@ export default function RemindersList() {
   const [filterStatus, setFilterStatus] = useState('');
 
   useEffect(() => {
-    loadReminders();
-    loadUsers();
-  }, []);
+    if (user) {
+      loadReminders();
+      loadUsers();
+    }
+  }, [user]);
 
   const loadReminders = async () => {
+    if (!user) return;
+    
     try {
-      const allReminders = await db.reminders.orderBy('created_at').reverse().toArray();
-      setReminders(allReminders);
+      let filteredReminders: Reminder[] = [];
+      
+      if (user.role.canAccessAdmin) {
+        // Admin sees all reminders
+        filteredReminders = await db.reminders.orderBy('created_at').reverse().toArray();
+      } else if (user.type_utilisateur === 'Enseignant') {
+        // Teacher sees only their created reminders
+        filteredReminders = await db.reminders
+          .where('createur_id')
+          .equals(user.id)
+          .reverse()
+          .sortBy('created_at');
+      } else if (user.type_utilisateur === 'Parent') {
+        // Parent sees reminders assigned to their children
+        const children = await db.students.where('parent_id').equals(user.id).toArray();
+        const childIds = children.map(c => c.utilisateur_id);
+        
+        if (childIds.length > 0) {
+          const assignments = await db.reminder_assignments
+            .where('utilisateur_id')
+            .anyOf(childIds)
+            .toArray();
+          const reminderIds = assignments.map(a => a.rappel_id);
+          
+          if (reminderIds.length > 0) {
+            filteredReminders = await db.reminders
+              .where('id')
+              .anyOf(reminderIds)
+              .reverse()
+              .sortBy('created_at');
+          }
+        }
+      } else if (user.type_utilisateur === 'Élève') {
+        // Student sees reminders assigned to them
+        const assignments = await db.reminder_assignments
+          .where('utilisateur_id')
+          .equals(user.id)
+          .toArray();
+        const reminderIds = assignments.map(a => a.rappel_id);
+        
+        if (reminderIds.length > 0) {
+          filteredReminders = await db.reminders
+            .where('id')
+            .anyOf(reminderIds)
+            .reverse()
+            .sortBy('created_at');
+        }
+      }
+      
+      setReminders(filteredReminders);
     } catch (error) {
       console.error('Erreur lors du chargement des rappels:', error);
     }
@@ -72,14 +126,25 @@ export default function RemindersList() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-gray-600 dark:text-gray-400">Gestion des rappels d'hygiène automatisés</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            {user?.role.canAccessAdmin
+              ? 'Gestion des rappels d\'hygiène automatisés'
+              : user?.type_utilisateur === 'Enseignant'
+              ? 'Mes rappels d\'hygiène créés'
+              : user?.type_utilisateur === 'Parent'
+              ? 'Rappels d\'hygiène de mes enfants'
+              : 'Mes rappels d\'hygiène personnels'
+            }
+          </p>
         </div>
-        <Link to="/reminders/create">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Nouveau rappel
-          </Button>
-        </Link>
+        {user?.role.canCreateReminders && (
+          <Link to="/reminders/create">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Nouveau rappel
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Filtres */}
@@ -130,7 +195,14 @@ export default function RemindersList() {
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
             <Bell className="w-5 h-5 mr-2 text-gai-orange" />
-            Rappels d'hygiène ({filteredReminders.length})
+            {user?.type_utilisateur === 'Enseignant'
+              ? `Mes rappels (${filteredReminders.length})`
+              : user?.type_utilisateur === 'Parent'
+              ? `Rappels de mes enfants (${filteredReminders.length})`
+              : user?.type_utilisateur === 'Élève'
+              ? `Mes rappels (${filteredReminders.length})`
+              : `Rappels d'hygiène (${filteredReminders.length})`
+            }
           </h3>
         </div>
 
@@ -139,7 +211,16 @@ export default function RemindersList() {
             <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500 dark:text-gray-400 mb-2">Aucun rappel trouvé</p>
             <p className="text-sm text-gray-400 dark:text-gray-500">
-              {reminders.length === 0 ? 'Commencez par créer votre premier rappel d\'hygiène.' : 'Essayez de modifier vos critères de recherche.'}
+              {reminders.length === 0 
+                ? user?.type_utilisateur === 'Enseignant'
+                  ? 'Commencez par créer votre premier rappel d\'hygiène.'
+                  : user?.type_utilisateur === 'Parent'
+                  ? 'Aucun rappel assigné à vos enfants pour le moment.'
+                  : user?.type_utilisateur === 'Élève'
+                  ? 'Aucun rappel ne vous a été assigné pour le moment.'
+                  : 'Commencez par créer votre premier rappel d\'hygiène.'
+                : 'Essayez de modifier vos critères de recherche.'
+              }
             </p>
           </div>
         ) : (
@@ -210,12 +291,16 @@ export default function RemindersList() {
                         <Link to={`/reminders/${reminder.id}`} className="text-gai-blue hover:text-blue-600">
                           <Eye className="w-4 h-4" />
                         </Link>
-                        <Link to={`/reminders/${reminder.id}/edit`} className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
-                          <Edit className="w-4 h-4" />
-                        </Link>
-                        <button className="text-red-600 hover:text-red-800">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {(user?.role.canAccessAdmin || reminder.createur_id === user?.id) && (
+                          <>
+                            <Link to={`/reminders/${reminder.id}/edit`} className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                              <Edit className="w-4 h-4" />
+                            </Link>
+                            <button className="text-red-600 hover:text-red-800">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

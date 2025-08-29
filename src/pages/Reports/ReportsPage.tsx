@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BarChart3, PieChart, TrendingUp, Download, Calendar, Users, Bell } from 'lucide-react';
 import { db } from '../../db/schema';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Reminder, User, Class, Notification } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -17,6 +18,7 @@ interface ReportStats {
 }
 
 export default function ReportsPage() {
+  const { user } = useAuth();
   const [stats, setStats] = useState<ReportStats>({
     totalReminders: 0,
     activeReminders: 0,
@@ -32,20 +34,86 @@ export default function ReportsPage() {
   const [dateRange, setDateRange] = useState('30');
 
   useEffect(() => {
-    loadReportData();
-  }, [dateRange]);
+    if (user) {
+      loadReportData();
+    }
+  }, [dateRange, user]);
 
   const loadReportData = async () => {
+    if (!user) return;
+    
     try {
-      const [reminders, users, notifications] = await Promise.all([
-        db.reminders.toArray(),
-        db.users.toArray(),
-        db.notifications.toArray()
-      ]);
+      let reminders: Reminder[] = [];
+      let users: User[] = [];
+      let notifications: Notification[] = [];
+
+      // Filter data based on user role and context
+      if (user.role.canAccessAdmin) {
+        // Admin sees all data
+        [reminders, users, notifications] = await Promise.all([
+          db.reminders.toArray(),
+          db.users.toArray(),
+          db.notifications.toArray()
+        ]);
+      } else if (user.type_utilisateur === 'Enseignant') {
+        // Teacher sees their created reminders and related data
+        const teacherClasses = await db.classes.where('enseignant_id').equals(user.id).toArray();
+        const classIds = teacherClasses.map(c => c.id!);
+        
+        // Get students from their classes
+        const classStudents = await db.students.where('classe_id').anyOf(classIds).toArray();
+        const studentIds = classStudents.map(s => s.utilisateur_id);
+        
+        [reminders, notifications] = await Promise.all([
+          db.reminders.where('createur_id').equals(user.id).toArray(),
+          db.notifications.where('destinataire_id').anyOf([user.id, ...studentIds]).toArray()
+        ]);
+        
+        // Get users related to teacher (their students + parents)
+        const studentUsers = await db.users.where('id').anyOf(studentIds).toArray();
+        const parentIds = classStudents.map(s => s.parent_id).filter(Boolean);
+        const parentUsers = parentIds.length > 0 ? await db.users.where('id').anyOf(parentIds).toArray() : [];
+        
+        users = [user, ...studentUsers, ...parentUsers];
+      } else if (user.type_utilisateur === 'Parent') {
+        // Parent sees data related to their children
+        const children = await db.students.where('parent_id').equals(user.id).toArray();
+        const childIds = children.map(c => c.utilisateur_id);
+        
+        [notifications] = await Promise.all([
+          db.notifications.where('destinataire_id').anyOf([user.id, ...childIds]).toArray()
+        ]);
+        
+        // Get reminders assigned to their children
+        const assignments = await db.reminder_assignments.where('utilisateur_id').anyOf(childIds).toArray();
+        const reminderIds = assignments.map(a => a.rappel_id);
+        
+        if (reminderIds.length > 0) {
+          reminders = await db.reminders.where('id').anyOf(reminderIds).toArray();
+        }
+        
+        // Get users (parent + children)
+        const childUsers = await db.users.where('id').anyOf(childIds).toArray();
+        users = [user, ...childUsers];
+      } else if (user.type_utilisateur === 'Élève') {
+        // Student sees only their own data
+        [notifications] = await Promise.all([
+          db.notifications.where('destinataire_id').equals(user.id).toArray()
+        ]);
+        
+        const assignments = await db.reminder_assignments.where('utilisateur_id').equals(user.id).toArray();
+        const reminderIds = assignments.map(a => a.rappel_id);
+        
+        if (reminderIds.length > 0) {
+          reminders = await db.reminders.where('id').anyOf(reminderIds).toArray();
+        }
+        
+        users = [user];
+      }
 
       // Calculer les statistiques
-      const usersByType = users.reduce((acc, user) => {
-        acc[user.type_utilisateur] = (acc[user.type_utilisateur] || 0) + 1;
+      const usersByType = users.reduce((acc, u) => {
+        acc[u.type_utilisateur] = (acc[u.type_utilisateur] || 0) + 1;
         return acc;
       }, {} as { [key: string]: number });
 
@@ -120,8 +188,16 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">Rapports & Analytics</h1>
-          <p className="text-gray-600 dark:text-gray-400">Analyse des données d'hygiène et performance du système</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            {user?.role.canAccessAdmin
+              ? 'Analyse des données d\'hygiène et performance du système'
+              : user?.type_utilisateur === 'Enseignant'
+              ? 'Analyse de vos rappels et de l\'activité de vos élèves'
+              : user?.type_utilisateur === 'Parent'
+              ? 'Suivi de l\'hygiène de vos enfants'
+              : 'Analyse de votre progression en hygiène'
+            }
+          </p>
         </div>
         <div className="flex items-center space-x-3">
           <select
@@ -147,9 +223,13 @@ export default function ReportsPage() {
           <div className="flex items-center">
             <Bell className="w-8 h-8 text-gai-orange mr-3" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Rappels Actifs</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                {user?.type_utilisateur === 'Enseignant' ? 'Mes Rappels' : 'Rappels Actifs'}
+              </h3>
               <p className="text-2xl font-bold text-gai-orange">{stats.activeReminders}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">sur {stats.totalReminders} total</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {user?.type_utilisateur === 'Enseignant' ? 'créés' : `sur ${stats.totalReminders} total`}
+              </p>
             </div>
           </div>
         </div>
@@ -184,11 +264,17 @@ export default function ReportsPage() {
           <div className="flex items-center">
             <Users className="w-8 h-8 text-purple-500 mr-3" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Utilisateurs</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                {user?.type_utilisateur === 'Enseignant' ? 'Mes Élèves' 
+                 : user?.type_utilisateur === 'Parent' ? 'Mes Enfants'
+                 : 'Utilisateurs'}
+              </h3>
               <p className="text-2xl font-bold text-purple-500">
                 {Object.values(stats.usersByType).reduce((a, b) => a + b, 0)}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">actifs</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {user?.type_utilisateur === 'Parent' ? 'enfants' : 'actifs'}
+              </p>
             </div>
           </div>
         </div>
@@ -200,7 +286,9 @@ export default function ReportsPage() {
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
               <PieChart className="w-5 h-5 mr-2 text-gai-blue" />
-              Rappels par catégorie
+              {user?.type_utilisateur === 'Enseignant' ? 'Mes rappels par catégorie'
+               : user?.type_utilisateur === 'Parent' ? 'Rappels de mes enfants'
+               : 'Rappels par catégorie'}
             </h3>
           </div>
           <div className="p-6">
@@ -329,24 +417,36 @@ export default function ReportsPage() {
       {/* Recommandations */}
       <div className="mt-8 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-          Recommandations d'amélioration
+          {user?.type_utilisateur === 'Enseignant' ? 'Conseils pour vos élèves'
+           : user?.type_utilisateur === 'Parent' ? 'Conseils pour vos enfants'
+           : user?.role.canAccessAdmin ? 'Recommandations d\'amélioration'
+           : 'Conseils personnalisés'}
         </h3>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div className="space-y-2">
             <p className="text-gray-700 dark:text-gray-300">
               • <strong>Taux de lecture :</strong> {getPercentage(stats.readNotifications, stats.sentNotifications)}% 
               {getPercentage(stats.readNotifications, stats.sentNotifications) < 70 && 
-                <span className="text-orange-600"> - Améliorer l'engagement</span>}
+                <span className="text-orange-600">
+                  {user?.type_utilisateur === 'Parent' ? ' - Encouragez vos enfants' : ' - Améliorer l\'engagement'}
+                </span>}
             </p>
             <p className="text-gray-700 dark:text-gray-300">
-              • <strong>Rappels actifs :</strong> {stats.activeReminders} sur {stats.totalReminders}
+              • <strong>
+                {user?.type_utilisateur === 'Enseignant' ? 'Mes rappels' : 'Rappels actifs'}
+              :</strong> {stats.activeReminders} sur {stats.totalReminders}
               {getPercentage(stats.activeReminders, stats.totalReminders) < 80 && 
-                <span className="text-orange-600"> - Activer plus de rappels</span>}
+                <span className="text-orange-600">
+                  {user?.type_utilisateur === 'Enseignant' ? ' - Créer plus de rappels' : ' - Activer plus de rappels'}
+                </span>}
             </p>
           </div>
           <div className="space-y-2">
             <p className="text-gray-700 dark:text-gray-300">
-              • <strong>Couverture :</strong> {Object.values(stats.usersByType).reduce((a, b) => a + b, 0)} utilisateurs actifs
+              • <strong>
+                {user?.type_utilisateur === 'Parent' ? 'Enfants' : 'Couverture'}
+              :</strong> {Object.values(stats.usersByType).reduce((a, b) => a + b, 0)} 
+              {user?.type_utilisateur === 'Parent' ? ' enfants' : ' utilisateurs actifs'}
             </p>
             <p className="text-gray-700 dark:text-gray-300">
               • <strong>Catégories :</strong> {Object.keys(stats.remindersByCategory).length} types de rappels

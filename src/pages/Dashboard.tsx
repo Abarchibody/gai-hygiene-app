@@ -1,164 +1,316 @@
 import { useState, useEffect } from 'react';
-import { Users, School, GraduationCap, Heart, Rocket, Bell, Database, Calendar } from 'lucide-react';
-import { getStatistics } from '../utils/dataManager';
-import { seedDatabase } from '../db/seedData';
-import Button from '../components/ui/Button';
+import { Bell, TrendingUp, Users, Calendar, BarChart3, Heart } from 'lucide-react';
+import { db } from '../db/schema';
+import { useAuth } from '../contexts/AuthContext';
+import type { Reminder, Notification } from '../types';
 
+interface DashboardStats {
+  activeReminders: number;
+  todayNotifications: number;
+  weeklyProgress: number;
+  upcomingEvents: number;
+  remindersByCategory: { [key: string]: number };
+  recentActivity: Array<{
+    type: string;
+    message: string;
+    time: string;
+  }>;
+}
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalStudents: 0,
-    totalParents: 0,
-    totalTeachers: 0,
-    totalClasses: 0,
-    totalRelations: 0,
-    totalReminders: 0,
+  const { user } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
     activeReminders: 0,
-    totalEvents: 0
+    todayNotifications: 0,
+    weeklyProgress: 0,
+    upcomingEvents: 0,
+    remindersByCategory: {},
+    recentActivity: []
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadStats();
-  }, []);
+    if (user) {
+      loadDashboardData();
+    }
+  }, [user]);
 
-  const loadStats = async () => {
-    const statistics = await getStatistics();
-    setStats(statistics);
-  };
-
-  const handleSeedDatabase = async () => {
-    setLoading(true);
+  const loadDashboardData = async () => {
+    if (!user) return;
+    
     try {
-      await seedDatabase();
-      await loadStats();
-      alert('Données de test chargées avec succès !');
+      let reminders: Reminder[] = [];
+      let notifications: Notification[] = [];
+      let events: any[] = [];
+
+      // Filter data based on user role and context
+      if (user.role.canAccessAdmin) {
+        // Admin sees all data
+        [reminders, notifications, events] = await Promise.all([
+          db.reminders.where('statut').equals('Actif').toArray(),
+          db.notifications.toArray(),
+          db.events?.toArray() || []
+        ]);
+      } else if (user.type_utilisateur === 'Enseignant') {
+        // Teacher sees their created reminders and class-related data
+        [reminders, notifications, events] = await Promise.all([
+          db.reminders.where('createur_id').equals(user.id).and(r => r.statut === 'Actif').toArray(),
+          db.notifications.where('destinataire_id').equals(user.id).toArray(),
+          db.events?.toArray() || []
+        ]);
+      } else if (user.type_utilisateur === 'Parent') {
+        // Parent sees notifications for their children
+        const children = await db.students.where('parent_id').equals(user.id).toArray();
+        const childIds = children.map(c => c.utilisateur_id);
+        
+        notifications = await db.notifications
+          .where('destinataire_id')
+          .anyOf([user.id, ...childIds])
+          .toArray();
+        
+        // Get reminders assigned to their children
+        const assignments = await db.reminder_assignments
+          .where('utilisateur_id')
+          .anyOf(childIds)
+          .toArray();
+        const reminderIds = assignments.map(a => a.rappel_id);
+        
+        if (reminderIds.length > 0) {
+          reminders = await db.reminders
+            .where('id')
+            .anyOf(reminderIds)
+            .and(r => r.statut === 'Actif')
+            .toArray();
+        }
+      } else if (user.type_utilisateur === 'Élève') {
+        // Student sees their own notifications and assigned reminders
+        notifications = await db.notifications.where('destinataire_id').equals(user.id).toArray();
+        
+        const assignments = await db.reminder_assignments.where('utilisateur_id').equals(user.id).toArray();
+        const reminderIds = assignments.map(a => a.rappel_id);
+        
+        if (reminderIds.length > 0) {
+          reminders = await db.reminders
+            .where('id')
+            .anyOf(reminderIds)
+            .and(r => r.statut === 'Actif')
+            .toArray();
+        }
+      }
+
+      const today = new Date();
+      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const weekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const todayNotifications = notifications.filter(n => 
+        new Date(n.scheduled_time) >= todayStart
+      ).length;
+
+      const weeklyNotifications = notifications.filter(n => 
+        new Date(n.scheduled_time) >= weekStart
+      );
+      const readThisWeek = weeklyNotifications.filter(n => n.status === 'read').length;
+      const weeklyProgress = weeklyNotifications.length > 0 
+        ? Math.round((readThisWeek / weeklyNotifications.length) * 100) 
+        : 0;
+
+      const remindersByCategory = reminders.reduce((acc, reminder) => {
+        acc[reminder.categorie] = (acc[reminder.categorie] || 0) + 1;
+        return acc;
+      }, {} as { [key: string]: number });
+
+      const recentActivity = notifications
+        .slice(-5)
+        .reverse()
+        .map(n => ({
+          type: 'notification',
+          message: `Rappel "${n.title}" programmé`,
+          time: new Date(n.scheduled_time).toLocaleTimeString('fr-FR', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          })
+        }));
+
+      setStats({
+        activeReminders: reminders.length,
+        todayNotifications,
+        weeklyProgress,
+        upcomingEvents: events.length,
+        remindersByCategory,
+        recentActivity
+      });
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
-      alert('Erreur lors du chargement des données');
     } finally {
       setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500 dark:text-gray-400">Chargement du tableau de bord...</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mb-8">
-        <p className="text-gray-600 dark:text-gray-400">Vue d'ensemble du système GAI Hygiène</p>
+        <p className="text-gray-600 dark:text-gray-400">
+          {user?.type_utilisateur === 'Admin' || user?.role.canAccessAdmin
+            ? 'Vue d\'ensemble du système GAI Hygiène'
+            : user?.type_utilisateur === 'Enseignant'
+            ? 'Suivi de vos rappels et classes'
+            : user?.type_utilisateur === 'Parent'
+            ? 'Suivi de l\'hygiène de vos enfants'
+            : 'Suivi de vos pratiques d\'hygiène quotidiennes'
+          }
+        </p>
       </div>
 
-      {/* Statistiques principales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-6 mb-6 lg:mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      {/* Métriques principales */}
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center">
-            <div className="text-gai-blue mr-3">
-              <Users className="w-8 h-8" />
-            </div>
+            <Bell className="w-8 h-8 text-gai-orange mr-3" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Utilisateurs</h3>
-              <p className="text-2xl font-bold text-gai-blue">{stats.totalUsers}</p>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                {user?.type_utilisateur === 'Enseignant' ? 'Mes Rappels' : 'Rappels Actifs'}
+              </h3>
+              <p className="text-2xl font-bold text-gai-orange">{stats.activeReminders}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {user?.type_utilisateur === 'Enseignant' ? 'créés' : 'en cours'}
+              </p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center">
-            <div className="text-gai-green mr-3">
-              <School className="w-8 h-8" />
-            </div>
+            <Calendar className="w-8 h-8 text-blue-500 mr-3" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Classes</h3>
-              <p className="text-2xl font-bold text-gai-green">{stats.totalClasses}</p>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Aujourd'hui</h3>
+              <p className="text-2xl font-bold text-blue-500">{stats.todayNotifications}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">notifications</p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center">
-            <div className="text-gai-orange mr-3">
-              <GraduationCap className="w-8 h-8" />
-            </div>
+            <TrendingUp className="w-8 h-8 text-green-500 mr-3" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Élèves Assignés</h3>
-              <p className="text-2xl font-bold text-gai-orange">{stats.totalStudents}</p>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Progrès Semaine</h3>
+              <p className="text-2xl font-bold text-green-500">{stats.weeklyProgress}%</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">complété</p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center">
-            <div className="text-purple-500 mr-3">
-              <Heart className="w-8 h-8" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Relations Parent-Élève</h3>
-              <p className="text-2xl font-bold text-purple-500">{stats.totalRelations}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <div className="flex items-center">
-            <div className="text-gai-orange mr-3">
-              <Bell className="w-8 h-8" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Rappels d'Hygiène</h3>
-              <p className="text-2xl font-bold text-gai-orange">{stats.totalReminders}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <div className="flex items-center">
-            <div className="text-indigo-500 mr-3">
-              <Calendar className="w-8 h-8" />
-            </div>
+            <BarChart3 className="w-8 h-8 text-purple-500 mr-3" />
             <div>
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Événements</h3>
-              <p className="text-2xl font-bold text-indigo-500">{stats.totalEvents}</p>
+              <p className="text-2xl font-bold text-purple-500">{stats.upcomingEvents}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">à venir</p>
             </div>
           </div>
         </div>
       </div>
 
-
-      
-      {/* Chargement des données */}
-      {stats.totalUsers === 0 && (
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg shadow-md p-6 text-white mb-8">
-          <h3 className="text-xl font-semibold mb-2 flex items-center">
-            <Database className="w-6 h-6 mr-2" />
-            Base de données vide
-          </h3>
-          <p className="mb-4 opacity-90">
-            Aucune donnée détectée. Chargez les données de test pour commencer.
-          </p>
-          <Button 
-            onClick={handleSeedDatabase}
-            disabled={loading}
-            className="bg-white text-orange-600 hover:bg-gray-100"
-          >
-            <Database className="w-4 h-4 mr-2" />
-            {loading ? 'Chargement...' : 'Charger les données de test'}
-          </Button>
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Rappels par catégorie */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+              <Heart className="w-5 h-5 mr-2 text-gai-blue" />
+              {user?.type_utilisateur === 'Enseignant' 
+                ? 'Rappels que j\'ai créés'
+                : user?.type_utilisateur === 'Parent'
+                ? 'Rappels de mes enfants'
+                : 'Mes rappels d\'hygiène'
+              }
+            </h3>
+          </div>
+          <div className="p-6">
+            {Object.keys(stats.remindersByCategory).length > 0 ? (
+              <div className="space-y-4">
+                {Object.entries(stats.remindersByCategory).map(([category, count]) => (
+                  <div key={category} className="flex items-center justify-between">
+                    <span className="text-gray-700 dark:text-gray-300">{category}</span>
+                    <div className="flex items-center">
+                      <div className="w-24 bg-gray-200 dark:bg-gray-600 rounded-full h-2 mr-3">
+                        <div 
+                          className="bg-gai-blue h-2 rounded-full" 
+                          style={{ width: `${Math.min(100, (count / Math.max(...Object.values(stats.remindersByCategory))) * 100)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100 w-6">{count}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                Aucun rappel actif pour le moment
+              </p>
+            )}
+          </div>
         </div>
-      )}
 
-      {/* Tests E2E */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg shadow-md p-6 text-white mt-8">
-        <h3 className="text-xl font-semibold mb-2 flex items-center">
-          <Rocket className="w-6 h-6 mr-2" />
-          Tests E2E Playwright
+        {/* Activité récente */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+              <Users className="w-5 h-5 mr-2 text-gai-green" />
+              {user?.type_utilisateur === 'Parent' 
+                ? 'Activité de mes enfants'
+                : 'Mon activité récente'
+              }
+            </h3>
+          </div>
+          <div className="p-6">
+            {stats.recentActivity.length > 0 ? (
+              <div className="space-y-3">
+                {stats.recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">{activity.message}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                Aucune activité récente
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Message d'encouragement */}
+      <div className="mt-8 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Continuez vos bonnes habitudes ! 🌟
         </h3>
-        <p className="mb-4 opacity-90">
-          Démonstration automatique avec navigateur réel.
+        <p className="text-gray-700 dark:text-gray-300">
+          {user?.type_utilisateur === 'Enseignant'
+            ? stats.activeReminders > 0
+              ? `Vous avez créé ${stats.activeReminders} rappel${stats.activeReminders > 1 ? 's' : ''} actif${stats.activeReminders > 1 ? 's' : ''} pour vos élèves.`
+              : "Créez des rappels personnalisés pour aider vos élèves à développer de bonnes habitudes."
+            : user?.type_utilisateur === 'Parent'
+            ? stats.weeklyProgress >= 80
+              ? "Excellent ! Vos enfants maintiennent de très bonnes pratiques d'hygiène."
+              : "Encouragez vos enfants à suivre leurs rappels quotidiens."
+            : stats.weeklyProgress >= 80 
+            ? "Excellent travail ! Vous maintenez de très bonnes pratiques d'hygiène."
+            : stats.weeklyProgress >= 60
+            ? "Bon progrès ! Continuez à suivre vos rappels quotidiens."
+            : "Chaque petit geste compte. Suivez vos rappels pour améliorer vos habitudes."
+          }
         </p>
-        <div className="flex items-center space-x-4">
-          <span className="text-green-300 font-medium">✅ Application - OPÉRATIONNELLE</span>
-          <code className="bg-black bg-opacity-30 px-2 py-1 rounded text-sm">npm run test:e2e</code>
-        </div>
       </div>
     </div>
   );

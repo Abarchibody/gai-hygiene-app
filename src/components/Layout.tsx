@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, School, Bell, Calendar, Database, Clock, LogOut, User, BarChart3, Menu, X } from 'lucide-react';
+import { Home, Users, School, Bell, Calendar, Database, Clock, LogOut, User, BarChart3, Menu, X, MessageSquare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ui/ThemeToggle';
 
@@ -69,8 +69,8 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             onClick={() => setSidebarOpen(false)}
             className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
               isActive('/') && location.pathname === '/'
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+                ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
             }`}
           >
             <Home className="w-5 h-5 mr-3" />
@@ -89,8 +89,8 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
                 isActive('/users')
-                  ? 'bg-gai-blue text-white' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+                  ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
               }`}
             >
               <Users className="w-5 h-5 mr-3" />
@@ -104,8 +104,8 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
                 isActive('/classes')
-                  ? 'bg-gai-blue text-white' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+                  ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
               }`}
             >
               <School className="w-5 h-5 mr-3" />
@@ -118,8 +118,8 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             onClick={() => setSidebarOpen(false)}
             className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
               isActive('/reminders')
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+                ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
             }`}
           >
             <Bell className="w-5 h-5 mr-3" />
@@ -131,39 +131,43 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             onClick={() => setSidebarOpen(false)}
             className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
               isActive('/notifications')
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+                ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
             }`}
           >
-            <Bell className="w-5 h-5 mr-3" />
+            <MessageSquare className="w-5 h-5 mr-3" />
             <span className="text-sm lg:text-base">Notifications</span>
           </Link>
           
-          <Link
-            to="/reports"
-            onClick={() => setSidebarOpen(false)}
-            className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
-              isActive('/reports')
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
-            }`}
-          >
-            <BarChart3 className="w-5 h-5 mr-3" />
-            <span className="text-sm lg:text-base">Rapports</span>
-          </Link>
+          {user?.role.canViewReports && (
+            <Link
+              to="/reports"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
+                isActive('/reports')
+                  ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
+              }`}
+            >
+              <BarChart3 className="w-5 h-5 mr-3" />
+              <span className="text-sm lg:text-base">Rapports</span>
+            </Link>
+          )}
           
-          <Link
-            to="/events"
-            onClick={() => setSidebarOpen(false)}
-            className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
-              isActive('/events')
-                ? 'bg-gai-blue text-white' 
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
-            }`}
-          >
-            <Calendar className="w-5 h-5 mr-3" />
-            <span className="text-sm lg:text-base">Programmation</span>
-          </Link>
+          {user?.role.canViewEvents && (
+            <Link
+              to="/events"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
+                isActive('/events')
+                  ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
+              }`}
+            >
+              <Calendar className="w-5 h-5 mr-3" />
+              <span className="text-sm lg:text-base">Programmation</span>
+            </Link>
+          )}
           
           
           {user?.role.canAccessAdmin && (
@@ -179,8 +183,8 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-4 lg:px-6 py-3 transition-colors ${
                   isActive('/admin')
-                    ? 'bg-gai-blue text-white' 
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gai-blue hover:text-white'
+                    ? 'bg-gai-blue text-white border-r-4 border-blue-300' 
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-gai-blue'
                 }`}
               >
                 <Database className="w-5 h-5 mr-3" />

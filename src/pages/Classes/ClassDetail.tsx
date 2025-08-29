@@ -164,7 +164,7 @@ export default function ClassDetail() {
                     Créée le
                   </label>
                   <p className="text-gray-900 dark:text-gray-100">
-                    {classe.created_at.toLocaleDateString('fr-FR')}
+                    {new Date(classe.created_at).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
 
@@ -173,7 +173,7 @@ export default function ClassDetail() {
                     Modifiée le
                   </label>
                   <p className="text-gray-900 dark:text-gray-100">
-                    {classe.updated_at.toLocaleDateString('fr-FR')}
+                    {new Date(classe.updated_at).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
               </div>
