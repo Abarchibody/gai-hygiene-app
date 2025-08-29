@@ -7,7 +7,8 @@
 4. [Fonctionnalités par Rôle](#fonctionnalités-par-rôle)
 5. [Modules Principaux](#modules-principaux)
 6. [Fonctionnalités Avancées](#fonctionnalités-avancées)
-7. [FAQ et Dépannage](#faq-et-dépannage)
+7. [Guide de Test des Rappels](#guide-de-test-des-rappels)
+8. [FAQ et Dépannage](#faq-et-dépannage)
 
 ---
 
@@ -316,6 +317,131 @@ L'application s'adapte automatiquement :
 - **Cache intelligent** : Stockage local des ressources
 - **Synchronisation** : Mise à jour automatique lors de la reconnexion
 - **Notifications** : Rappels même hors ligne
+
+---
+
+## Guide de Test des Rappels
+
+### Vue d'ensemble
+Ce guide détaille comment tester le système de rappels d'hygiène, incluant la création, l'assignation et les notifications en temps réel.
+
+### Comptes de Test Recommandés
+
+#### Pour Créer des Rappels
+- **Enseignant** : `jp.mukendi@gai.cd` / `Password123!`
+- **Admin** : `admin@gai.cd` / `admin`
+
+#### Pour Recevoir des Rappels
+- **Élève (Recommandé)** : `grace.mbuyi@gai.cd` / `Password123!`
+  - *Avantage* : Reçoit le plus de rappels (individuels + classe)
+- **Parent** : `f.mbuyi@gai.cd` / `Password123!`
+
+### Test Rapide : Notification en 5 Minutes
+
+#### Étape 1 : Création du Rappel
+1. **Connexion Enseignant**
+   - Email : `jp.mukendi@gai.cd`
+   - Mot de passe : `Password123!`
+
+2. **Nouveau Rappel**
+   - Aller sur "Rappels" → "Nouveau rappel"
+   - **Titre** : `Test Notification 5min`
+   - **Catégorie** : `Personnalisé`
+   - **Description** : `Test de notification immédiate`
+   - **Récurrence** : `Unique`
+   - **Date** : Aujourd'hui
+   - **Heure** : *Heure actuelle + 5 minutes*
+   - Cliquer "Créer le rappel"
+
+#### Étape 2 : Assignation
+1. **Page de Détail du Rappel**
+   - Cliquer "Assigner aux utilisateurs"
+   - Onglet "Utilisateurs individuels"
+   - Cocher "Grace Mbuyi"
+   - Cliquer "Enregistrer les assignations"
+
+#### Étape 3 : Test de Notification
+1. **Connexion Grace**
+   - Se déconnecter de l'enseignant
+   - Email : `grace.mbuyi@gai.cd`
+   - Mot de passe : `Password123!`
+
+2. **Activation Notifications**
+   - Aller sur "Notifications"
+   - Cliquer "Activer les notifications"
+   - Autoriser dans le navigateur
+
+3. **Attendre le Résultat**
+   - Notification navigateur dans 5 minutes
+   - Vérifier l'historique dans "Notifications"
+
+### Tests par Type d'Utilisateur
+
+#### Test Élève (Grace)
+- **Connexion** : `grace.mbuyi@gai.cd` / `Password123!`
+- **Attendu** : 6+ rappels visibles (individuels + classe)
+- **Vérification** : Différentes catégories et récurrences
+
+#### Test Parent (Françoise Mbuyi)
+- **Connexion** : `f.mbuyi@gai.cd` / `Password123!`
+- **Attendu** : Rappels des enfants Mbuyi (Grace et David)
+- **Vérification** : Filtrage par relation familiale
+
+#### Test Enseignant
+- **Connexion** : `jp.mukendi@gai.cd` / `Password123!`
+- **Attendu** : Uniquement ses rappels créés
+- **Vérification** : Permissions de création et modification
+
+#### Test Admin
+- **Connexion** : `admin@gai.cd` / `admin`
+- **Attendu** : TOUS les rappels du système
+- **Vérification** : Accès complet et gestion globale
+
+### Test d'Assignation par Classe
+
+1. **Créer un Rappel** (Admin/Enseignant)
+2. **Assigner à une Classe**
+   - "Assigner aux utilisateurs" → Onglet "Classes entières"
+   - Sélectionner "CP1 A" par exemple
+   - Enregistrer
+3. **Vérifier**
+   - Se connecter avec un élève de cette classe
+   - Le rappel doit apparaître dans sa liste
+
+### Résolution des Problèmes de Test
+
+#### Rappels Non Visibles
+- **Cause** : Assignation manquante
+- **Solution** : Vérifier les assignations dans le détail du rappel
+
+#### Notifications Non Reçues
+- **Cause** : Permissions navigateur
+- **Solution** : Réactiver dans les paramètres du navigateur
+
+#### Heure Incorrecte
+- **Cause** : Format d'heure
+- **Solution** : Utiliser HH:MM (ex: 14:35)
+
+### Métriques de Succès
+
+#### Test Réussi Si :
+- ✅ Grace voit 6+ rappels dans sa liste
+- ✅ Notifications navigateur fonctionnent
+- ✅ Assignations par utilisateur et classe opérationnelles
+- ✅ Différents types d'utilisateurs voient les bons rappels
+- ✅ Interface réactive sans erreurs
+
+### Données de Test Disponibles
+
+#### Rappels Pré-configurés
+- **8 rappels** avec différentes catégories
+- **Assignations multiples** : Individuelles et par classe
+- **Récurrences variées** : Quotidien, Hebdomadaire, Mensuel, Unique
+
+#### Utilisateurs de Test
+- **37 utilisateurs** (1 Admin, 6 Enseignants, 10 Parents, 20 Élèves)
+- **8 classes** (5 Primaires, 3 Secondaires)
+- **Relations parent-enfant** configurées automatiquement
 
 ---
 

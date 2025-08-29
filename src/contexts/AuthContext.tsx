@@ -60,9 +60,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(authUser);
           localStorage.setItem('gai_auth_user', JSON.stringify(authUser));
           
-          // Auto-sync data from cloud after successful login
+          // Force full sync from cloud after successful login
           try {
             const { syncService } = await import('../utils/syncService');
+            console.log('🔄 Syncing data from cloud...');
             await syncService.syncFromCloud();
             console.log('✅ Data synced from cloud after login');
           } catch (syncError) {
@@ -88,6 +89,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         setUser(authUser);
         localStorage.setItem('gai_auth_user', JSON.stringify(authUser));
+        
+        // If local login but no data, try to sync from cloud
+        try {
+          const userCount = await db.users.count();
+          if (userCount <= 1) { // Only the logged-in user exists
+            const { syncService } = await import('../utils/syncService');
+            console.log('🔄 Local database seems empty, syncing from cloud...');
+            await syncService.syncFromCloud();
+            console.log('✅ Data synced from cloud');
+          }
+        } catch (syncError) {
+          console.log('⚠️ Could not sync from cloud:', syncError);
+        }
+        
         return true;
       }
 

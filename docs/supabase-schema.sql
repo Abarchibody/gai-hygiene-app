@@ -179,3 +179,35 @@ INSERT INTO sync_status (table_name, sync_count) VALUES
 ('notifications', 0),
 ('events', 0),
 ('app_settings', 0);
+
+
+-- Delete all data in correct order (respecting foreign key constraints)
+DELETE FROM notifications;
+DELETE FROM reminder_assignments;
+DELETE FROM reminders;
+DELETE FROM events;
+DELETE FROM students;
+DELETE FROM classes;
+DELETE FROM users;
+
+-- Reset sync status
+UPDATE sync_status SET
+  last_sync_at = NULL,
+  sync_count = 0,
+  last_error = NULL,
+  updated_at = NOW();
+
+-- Keep app_settings but reset sync-related ones
+UPDATE app_settings SET
+  value = 'false',
+  updated_at = NOW()
+WHERE key = 'sync_enabled';
+
+-- Reset auto-increment sequences (optional)
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ALTER SEQUENCE classes_id_seq RESTART WITH 1;
+ALTER SEQUENCE students_id_seq RESTART WITH 1;
+ALTER SEQUENCE reminders_id_seq RESTART WITH 1;
+ALTER SEQUENCE reminder_assignments_id_seq RESTART WITH 1;
+ALTER SEQUENCE notifications_id_seq RESTART WITH 1;
+ALTER SEQUENCE events_id_seq RESTART WITH 1;
