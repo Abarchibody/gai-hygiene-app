@@ -214,14 +214,17 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
                 
                 {/* User Info & Logout */}
                 <div className="flex items-center space-x-2 lg:space-x-3">
-                  <div className="hidden sm:flex items-center text-xs lg:text-sm text-gray-600 dark:text-gray-300">
+                  <Link 
+                    to="/profile"
+                    className="hidden sm:flex items-center text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-gai-blue transition-colors"
+                  >
                     <User className="w-3 lg:w-4 h-3 lg:h-4 mr-1 lg:mr-2" />
                     <span className="hidden md:inline">{user?.prenom} {user?.nom}</span>
                     <span className="md:hidden">{user?.prenom}</span>
                     <span className="ml-1 lg:ml-2 px-1 lg:px-2 py-1 bg-gai-blue text-white text-xs rounded-full">
                       {user?.type_utilisateur}
                     </span>
-                  </div>
+                  </Link>
                   <button
                     onClick={logout}
                     className="flex items-center px-2 lg:px-3 py-2 text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"

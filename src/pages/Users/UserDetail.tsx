@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Trash2, Mail, Phone, Calendar, Heart, School } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Mail, Phone, Calendar, Heart, School, Lock } from 'lucide-react';
 import { db } from '../../db/schema';
 import type { User } from '../../types';
 import Button from '../../components/ui/Button';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 export default function UserDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -29,15 +33,23 @@ export default function UserDetail() {
   };
 
   const handleDelete = async () => {
-    if (!user || !confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-      return;
-    }
-
+    if (!user) return;
     try {
       await db.users.delete(user.id!);
       navigate('/users?deleted=1');
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!user) return;
+    try {
+      await db.users.update(user.id!, { password: 'Password123!', updated_at: new Date() });
+      setResetSuccess(true);
+      setTimeout(() => setResetSuccess(false), 3000);
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation:', error);
     }
   };
 
@@ -89,7 +101,14 @@ export default function UserDetail() {
               Modifier
             </Button>
           </Link>
-          <Button variant="danger" onClick={handleDelete}>
+          <Button 
+            variant="secondary"
+            onClick={() => setShowResetDialog(true)}
+          >
+            <Lock className="w-4 h-4 mr-2" />
+            Réinitialiser mot de passe
+          </Button>
+          <Button variant="danger" onClick={() => setShowDeleteDialog(true)}>
             <Trash2 className="w-4 h-4 mr-2" />
             Supprimer
           </Button>
@@ -251,6 +270,37 @@ export default function UserDetail() {
           )}
         </div>
       </div>
+
+      {/* Success message */}
+      {resetSuccess && (
+        <div className="fixed top-4 right-4 z-50 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 shadow-lg">
+          <p className="text-green-800 dark:text-green-200 text-sm">
+            ✅ Mot de passe réinitialisé à "Password123!"
+          </p>
+        </div>
+      )}
+
+      {/* Reset Password Dialog */}
+      <ConfirmDialog
+        isOpen={showResetDialog}
+        onClose={() => setShowResetDialog(false)}
+        onConfirm={handleResetPassword}
+        title="Réinitialiser le mot de passe"
+        message={`Réinitialiser le mot de passe de ${user?.prenom} ${user?.nom} à "Password123!" ?`}
+        type="warning"
+        confirmText="Réinitialiser"
+      />
+
+      {/* Delete User Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDelete}
+        title="Supprimer l'utilisateur"
+        message={`Êtes-vous sûr de vouloir supprimer ${user?.prenom} ${user?.nom} ? Cette action est irréversible.`}
+        type="danger"
+        confirmText="Supprimer"
+      />
     </div>
   );
 }

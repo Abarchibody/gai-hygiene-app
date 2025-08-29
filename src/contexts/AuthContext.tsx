@@ -34,20 +34,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      if (email === 'admin@gai.cd' && password === 'admin') {
-        const adminUser: AuthUser = {
-          id: 0,
-          email: 'admin@gai.cd',
-          nom: 'Administrateur',
-          prenom: 'GAI',
-          type_utilisateur: 'Admin',
-          role: getRoleByUserType('Admin')
-        };
-        setUser(adminUser);
-        localStorage.setItem('gai_auth_user', JSON.stringify(adminUser));
-        return true;
+      // Try Supabase first if available
+      try {
+        const { supabase } = await import('../utils/supabaseClient');
+        const { data: supabaseUsers, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', email)
+          .single();
+        
+        if (!error && supabaseUsers && supabaseUsers.password === password) {
+          const authUser: AuthUser = {
+            id: supabaseUsers.id,
+            email: supabaseUsers.email,
+            nom: supabaseUsers.nom,
+            prenom: supabaseUsers.prenom,
+            type_utilisateur: supabaseUsers.type_utilisateur,
+            role: getRoleByUserType(supabaseUsers.type_utilisateur)
+          };
+          setUser(authUser);
+          localStorage.setItem('gai_auth_user', JSON.stringify(authUser));
+          return true;
+        }
+      } catch (supabaseError) {
+        console.log('Supabase not available, trying local data');
       }
 
+      // Fallback to local IndexedDB
       const dbUser = await db.users.where('email').equals(email).first();
       if (dbUser && dbUser.password === password) {
         const authUser: AuthUser = {

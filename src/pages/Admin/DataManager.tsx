@@ -5,10 +5,15 @@ import { exportData, importData } from '../../utils/dataManager';
 import { notificationService } from '../../utils/notificationService';
 import { db } from '../../db/schema';
 import Button from '../../components/ui/Button';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 export default function DataManager() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showSeedDialog, setShowSeedDialog] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const showMessage = (type: 'success' | 'error', text: string) => {
     setMessage({ type, text });
@@ -16,10 +21,6 @@ export default function DataManager() {
   };
 
   const handleSeedData = async () => {
-    if (!confirm('Cela va remplacer toutes les données existantes. Continuer ?')) {
-      return;
-    }
-
     setLoading(true);
     try {
       const result = await seedDatabase();
@@ -41,10 +42,6 @@ export default function DataManager() {
   };
 
   const handleClearData = async () => {
-    if (!confirm('⚠️ ATTENTION : Cela va supprimer TOUTES les données de façon permanente. Êtes-vous sûr ?')) {
-      return;
-    }
-
     setLoading(true);
     try {
       await clearDatabase();
@@ -68,24 +65,25 @@ export default function DataManager() {
     }
   };
 
-  const handleImportData = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!confirm('Cela va remplacer toutes les données existantes. Continuer ?')) {
-      event.target.value = '';
-      return;
+    if (file) {
+      setPendingFile(file);
+      setShowImportDialog(true);
     }
+  };
 
+  const handleImportData = async () => {
+    if (!pendingFile) return;
     setLoading(true);
     try {
-      await importData(file);
+      await importData(pendingFile);
       showMessage('success', 'Données importées avec succès');
     } catch (error) {
       showMessage('error', 'Erreur lors de l\'import des données');
     } finally {
       setLoading(false);
-      event.target.value = '';
+      setPendingFile(null);
     }
   };
 
@@ -133,7 +131,7 @@ export default function DataManager() {
               <li>• 6 Rappels d'hygiène variés</li>
             </ul>
             <Button 
-              onClick={handleSeedData} 
+              onClick={() => setShowSeedDialog(true)} 
               disabled={loading}
               className="w-full"
             >
@@ -171,7 +169,7 @@ export default function DataManager() {
                 <input
                   type="file"
                   accept=".json"
-                  onChange={handleImportData}
+                  onChange={handleFileSelect}
                   disabled={loading}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
@@ -202,7 +200,7 @@ export default function DataManager() {
                 ⚠️ Ces actions sont irréversibles et supprimeront définitivement toutes les données.
               </p>
               <Button 
-                onClick={handleClearData} 
+                onClick={() => setShowClearDialog(true)} 
                 disabled={loading}
                 variant="danger"
               >
@@ -213,6 +211,42 @@ export default function DataManager() {
           </div>
         </div>
       </div>
+
+      {/* Seed Data Dialog */}
+      <ConfirmDialog
+        isOpen={showSeedDialog}
+        onClose={() => setShowSeedDialog(false)}
+        onConfirm={handleSeedData}
+        title="Ajouter les données de test"
+        message="Cela va remplacer toutes les données existantes par des données de test réalistes. Continuer ?"
+        type="warning"
+        confirmText="Ajouter"
+      />
+
+      {/* Clear Data Dialog */}
+      <ConfirmDialog
+        isOpen={showClearDialog}
+        onClose={() => setShowClearDialog(false)}
+        onConfirm={handleClearData}
+        title="Supprimer toutes les données"
+        message="⚠️ ATTENTION : Cette action va supprimer TOUTES les données de façon permanente. Cette action est irréversible !"
+        type="danger"
+        confirmText="Supprimer tout"
+      />
+
+      {/* Import Data Dialog */}
+      <ConfirmDialog
+        isOpen={showImportDialog}
+        onClose={() => {
+          setShowImportDialog(false);
+          setPendingFile(null);
+        }}
+        onConfirm={handleImportData}
+        title="Importer des données"
+        message={`Importer le fichier "${pendingFile?.name}" ? Cela va remplacer toutes les données existantes.`}
+        type="warning"
+        confirmText="Importer"
+      />
     </div>
   );
 }

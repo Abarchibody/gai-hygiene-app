@@ -181,7 +181,7 @@ export default function RemindersList() {
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                             <Clock className="w-3 h-3 mr-1" />
-                            {reminder.heure} - {reminder.date_debut.toLocaleDateString('fr-FR')}
+                            {reminder.heure} - {reminder.date_debut ? new Date(reminder.date_debut).toLocaleDateString('fr-FR') : 'N/A'}
                           </div>
                         </div>
                       </div>

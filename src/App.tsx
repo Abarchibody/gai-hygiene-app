@@ -32,6 +32,8 @@ import DataManager from './pages/Admin/DataManager';
 import SystemStatus from './pages/Admin/SystemStatus';
 import BackupManager from './pages/Admin/BackupManager';
 import SyncManager from './pages/Admin/SyncManager';
+import ChangePassword from './pages/Users/ChangePassword';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   useEffect(() => {
@@ -55,9 +57,11 @@ function App() {
             </ProtectedRoute>
           } />
         <Route path="/users" element={
-          <Layout pageTitle="Utilisateurs">
-            <UsersList />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Utilisateurs">
+              <UsersList />
+            </Layout>
+          </ProtectedRoute>
         } />
           <Route path="/users/create" element={
             <ProtectedRoute requiredPermission="canCreateUsers">
@@ -67,104 +71,156 @@ function App() {
             </ProtectedRoute>
           } />
         <Route path="/users/:id" element={
-          <Layout pageTitle="Détail utilisateur">
-            <UserDetail />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Détail utilisateur">
+              <UserDetail />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/users/:id/edit" element={
-          <Layout pageTitle="Modifier utilisateur">
-            <EditUser />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Modifier utilisateur">
+              <EditUser />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/users/:id/assign-parent" element={
-          <Layout pageTitle="Assigner un parent">
-            <AssignParent />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Assigner un parent">
+              <AssignParent />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/users/:id/change-password" element={
+          <ProtectedRoute>
+            <Layout pageTitle="Changer le mot de passe">
+              <ChangePassword />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/classes" element={
-          <Layout pageTitle="Classes">
-            <ClassesList />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Classes">
+              <ClassesList />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/classes/create" element={
-          <Layout pageTitle="Créer une classe">
-            <CreateClass />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Créer une classe">
+              <CreateClass />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/classes/:id" element={
-          <Layout pageTitle="Détail classe">
-            <ClassDetail />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Détail classe">
+              <ClassDetail />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/classes/:id/edit" element={
-          <Layout pageTitle="Modifier classe">
-            <EditClass />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Modifier classe">
+              <EditClass />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/classes/:id/assign-students" element={
-          <Layout pageTitle="Assigner des élèves">
-            <AssignStudents />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Assigner des élèves">
+              <AssignStudents />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/reminders" element={
-          <Layout pageTitle="Rappels d'hygiène">
-            <RemindersList />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Rappels d'hygiène">
+              <RemindersList />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/reminders/create" element={
-          <Layout pageTitle="Créer un rappel">
-            <CreateReminder />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Créer un rappel">
+              <CreateReminder />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/reminders/:id" element={
-          <Layout pageTitle="Détail rappel">
-            <ReminderDetail />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Détail rappel">
+              <ReminderDetail />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/reminders/:id/edit" element={
-          <Layout pageTitle="Modifier rappel">
-            <EditReminder />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Modifier rappel">
+              <EditReminder />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/reminders/:id/assign" element={
-          <Layout pageTitle="Assigner rappel">
-            <AssignReminder />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Assigner rappel">
+              <AssignReminder />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/notifications" element={
-          <Layout pageTitle="Centre de notifications">
-            <NotificationCenter />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Centre de notifications">
+              <NotificationCenter />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/reports" element={
-          <Layout pageTitle="Rapports & Analytics">
-            <ReportsPage />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Rapports & Analytics">
+              <ReportsPage />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/events" element={
-          <Layout pageTitle="Programmation">
-            <EventsPage />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Programmation">
+              <EventsPage />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/events/create" element={
-          <Layout pageTitle="Nouvel événement">
-            <CreateEvent />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Nouvel événement">
+              <CreateEvent />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/events/:id" element={
-          <Layout pageTitle="Détail événement">
-            <EventDetail />
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Détail événement">
+              <EventDetail />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Layout pageTitle="Mon Profil">
+              <ProfilePage />
+            </Layout>
+          </ProtectedRoute>
         } />
         <Route path="/admin" element={
-          <Layout pageTitle="Administration">
-            <div className="space-y-6 p-6 bg-white dark:bg-gray-900 rounded-lg">
-              <SystemStatus />
-              <SyncManager />
-              <DataManager />
-              <BackupManager />
-            </div>
-          </Layout>
+          <ProtectedRoute>
+            <Layout pageTitle="Administration">
+              <div className="space-y-6 p-6 bg-white dark:bg-gray-900 rounded-lg">
+                <SystemStatus />
+                <SyncManager />
+                <DataManager />
+                <BackupManager />
+              </div>
+            </Layout>
+          </ProtectedRoute>
         } />
         </Routes>
         </Router>

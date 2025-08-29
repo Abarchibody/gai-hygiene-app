@@ -153,14 +153,20 @@ export default function CreateUser() {
               required
             />
 
-            <Input
-              label="Mot de passe"
-              type="password"
-              value={formData.password}
-              onChange={(e) => handleChange('password', e.target.value)}
-              error={errors.password}
-              required
-            />
+            <div>
+              <Input
+                label="Mot de passe"
+                type="password"
+                value={formData.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                error={errors.password}
+                required
+                placeholder="Minimum 6 caractères"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Le mot de passe peut être modifié après création
+              </p>
+            </div>
 
             <Input
               label="Téléphone"

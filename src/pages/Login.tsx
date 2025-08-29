@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import ThemeToggle from '../components/ui/ThemeToggle';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,29 +38,27 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gai-blue to-blue-600 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+    <ThemeProvider>
+      <div className="min-h-screen bg-gradient-to-br from-gai-blue to-blue-600 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md border border-gray-200 dark:border-gray-700">
         <div className="text-center mb-8">
           <div className="bg-gai-blue text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <LogIn className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Connexion GAI</h1>
-          <p className="text-gray-600 mt-2">Application de rappels d'hygiène</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Connexion GAI</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">Application de rappels d'hygiène</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-            <p className="text-red-800 text-sm">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-6">
+            <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
           </div>
         )}
 
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
-          <p className="text-blue-800 text-sm">
-            <strong>Compte par défaut :</strong><br />
-            Email: admin@gai.cd<br />
-            Mot de passe: admin
-          </p>
-        </div>
+
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
@@ -67,7 +67,7 @@ export default function Login() {
             value={formData.email}
             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
             required
-            placeholder="admin@gai.cd"
+            placeholder="Votre email"
           />
 
           <div className="relative">
@@ -77,12 +77,12 @@ export default function Login() {
               value={formData.password}
               onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
               required
-              placeholder="admin"
+              placeholder="Votre mot de passe"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -93,7 +93,8 @@ export default function Login() {
             {loading ? 'Connexion...' : 'Se connecter'}
           </Button>
         </form>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
