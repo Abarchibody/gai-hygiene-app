@@ -11,7 +11,14 @@ import CreateClass from './pages/Classes/CreateClass';
 import ClassDetail from './pages/Classes/ClassDetail';
 import EditClass from './pages/Classes/EditClass';
 import AssignStudents from './pages/Classes/AssignStudents';
+import RemindersList from './pages/Reminders/RemindersList';
+import CreateReminder from './pages/Reminders/CreateReminder';
+import ReminderDetail from './pages/Reminders/ReminderDetail';
+import EditReminder from './pages/Reminders/EditReminder';
+import AssignReminder from './pages/Reminders/AssignReminder';
+import NotificationCenter from './pages/Notifications/NotificationCenter';
 import DataManager from './pages/Admin/DataManager';
+import SystemStatus from './pages/Admin/SystemStatus';
 
 function App() {
   return (
@@ -72,9 +79,42 @@ function App() {
             <AssignStudents />
           </Layout>
         } />
+        <Route path="/reminders" element={
+          <Layout pageTitle="Rappels d'hygiène">
+            <RemindersList />
+          </Layout>
+        } />
+        <Route path="/reminders/create" element={
+          <Layout pageTitle="Créer un rappel">
+            <CreateReminder />
+          </Layout>
+        } />
+        <Route path="/reminders/:id" element={
+          <Layout pageTitle="Détail rappel">
+            <ReminderDetail />
+          </Layout>
+        } />
+        <Route path="/reminders/:id/edit" element={
+          <Layout pageTitle="Modifier rappel">
+            <EditReminder />
+          </Layout>
+        } />
+        <Route path="/reminders/:id/assign" element={
+          <Layout pageTitle="Assigner rappel">
+            <AssignReminder />
+          </Layout>
+        } />
+        <Route path="/notifications" element={
+          <Layout pageTitle="Centre de notifications">
+            <NotificationCenter />
+          </Layout>
+        } />
         <Route path="/admin" element={
           <Layout pageTitle="Administration">
-            <DataManager />
+            <div className="space-y-6">
+              <SystemStatus />
+              <DataManager />
+            </div>
           </Layout>
         } />
       </Routes>

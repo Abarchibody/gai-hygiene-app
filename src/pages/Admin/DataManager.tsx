@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Database, Download, Upload, Trash2, Sprout, AlertTriangle, CheckCircle } from 'lucide-react';
 import { seedDatabase, clearDatabase } from '../../db/seedData';
 import { exportData, importData } from '../../utils/dataManager';
+import { notificationService } from '../../utils/notificationService';
+import { db } from '../../db/schema';
 import Button from '../../components/ui/Button';
 
 export default function DataManager() {
@@ -21,8 +23,15 @@ export default function DataManager() {
     setLoading(true);
     try {
       const result = await seedDatabase();
+      
+      // Programmer les notifications pour les rappels actifs
+      const activeReminders = await db.reminders.where('statut').equals('Actif').toArray();
+      for (const reminder of activeReminders) {
+        await notificationService.scheduleReminderNotifications(reminder);
+      }
+      
       showMessage('success', 
-        `Données de test ajoutées : ${result.users} utilisateurs, ${result.classes} classes, ${result.relations} relations`
+        `Données de test ajoutées : ${result.users} utilisateurs, ${result.classes} classes, ${result.relations} relations, ${result.reminders} rappels + notifications programmées`
       );
     } catch (error) {
       showMessage('error', 'Erreur lors de l\'ajout des données de test');
@@ -121,6 +130,7 @@ export default function DataManager() {
               <li>• 4 Parents avec contacts</li>
               <li>• 6 Élèves avec relations familiales</li>
               <li>• 4 Classes avec assignations</li>
+              <li>• 6 Rappels d'hygiène variés</li>
             </ul>
             <Button 
               onClick={handleSeedData} 

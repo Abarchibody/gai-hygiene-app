@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Users, School, GraduationCap, Heart, Rocket } from 'lucide-react';
+import { Users, School, GraduationCap, Heart, Rocket, Bell } from 'lucide-react';
 import { getStatistics } from '../utils/dataManager';
+import TestPanel from '../components/TestPanel';
+import UITestSuite from '../components/UITestSuite';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -9,7 +11,9 @@ export default function Dashboard() {
     totalParents: 0,
     totalTeachers: 0,
     totalClasses: 0,
-    totalRelations: 0
+    totalRelations: 0,
+    totalReminders: 0,
+    activeReminders: 0
   });
 
   useEffect(() => {
@@ -28,7 +32,7 @@ export default function Dashboard() {
       </div>
 
       {/* Statistiques principales */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
+      <div className="grid md:grid-cols-5 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center">
             <div className="text-gai-blue mr-3">
@@ -76,20 +80,38 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center">
+            <div className="text-gai-orange mr-3">
+              <Bell className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800">Rappels d'Hygiène</h3>
+              <p className="text-2xl font-bold text-gai-orange">{stats.totalReminders}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* Panel de test */}
+      <TestPanel />
+      
+      {/* Suite de tests UI */}
+      <UITestSuite />
+      
       {/* Phase suivante */}
-      <div className="bg-gradient-to-r from-gai-blue to-blue-600 rounded-lg shadow-md p-6 text-white">
+      <div className="bg-gradient-to-r from-gai-blue to-blue-600 rounded-lg shadow-md p-6 text-white mt-8">
         <h3 className="text-xl font-semibold mb-2 flex items-center">
           <Rocket className="w-6 h-6 mr-2" />
-          Migration React Réussie
+          Phase 2 - Rappels d'Hygiène
         </h3>
         <p className="mb-4 opacity-90">
-          Le layout et la navigation sont migrés avec succès. 
-          Prochaine étape : IndexedDB et modules métier.
+          Module rappels d'hygiène en développement. 
+          Création et gestion des rappels automatisés.
         </p>
         <div className="flex items-center">
-          <span className="text-green-300 font-medium">✅ Layout React - TERMINÉ</span>
+          <span className="text-green-300 font-medium">✅ Infrastructure - TERMINÉE</span>
         </div>
       </div>
     </div>

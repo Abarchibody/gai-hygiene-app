@@ -1,10 +1,12 @@
 import { db } from '../db/schema';
-import type { User, Class, Student } from '../types';
+import type { User, Class, Student, Reminder, ReminderAssignment } from '../types';
 
 export interface DatabaseExport {
   users: User[];
   classes: Class[];
   students: Student[];
+  reminders: Reminder[];
+  reminderAssignments: ReminderAssignment[];
   exportDate: string;
   version: string;
 }
@@ -14,11 +16,15 @@ export const exportData = async (): Promise<void> => {
     const users = await db.users.toArray();
     const classes = await db.classes.toArray();
     const students = await db.students.toArray();
+    const reminders = await db.reminders.toArray();
+    const reminderAssignments = await db.reminderAssignments.toArray();
 
     const exportData: DatabaseExport = {
       users,
       classes,
       students,
+      reminders,
+      reminderAssignments,
       exportDate: new Date().toISOString(),
       version: '1.0'
     };
@@ -54,7 +60,9 @@ export const importData = async (file: File): Promise<void> => {
     }
 
     // Vider la base de données
-    await db.transaction('rw', [db.users, db.classes, db.students], async () => {
+    await db.transaction('rw', [db.users, db.classes, db.students, db.reminders, db.reminderAssignments], async () => {
+      await db.reminderAssignments.clear();
+      await db.reminders.clear();
       await db.students.clear();
       await db.classes.clear();
       await db.users.clear();
@@ -63,6 +71,8 @@ export const importData = async (file: File): Promise<void> => {
       await db.users.bulkAdd(data.users);
       await db.classes.bulkAdd(data.classes);
       await db.students.bulkAdd(data.students);
+      if (data.reminders) await db.reminders.bulkAdd(data.reminders);
+      if (data.reminderAssignments) await db.reminderAssignments.bulkAdd(data.reminderAssignments);
     });
 
     console.log('✅ Données importées avec succès');
@@ -80,14 +90,18 @@ export const getStatistics = async () => {
       totalParents,
       totalTeachers,
       totalClasses,
-      totalRelations
+      totalRelations,
+      totalReminders,
+      activeReminders
     ] = await Promise.all([
       db.users.count(),
       db.users.where('type_utilisateur').equals('Élève').count(),
       db.users.where('type_utilisateur').equals('Parent').count(),
       db.users.where('type_utilisateur').equals('Enseignant').count(),
       db.classes.count(),
-      db.students.count()
+      db.students.count(),
+      db.reminders.count(),
+      db.reminders.where('statut').equals('Actif').count()
     ]);
 
     return {
@@ -96,7 +110,9 @@ export const getStatistics = async () => {
       totalParents,
       totalTeachers,
       totalClasses,
-      totalRelations
+      totalRelations,
+      totalReminders,
+      activeReminders
     };
   } catch (error) {
     console.error('❌ Erreur lors du calcul des statistiques:', error);
@@ -106,7 +122,9 @@ export const getStatistics = async () => {
       totalParents: 0,
       totalTeachers: 0,
       totalClasses: 0,
-      totalRelations: 0
+      totalRelations: 0,
+      totalReminders: 0,
+      activeReminders: 0
     };
   }
 };
