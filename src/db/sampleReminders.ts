@@ -101,8 +101,63 @@ export const seedReminders = async () => {
     const reminderIds = await db.reminders.bulkAdd(remindersWithValidCreators, { allKeys: true });
     console.log(`✅ ${reminderIds.length} rappels d'hygiène ajoutés`);
 
+    // Créer des assignations de test
+    const users = await db.users.toArray();
+    const classes = await db.classes.toArray();
+    const assignments = [];
+
+    // Assigner le premier rappel à tous les élèves individuellement
+    if (reminderIds.length > 0) {
+      const students = users.filter(u => u.type_utilisateur === 'Élève');
+      for (const student of students.slice(0, 3)) { // Assigner aux 3 premiers élèves
+        assignments.push({
+          rappel_id: reminderIds[0] as number,
+          utilisateur_id: student.id!,
+          created_at: new Date()
+        });
+      }
+    }
+
+    // Assigner le deuxième rappel à toutes les classes
+    if (reminderIds.length > 1) {
+      for (const classe of classes) {
+        assignments.push({
+          rappel_id: reminderIds[1] as number,
+          classe_id: classe.id!,
+          created_at: new Date()
+        });
+      }
+    }
+
+    // Assigner le troisième rappel à un mélange d'utilisateurs et de classes
+    if (reminderIds.length > 2) {
+      const parents = users.filter(u => u.type_utilisateur === 'Parent');
+      // Assigner à 2 parents
+      for (const parent of parents.slice(0, 2)) {
+        assignments.push({
+          rappel_id: reminderIds[2] as number,
+          utilisateur_id: parent.id!,
+          created_at: new Date()
+        });
+      }
+      // Assigner à 1 classe
+      if (classes.length > 0) {
+        assignments.push({
+          rappel_id: reminderIds[2] as number,
+          classe_id: classes[0].id!,
+          created_at: new Date()
+        });
+      }
+    }
+
+    if (assignments.length > 0) {
+      await db.reminderAssignments.bulkAdd(assignments);
+      console.log(`✅ ${assignments.length} assignations de rappels créées`);
+    }
+
     return {
-      reminders: reminderIds.length
+      reminders: reminderIds.length,
+      assignments: assignments.length
     };
   } catch (error) {
     console.error('❌ Erreur lors de l\'ajout des rappels:', error);

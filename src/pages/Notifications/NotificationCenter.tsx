@@ -65,11 +65,10 @@ export default function NotificationCenter() {
   };
 
   const testNotification = async () => {
-    if (permission === 'granted') {
-      new Notification('Test GAI Hygiène', {
-        body: 'Les notifications fonctionnent correctement !',
-        icon: '/favicon.ico'
-      });
+    const success = await notificationService.sendTestNotification();
+    if (success) {
+      // Recharger les statistiques après le test
+      setTimeout(loadNotifications, 1000);
     }
   };
 
@@ -185,11 +184,14 @@ export default function NotificationCenter() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button variant="secondary" onClick={testNotification} disabled={permission !== 'granted'}>
+            <Button variant="secondary" onClick={testNotification}>
               Tester une notification
             </Button>
             <Button onClick={startScheduler}>
               Démarrer le planificateur
+            </Button>
+            <Button variant="secondary" onClick={loadNotifications}>
+              Actualiser
             </Button>
             {pwaInstallable && (
               <Button variant="secondary">

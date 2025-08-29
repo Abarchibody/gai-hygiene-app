@@ -38,37 +38,63 @@ export default function RemindersList() {
           .reverse()
           .sortBy('created_at');
       } else if (user.type_utilisateur === 'Parent') {
-        // Parent sees reminders assigned to their children
+        // Parent sees reminders assigned to their children (individual + class assignments)
         const children = await db.students.where('parent_id').equals(user.id).toArray();
         const childIds = children.map(c => c.utilisateur_id);
+        const classIds = children.map(c => c.classe_id).filter(Boolean);
         
+        const reminderIds = new Set<number>();
+        
+        // Individual assignments to children
         if (childIds.length > 0) {
-          const assignments = await db.reminderAssignments
+          const userAssignments = await db.reminderAssignments
             .where('utilisateur_id')
             .anyOf(childIds)
             .toArray();
-          const reminderIds = assignments.map(a => a.rappel_id);
-          
-          if (reminderIds.length > 0) {
-            filteredReminders = await db.reminders
-              .where('id')
-              .anyOf(reminderIds)
-              .reverse()
-              .sortBy('created_at');
-          }
+          userAssignments.forEach(a => reminderIds.add(a.rappel_id));
+        }
+        
+        // Class assignments for children's classes
+        if (classIds.length > 0) {
+          const classAssignments = await db.reminderAssignments
+            .where('classe_id')
+            .anyOf(classIds)
+            .toArray();
+          classAssignments.forEach(a => reminderIds.add(a.rappel_id));
+        }
+        
+        if (reminderIds.size > 0) {
+          filteredReminders = await db.reminders
+            .where('id')
+            .anyOf(Array.from(reminderIds))
+            .reverse()
+            .sortBy('created_at');
         }
       } else if (user.type_utilisateur === 'Élève') {
-        // Student sees reminders assigned to them
-        const assignments = await db.reminderAssignments
+        // Student sees reminders assigned to them (individual + class assignments)
+        const student = await db.students.where('utilisateur_id').equals(user.id).first();
+        const reminderIds = new Set<number>();
+        
+        // Individual assignments
+        const userAssignments = await db.reminderAssignments
           .where('utilisateur_id')
           .equals(user.id)
           .toArray();
-        const reminderIds = assignments.map(a => a.rappel_id);
+        userAssignments.forEach(a => reminderIds.add(a.rappel_id));
         
-        if (reminderIds.length > 0) {
+        // Class assignments
+        if (student?.classe_id) {
+          const classAssignments = await db.reminderAssignments
+            .where('classe_id')
+            .equals(student.classe_id)
+            .toArray();
+          classAssignments.forEach(a => reminderIds.add(a.rappel_id));
+        }
+        
+        if (reminderIds.size > 0) {
           filteredReminders = await db.reminders
             .where('id')
-            .anyOf(reminderIds)
+            .anyOf(Array.from(reminderIds))
             .reverse()
             .sortBy('created_at');
         }

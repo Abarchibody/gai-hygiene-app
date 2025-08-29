@@ -155,12 +155,12 @@ export default function CreateReminder() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             Créer un nouveau rappel d'hygiène
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Configurez un rappel automatisé pour promouvoir les bonnes pratiques d'hygiène
           </p>
         </div>
@@ -186,13 +186,13 @@ export default function CreateReminder() {
             />
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description (optionnelle)
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => handleChange('description', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-gai-blue focus:border-gai-blue"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-gai-blue focus:border-gai-blue bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 rows={3}
                 placeholder="Décrivez les instructions spécifiques pour ce rappel..."
               />
@@ -235,8 +235,8 @@ export default function CreateReminder() {
             />
           </div>
 
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200 mt-6">
-            <div className="text-sm text-gray-500">
+          <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               Les champs marqués d'un * sont obligatoires
             </div>
             <div className="flex space-x-3">

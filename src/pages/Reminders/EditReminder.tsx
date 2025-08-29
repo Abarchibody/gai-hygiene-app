@@ -36,19 +36,27 @@ export default function EditReminder() {
     try {
       const reminder = await db.reminders.get(reminderId);
       if (reminder) {
+        const dateDebut = reminder.date_debut instanceof Date 
+          ? reminder.date_debut.toISOString().split('T')[0]
+          : new Date(reminder.date_debut).toISOString().split('T')[0];
+        
         setFormData({
           titre: reminder.titre,
           description: reminder.description || '',
           categorie: reminder.categorie,
           recurrence: reminder.recurrence,
-          date_debut: reminder.date_debut.toISOString().split('T')[0],
+          date_debut: dateDebut,
           heure: reminder.heure,
           statut: reminder.statut,
           createur_id: reminder.createur_id.toString()
         });
+      } else {
+        console.error('Rappel non trouvé avec l\'ID:', reminderId);
+        navigate('/reminders');
       }
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
+      setErrors({ submit: 'Erreur lors du chargement du rappel' });
     } finally {
       setInitialLoading(false);
     }
@@ -163,6 +171,17 @@ export default function EditReminder() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-gray-500 dark:text-gray-400">Chargement...</div>
+      </div>
+    );
+  }
+
+  if (!formData.titre && !initialLoading) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Rappel introuvable</h2>
+        <Link to="/reminders" className="text-gai-blue hover:underline">
+          Retour à la liste
+        </Link>
       </div>
     );
   }

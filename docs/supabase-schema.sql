@@ -48,6 +48,34 @@ CREATE TABLE reminders (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Table des assignations de rappels
+CREATE TABLE reminder_assignments (
+  id BIGSERIAL PRIMARY KEY,
+  rappel_id BIGINT NOT NULL REFERENCES reminders(id) ON DELETE CASCADE,
+  utilisateur_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+  classe_id BIGINT REFERENCES classes(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT check_assignment CHECK (
+    (utilisateur_id IS NOT NULL AND classe_id IS NULL) OR
+    (utilisateur_id IS NULL AND classe_id IS NOT NULL)
+  )
+);
+
+-- Table des notifications
+CREATE TABLE notifications (
+  id BIGSERIAL PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  message TEXT NOT NULL,
+  type VARCHAR(20) NOT NULL CHECK (type IN ('reminder', 'alert', 'info')),
+  status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'sent', 'read', 'failed')),
+  recipient_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+  reminder_id BIGINT REFERENCES reminders(id) ON DELETE CASCADE,
+  scheduled_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE,
+  read_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Table des événements de programmation
 CREATE TABLE events (
   id BIGSERIAL PRIMARY KEY,
@@ -72,7 +100,15 @@ CREATE INDEX idx_users_type ON users(type_utilisateur);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_classes_enseignant ON classes(enseignant_id);
 CREATE INDEX idx_students_utilisateur ON students(utilisateur_id);
+CREATE INDEX idx_students_classe ON students(classe_id);
+CREATE INDEX idx_students_parent ON students(parent_id);
 CREATE INDEX idx_reminders_createur ON reminders(createur_id);
+CREATE INDEX idx_reminder_assignments_rappel ON reminder_assignments(rappel_id);
+CREATE INDEX idx_reminder_assignments_user ON reminder_assignments(utilisateur_id);
+CREATE INDEX idx_reminder_assignments_class ON reminder_assignments(classe_id);
+CREATE INDEX idx_notifications_recipient ON notifications(recipient_id);
+CREATE INDEX idx_notifications_status ON notifications(status);
+CREATE INDEX idx_notifications_scheduled ON notifications(scheduled_at);
 CREATE INDEX idx_events_responsable ON events(responsable_id);
 
 -- Politiques de sécurité RLS (Row Level Security)
@@ -80,6 +116,8 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reminder_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 
 -- Politique simple : accès complet pour tous les utilisateurs authentifiés
@@ -87,4 +125,6 @@ CREATE POLICY "Enable all operations for authenticated users" ON users FOR ALL U
 CREATE POLICY "Enable all operations for authenticated users" ON classes FOR ALL USING (true);
 CREATE POLICY "Enable all operations for authenticated users" ON students FOR ALL USING (true);
 CREATE POLICY "Enable all operations for authenticated users" ON reminders FOR ALL USING (true);
+CREATE POLICY "Enable all operations for authenticated users" ON reminder_assignments FOR ALL USING (true);
+CREATE POLICY "Enable all operations for authenticated users" ON notifications FOR ALL USING (true);
 CREATE POLICY "Enable all operations for authenticated users" ON events FOR ALL USING (true);

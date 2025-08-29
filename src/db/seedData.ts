@@ -248,6 +248,9 @@ export const seedDatabase = async () => {
     // Ajouter les rappels d'hygiène de test
     const reminderResult = await seedReminders();
     console.log(`✅ ${reminderResult.reminders} rappels d'hygiène ajoutés`);
+    if (reminderResult.assignments) {
+      console.log(`✅ ${reminderResult.assignments} assignations de rappels créées`);
+    }
 
     // Ajouter les événements de programmation
     const eventResult = await seedEvents();
@@ -260,6 +263,7 @@ export const seedDatabase = async () => {
       classes: classIds.length,
       relations: studentRelations.length,
       reminders: reminderResult.reminders,
+      assignments: reminderResult.assignments || 0,
       events: eventResult.events
     };
   } catch (error) {

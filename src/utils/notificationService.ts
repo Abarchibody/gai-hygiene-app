@@ -121,22 +121,25 @@ class NotificationService {
     try {
       if (this.permission !== 'granted') {
         console.warn('Permission de notification non accordée');
+        await db.notifications.update(notification.id!, {
+          status: 'failed'
+        });
         return false;
       }
 
       const browserNotification = new Notification(notification.title, {
         body: notification.message,
-        icon: '/favicon.ico',
-        badge: '/favicon.ico',
         tag: `reminder-${notification.reminder_id}`,
-        requireInteraction: true
+        requireInteraction: false
       });
 
-      // Marquer comme envoyée
-      await db.notifications.update(notification.id!, {
-        status: 'sent',
-        sent_at: new Date()
-      });
+      browserNotification.onshow = () => {
+        console.log(`🔔 Notification affichée: ${notification.title}`);
+      };
+
+      browserNotification.onerror = (error) => {
+        console.error('Erreur d\'affichage:', error);
+      };
 
       // Gérer les clics sur la notification
       browserNotification.onclick = () => {
@@ -144,6 +147,12 @@ class NotificationService {
         browserNotification.close();
         this.markAsRead(notification.id!);
       };
+
+      // Marquer comme envoyée
+      await db.notifications.update(notification.id!, {
+        status: 'sent',
+        sent_at: new Date()
+      });
 
       console.log(`🔔 Notification envoyée: ${notification.title}`);
       return true;
@@ -179,15 +188,25 @@ class NotificationService {
         .and(notification => notification.scheduled_at <= now)
         .toArray();
 
-      console.log(`🔄 Traitement de ${pendingNotifications.length} notifications en attente`);
-
-      for (const notification of pendingNotifications) {
-        await this.sendNotification(notification);
+      if (pendingNotifications.length > 0) {
+        console.log(`🔄 Traitement de ${pendingNotifications.length} notifications en attente`);
         
-        // Programmer la prochaine occurrence si récurrente
-        const reminder = await db.reminders.get(notification.reminder_id!);
-        if (reminder && reminder.recurrence !== 'Unique' && reminder.statut === 'Actif') {
-          await this.scheduleReminderNotifications(reminder);
+        for (const notification of pendingNotifications) {
+          const success = await this.sendNotification(notification);
+          
+          if (success) {
+            // Programmer la prochaine occurrence si récurrente
+            const reminder = await db.reminders.get(notification.reminder_id!);
+            if (reminder && reminder.recurrence !== 'Unique' && reminder.statut === 'Actif') {
+              await this.scheduleReminderNotifications(reminder);
+            }
+          }
+        }
+      } else {
+        // Log périodique pour confirmer que le service fonctionne
+        const totalPending = await db.notifications.where('status').equals('pending').count();
+        if (totalPending > 0) {
+          console.log(`🕰️ ${totalPending} notifications en attente (pas encore l'heure)`);
         }
       }
     } catch (error) {
@@ -196,6 +215,9 @@ class NotificationService {
   }
 
   startNotificationScheduler(): void {
+    // Vérifier immédiatement au démarrage
+    this.processPendingNotifications();
+    
     // Vérifier les notifications toutes les minutes
     setInterval(() => {
       this.processPendingNotifications();
@@ -236,7 +258,50 @@ class NotificationService {
       return { total, pending, sent, read, failed };
     } catch (error) {
       console.error('Erreur calcul statistiques notifications:', error);
-      return { total: 0, pending: 0, sent: 0, read: 0, failed: 0 };
+      return { total: 0, pending, sent: 0, read: 0, failed: 0 };
+    }
+  }
+
+  async sendTestNotification(): Promise<boolean> {
+    try {
+      console.log('Permission actuelle:', this.permission);
+      
+      if (this.permission !== 'granted') {
+        console.log('Demande de permission...');
+        const granted = await this.requestPermission();
+        if (!granted) {
+          alert('Veuillez autoriser les notifications dans votre navigateur pour recevoir les rappels d\'hygiène.');
+          return false;
+        }
+      }
+
+      console.log('Création de la notification de test...');
+      const testNotification = new Notification('Test GAI Hygiène', {
+        body: 'Ceci est un test de notification. Le système fonctionne correctement !',
+        tag: 'test-notification',
+        requireInteraction: false
+      });
+
+      testNotification.onclick = () => {
+        console.log('Notification cliquée');
+        window.focus();
+        testNotification.close();
+      };
+
+      testNotification.onshow = () => {
+        console.log('🔔 Notification affichée avec succès');
+      };
+
+      testNotification.onerror = (error) => {
+        console.error('Erreur d\'affichage de la notification:', error);
+      };
+
+      console.log('🔔 Notification de test envoyée');
+      return true;
+    } catch (error) {
+      console.error('Erreur lors du test de notification:', error);
+      alert('Erreur lors du test de notification: ' + error.message);
+      return false;
     }
   }
 }

@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import { pwaService } from './utils/pwaService';
+import { notificationService } from './utils/notificationService';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UsersList from './pages/Users/UsersList';
@@ -38,6 +39,10 @@ function App() {
   useEffect(() => {
     // Enregistrer le Service Worker au démarrage
     pwaService.registerServiceWorker();
+    
+    // Démarrer le planificateur de notifications
+    notificationService.startNotificationScheduler();
+    
     // Initialiser le service de sauvegarde
     console.log('💾 Service de sauvegarde initialisé');
   }, []);

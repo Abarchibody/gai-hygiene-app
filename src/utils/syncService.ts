@@ -1,6 +1,6 @@
 import { supabase, type SyncStatus, type SyncConfig } from './supabaseClient';
 import { db } from '../db/schema';
-import type { User, Class, Student, Reminder, Event } from '../types';
+import type { User, Class, Student, Reminder, ReminderAssignment, Notification, Event } from '../types';
 
 class SyncService {
   private syncStatus: SyncStatus = {
@@ -89,6 +89,8 @@ class SyncService {
       await this.syncTable('classes', await db.classes.toArray());
       await this.syncTable('students', await db.students.toArray());
       await this.syncTable('reminders', await db.reminders.toArray());
+      await this.syncTable('reminder_assignments', await db.reminderAssignments.toArray());
+      await this.syncTable('notifications', await db.notifications.toArray());
       await this.syncTable('events', await db.events.toArray());
       
       this.syncStatus.lastSync = new Date();
@@ -117,11 +119,13 @@ class SyncService {
       console.log('🔄 Début de la synchronisation depuis Supabase...');
       
       // Récupérer les données du cloud
-      const [users, classes, students, reminders, events] = await Promise.all([
+      const [users, classes, students, reminders, reminderAssignments, notifications, events] = await Promise.all([
         supabase.from('users').select('*'),
         supabase.from('classes').select('*'),
         supabase.from('students').select('*'),
         supabase.from('reminders').select('*'),
+        supabase.from('reminder_assignments').select('*'),
+        supabase.from('notifications').select('*'),
         supabase.from('events').select('*')
       ]);
 
@@ -130,6 +134,8 @@ class SyncService {
       if (classes.data) await this.updateLocalTable('classes', classes.data);
       if (students.data) await this.updateLocalTable('students', students.data);
       if (reminders.data) await this.updateLocalTable('reminders', reminders.data);
+      if (reminderAssignments.data) await this.updateLocalTable('reminder_assignments', reminderAssignments.data);
+      if (notifications.data) await this.updateLocalTable('notifications', notifications.data);
       if (events.data) await this.updateLocalTable('events', events.data);
       
       this.syncStatus.lastSync = new Date();
@@ -172,6 +178,14 @@ class SyncService {
       case 'reminders':
         await db.reminders.clear();
         await db.reminders.bulkAdd(data);
+        break;
+      case 'reminder_assignments':
+        await db.reminderAssignments.clear();
+        await db.reminderAssignments.bulkAdd(data);
+        break;
+      case 'notifications':
+        await db.notifications.clear();
+        await db.notifications.bulkAdd(data);
         break;
       case 'events':
         await db.events.clear();

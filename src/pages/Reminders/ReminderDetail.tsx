@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Trash2, Bell, Clock, User, Users, Calendar } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Bell, Clock, User, Users, Calendar, School } from 'lucide-react';
 import { db } from '../../db/schema';
-import type { Reminder, User as UserType } from '../../types';
+import type { Reminder, User as UserType, Class, ReminderAssignment } from '../../types';
 import Button from '../../components/ui/Button';
 
 export default function ReminderDetail() {
@@ -10,6 +10,9 @@ export default function ReminderDetail() {
   const navigate = useNavigate();
   const [reminder, setReminder] = useState<Reminder | null>(null);
   const [creator, setCreator] = useState<UserType | null>(null);
+  const [assignments, setAssignments] = useState<ReminderAssignment[]>([]);
+  const [assignedUsers, setAssignedUsers] = useState<UserType[]>([]);
+  const [assignedClasses, setAssignedClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,6 +29,24 @@ export default function ReminderDetail() {
       if (reminderData?.createur_id) {
         const creatorData = await db.users.get(reminderData.createur_id);
         setCreator(creatorData || null);
+      }
+
+      // Charger les assignations
+      const assignmentData = await db.reminderAssignments.where('rappel_id').equals(reminderId).toArray();
+      setAssignments(assignmentData);
+
+      // Charger les utilisateurs assignés
+      const userIds = assignmentData.filter(a => a.utilisateur_id).map(a => a.utilisateur_id!);
+      if (userIds.length > 0) {
+        const users = await db.users.where('id').anyOf(userIds).toArray();
+        setAssignedUsers(users);
+      }
+
+      // Charger les classes assignées
+      const classIds = assignmentData.filter(a => a.classe_id).map(a => a.classe_id!);
+      if (classIds.length > 0) {
+        const classes = await db.classes.where('id').anyOf(classIds).toArray();
+        setAssignedClasses(classes);
       }
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
@@ -235,15 +256,79 @@ export default function ReminderDetail() {
             </div>
             
             <div className="p-6">
-              <div className="text-center py-8">
-                <Users className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">Aucune assignation</p>
-                <Link to={`/reminders/${reminder.id}/assign`}>
-                  <Button size="sm">
-                    Assigner aux utilisateurs
-                  </Button>
-                </Link>
-              </div>
+              {assignments.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">Aucune assignation</p>
+                  <Link to={`/reminders/${reminder.id}/assign`}>
+                    <Button size="sm">
+                      Assigner aux utilisateurs
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {assignedUsers.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+                        <User className="w-4 h-4 mr-1" />
+                        Utilisateurs ({assignedUsers.length})
+                      </h4>
+                      <div className="space-y-2">
+                        {assignedUsers.map((user) => (
+                          <div key={user.id} className="flex items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-md">
+                            <div className="w-6 h-6 bg-gai-blue rounded-full flex items-center justify-center text-white text-xs font-medium mr-2">
+                              {user.prenom.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {user.nom} {user.prenom}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {user.type_utilisateur}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {assignedClasses.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+                        <School className="w-4 h-4 mr-1" />
+                        Classes ({assignedClasses.length})
+                      </h4>
+                      <div className="space-y-2">
+                        {assignedClasses.map((classe) => (
+                          <div key={classe.id} className="flex items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-md">
+                            <div className="w-6 h-6 bg-gai-green rounded-full flex items-center justify-center text-white text-xs font-medium mr-2">
+                              {classe.nom_classe.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {classe.nom_classe}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {classe.niveau}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Link to={`/reminders/${reminder.id}/assign`}>
+                      <Button size="sm" variant="secondary" className="w-full">
+                        Modifier les assignations
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
