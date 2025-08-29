@@ -95,6 +95,29 @@ CREATE TABLE events (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Table de suivi de synchronisation
+CREATE TABLE sync_status (
+  id BIGSERIAL PRIMARY KEY,
+  table_name VARCHAR(50) NOT NULL UNIQUE,
+  last_sync_at TIMESTAMP WITH TIME ZONE,
+  last_sync_direction VARCHAR(20) CHECK (last_sync_direction IN ('to_cloud', 'from_cloud', 'bidirectional')),
+  sync_count INTEGER DEFAULT 0,
+  last_error TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Table des paramètres de l'application
+CREATE TABLE app_settings (
+  id BIGSERIAL PRIMARY KEY,
+  key VARCHAR(100) NOT NULL UNIQUE,
+  value JSONB NOT NULL,
+  category VARCHAR(50) DEFAULT 'general',
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Indexes pour améliorer les performances
 CREATE INDEX idx_users_type ON users(type_utilisateur);
 CREATE INDEX idx_users_email ON users(email);
@@ -110,6 +133,9 @@ CREATE INDEX idx_notifications_recipient ON notifications(recipient_id);
 CREATE INDEX idx_notifications_status ON notifications(status);
 CREATE INDEX idx_notifications_scheduled ON notifications(scheduled_at);
 CREATE INDEX idx_events_responsable ON events(responsable_id);
+CREATE INDEX idx_sync_status_table ON sync_status(table_name);
+CREATE INDEX idx_app_settings_key ON app_settings(key);
+CREATE INDEX idx_app_settings_category ON app_settings(category);
 
 -- Politiques de sécurité RLS (Row Level Security)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -119,6 +145,8 @@ ALTER TABLE reminders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reminder_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sync_status ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 
 -- Politique simple : accès complet pour tous les utilisateurs authentifiés
 CREATE POLICY "Enable all operations for authenticated users" ON users FOR ALL USING (true);
@@ -128,3 +156,26 @@ CREATE POLICY "Enable all operations for authenticated users" ON reminders FOR A
 CREATE POLICY "Enable all operations for authenticated users" ON reminder_assignments FOR ALL USING (true);
 CREATE POLICY "Enable all operations for authenticated users" ON notifications FOR ALL USING (true);
 CREATE POLICY "Enable all operations for authenticated users" ON events FOR ALL USING (true);
+CREATE POLICY "Enable all operations for authenticated users" ON sync_status FOR ALL USING (true);
+CREATE POLICY "Enable all operations for authenticated users" ON app_settings FOR ALL USING (true);
+
+-- Insérer les paramètres par défaut
+INSERT INTO app_settings (key, value, category, description) VALUES
+('theme', '"system"', 'ui', 'Thème de l''interface (light, dark, system)'),
+('language', '"fr"', 'ui', 'Langue de l''interface'),
+('notifications_enabled', 'true', 'notifications', 'Notifications activées'),
+('sync_enabled', 'false', 'sync', 'Synchronisation cloud activée'),
+('sync_interval', '5', 'sync', 'Intervalle de synchronisation en minutes'),
+('auto_backup', 'true', 'backup', 'Sauvegarde automatique activée'),
+('backup_frequency', '"daily"', 'backup', 'Fréquence de sauvegarde (daily, weekly, monthly)');
+
+-- Initialiser le statut de sync pour chaque table
+INSERT INTO sync_status (table_name, sync_count) VALUES
+('users', 0),
+('classes', 0),
+('students', 0),
+('reminders', 0),
+('reminder_assignments', 0),
+('notifications', 0),
+('events', 0),
+('app_settings', 0);
