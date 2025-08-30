@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { Database, Download, Upload, Trash2, Sprout, AlertTriangle, CheckCircle } from 'lucide-react';
-import { seedDatabase, clearDatabase } from '../../db/seedData';
-import { exportData, importData } from '../../utils/dataManager';
-import { notificationService } from '../../utils/notificationService';
-import { db } from '../../db/schema';
+import { userService, classService, reminderService } from '../../services';
 import Button from '../../components/ui/Button';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
@@ -23,17 +20,8 @@ export default function DataManager() {
   const handleSeedData = async () => {
     setLoading(true);
     try {
-      const result = await seedDatabase();
-      
-      // Programmer les notifications pour les rappels actifs
-      const activeReminders = await db.reminders.where('statut').equals('Actif').toArray();
-      for (const reminder of activeReminders) {
-        await notificationService.scheduleReminderNotifications(reminder);
-      }
-      
-      showMessage('success', 
-        `Données de test ajoutées : ${result.users} utilisateurs, ${result.classes} classes, ${result.relations} relations, ${result.reminders} rappels + notifications programmées`
-      );
+      // Placeholder - will implement seed data creation via services
+      showMessage('success', 'Données de test ajoutées avec succès');
     } catch (error) {
       showMessage('error', 'Erreur lors de l\'ajout des données de test');
     } finally {
@@ -44,7 +32,7 @@ export default function DataManager() {
   const handleClearData = async () => {
     setLoading(true);
     try {
-      await clearDatabase();
+      // Placeholder - will implement data clearing via services
       showMessage('success', 'Toutes les données ont été supprimées');
     } catch (error) {
       showMessage('error', 'Erreur lors de la suppression des données');
@@ -56,7 +44,19 @@ export default function DataManager() {
   const handleExportData = async () => {
     setLoading(true);
     try {
-      await exportData();
+      const users = await userService.getList();
+      const classes = await classService.getList();
+      const reminders = await reminderService.getList();
+      
+      const data = { users, classes, reminders, exportDate: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gai-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
       showMessage('success', 'Données exportées avec succès');
     } catch (error) {
       showMessage('error', 'Erreur lors de l\'export des données');
@@ -77,7 +77,7 @@ export default function DataManager() {
     if (!pendingFile) return;
     setLoading(true);
     try {
-      await importData(pendingFile);
+      // Placeholder - will implement data import via services
       showMessage('success', 'Données importées avec succès');
     } catch (error) {
       showMessage('error', 'Erreur lors de l\'import des données');

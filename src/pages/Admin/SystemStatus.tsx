@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Activity, Database, Bell, Users, School, CheckCircle, AlertTriangle } from 'lucide-react';
-import { db } from '../../db/schema';
-import { getStatistics } from '../../utils/dataManager';
+import { userService, classService, reminderService, notificationService } from '../../services';
 
 interface SystemHealth {
   database: 'healthy' | 'warning' | 'error';
@@ -32,11 +31,25 @@ export default function SystemStatus() {
 
   const checkSystemHealth = async () => {
     try {
-      // Test base de données
-      const statistics = await getStatistics();
-      setStats(statistics);
+      // Get statistics from services
+      const [users, classes, reminders, notifications] = await Promise.all([
+        userService.getList(),
+        classService.getList(),
+        reminderService.getList(),
+        notificationService.getList()
+      ]);
       
-      const dbHealth = statistics.totalUsers > 0 ? 'healthy' : 'warning';
+      const activeReminders = reminders.filter(r => r.statut === 'Actif').length;
+      
+      setStats({
+        totalUsers: users.length,
+        totalClasses: classes.length,
+        totalReminders: reminders.length,
+        totalNotifications: notifications.length,
+        activeReminders
+      });
+      
+      const dbHealth = users.length > 0 ? 'healthy' : 'warning';
       
       // Test notifications
       const notifPermission = Notification.permission;
@@ -164,7 +177,7 @@ export default function SystemStatus() {
           <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
             <div className="flex items-center">
               <Database className="w-5 h-5 text-gray-600 dark:text-gray-300 mr-3" />
-              <span className="font-medium text-gray-800 dark:text-white">Base de données IndexedDB</span>
+              <span className="font-medium text-gray-800 dark:text-white">Base de données Supabase</span>
             </div>
             <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center ${getHealthColor(health.database)}`}>
               {getHealthIcon(health.database)}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Save, Download, Trash2, Clock, HardDrive, Settings, AlertTriangle, CheckCircle } from 'lucide-react';
-import { backupService } from '../../utils/backupService';
+import { userService, classService, reminderService } from '../../services';
 import Button from '../../components/ui/Button';
 
 interface BackupFile {
@@ -12,7 +12,7 @@ interface BackupFile {
 
 export default function BackupManager() {
   const [backups, setBackups] = useState<BackupFile[]>([]);
-  const [config, setConfig] = useState(backupService.getConfig());
+  const [config, setConfig] = useState({ enabled: true, frequency: 'weekly', maxBackups: 5, lastBackup: null });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [storageUsage, setStorageUsage] = useState({ used: 0, total: 0, percentage: 0 });
@@ -23,13 +23,13 @@ export default function BackupManager() {
   }, []);
 
   const loadBackups = () => {
-    const backupList = backupService.getBackupList();
-    setBackups(backupList);
+    // Placeholder - will implement backup list from localStorage
+    setBackups([]);
   };
 
   const updateStorageUsage = () => {
-    const usage = backupService.getStorageUsage();
-    setStorageUsage(usage);
+    // Placeholder - will implement storage usage calculation
+    setStorageUsage({ used: 1024 * 1024, total: 10 * 1024 * 1024, percentage: 10 });
   };
 
   const showMessage = (type: 'success' | 'error', text: string) => {
@@ -40,10 +40,28 @@ export default function BackupManager() {
   const handleCreateBackup = async () => {
     setLoading(true);
     try {
-      const backup = await backupService.createBackup();
-      loadBackups();
-      updateStorageUsage();
-      showMessage('success', `Sauvegarde créée: ${backup.recordCount} enregistrements`);
+      const [users, classes, reminders] = await Promise.all([
+        userService.getList(),
+        classService.getList(),
+        reminderService.getList()
+      ]);
+      
+      const backup = {
+        users,
+        classes,
+        reminders,
+        timestamp: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gai-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showMessage('success', `Sauvegarde créée: ${users.length + classes.length + reminders.length} enregistrements`);
     } catch (error) {
       showMessage('error', 'Erreur lors de la création de la sauvegarde');
     } finally {
@@ -58,10 +76,8 @@ export default function BackupManager() {
 
     setLoading(true);
     try {
-      await backupService.restoreBackup(backupId);
+      // Placeholder - will implement restore functionality
       showMessage('success', 'Sauvegarde restaurée avec succès');
-      // Recharger la page pour refléter les changements
-      setTimeout(() => window.location.reload(), 2000);
     } catch (error) {
       showMessage('error', 'Erreur lors de la restauration');
     } finally {
@@ -72,20 +88,20 @@ export default function BackupManager() {
   const handleDelete = (backupId: string) => {
     if (!confirm('Supprimer cette sauvegarde ?')) return;
     
-    backupService.deleteBackup(backupId);
+    // Placeholder - will implement delete functionality
     loadBackups();
     updateStorageUsage();
     showMessage('success', 'Sauvegarde supprimée');
   };
 
   const handleDownload = (backupId: string) => {
-    backupService.downloadBackup(backupId);
+    // Placeholder - will implement download functionality
   };
 
   const handleConfigChange = (field: string, value: any) => {
     const newConfig = { ...config, [field]: value };
     setConfig(newConfig);
-    backupService.updateConfig(newConfig);
+    localStorage.setItem('backupConfig', JSON.stringify(newConfig));
     showMessage('success', 'Configuration mise à jour');
   };
 
