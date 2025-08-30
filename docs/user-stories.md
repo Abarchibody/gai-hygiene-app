@@ -1,5 +1,13 @@
 # User Stories - Application GAI Rappels d'Hygiène
 
+## Architecture Offline-First + Cloud Sync
+
+L'application utilise une **architecture hybride offline-first** :
+- **Stockage principal** : IndexedDB (local, toujours disponible)
+- **Synchronisation cloud** : Supabase PostgreSQL (temps réel)
+- **Fonctionnement** : 100% offline avec sync automatique quand en ligne
+- **Avantages** : Performance maximale, résilience réseau, collaboration temps réel
+
 ## Table des Matières
 1. [Module Tableau de Bord](#module-tableau-de-bord)
 2. [Module Gestion Utilisateurs](#module-gestion-utilisateurs)
@@ -11,20 +19,22 @@
 8. [Module Administration](#module-administration)
 9. [Module Authentification & Profil](#module-authentification--profil)
 10. [Module Navigation & Layout](#module-navigation--layout)
-11. [Stories Transversales](#stories-transversales)
+11. [Module Offline & Synchronisation](#module-offline--synchronisation)
+12. [Stories Transversales](#stories-transversales)
 
 ---
 
 ## Module Tableau de Bord
 
 ### 👑 Administrateur - Dashboard Global (Dashboard.tsx)
-- **En tant qu'administrateur**, je veux voir toutes les statistiques globales (rappels actifs, notifications du jour, progrès hebdomadaire, événements)
-- **En tant qu'administrateur**, je veux voir des métriques visuelles avec icônes colorées et valeurs numériques importantes
-- **En tant qu'administrateur**, je veux voir la répartition des rappels par catégorie avec barres de progression
-- **En tant qu'administrateur**, je veux voir l'activité récente du système avec horodatage
-- **En tant qu'administrateur**, je veux recevoir des messages d'encouragement basés sur les performances
-- **En tant qu'administrateur**, je veux que les données se chargent avec indicateur de progression
-- **En tant qu'administrateur**, je veux voir une vue d'ensemble adaptée à mon rôle d'administrateur
+- **En tant qu'administrateur**, je veux voir toutes les statistiques globales (rappels actifs, notifications du jour, progrès hebdomadaire, événements) **chargées instantanément depuis IndexedDB**
+- **En tant qu'administrateur**, je veux voir des métriques visuelles avec icônes colorées et valeurs numériques importantes **calculées en temps réel localement**
+- **En tant qu'administrateur**, je veux voir la répartition des rappels par catégorie avec barres de progression **même hors ligne**
+- **En tant qu'administrateur**, je veux voir l'activité récente du système avec horodatage **synchronisée automatiquement**
+- **En tant qu'administrateur**, je veux recevoir des messages d'encouragement basés sur les performances **calculées localement**
+- **En tant qu'administrateur**, je veux que les données se chargent avec indicateur de progression **ultra-rapide (cache local)**
+- **En tant qu'administrateur**, je veux voir une vue d'ensemble adaptée à mon rôle d'administrateur **avec statut de synchronisation cloud**
+- **En tant qu'administrateur**, je veux voir l'indicateur de statut réseau (online/offline) **dans le header**
 
 ### 👨🏫 Enseignant - Dashboard Pédagogique (Dashboard.tsx)
 - **En tant qu'enseignant**, je veux voir uniquement les statistiques de mes rappels créés et mes classes
@@ -55,22 +65,24 @@
 ## Module Gestion Utilisateurs
 
 ### 👑 Administrateur - Liste des Utilisateurs (UsersList)
-- **En tant qu'administrateur**, je veux voir la liste complète des utilisateurs avec nom, type, contact et date de création
-- **En tant qu'administrateur**, je veux rechercher des utilisateurs par nom, prénom ou email pour trouver rapidement
-- **En tant qu'administrateur**, je veux filtrer les utilisateurs par type (Élève, Parent, Enseignant) pour une gestion ciblée
+- **En tant qu'administrateur**, je veux voir la liste complète des utilisateurs **chargée instantanément depuis IndexedDB** avec nom, type, contact et date de création
+- **En tant qu'administrateur**, je veux rechercher des utilisateurs par nom, prénom ou email **avec recherche locale ultra-rapide**
+- **En tant qu'administrateur**, je veux filtrer les utilisateurs par type (Élève, Parent, Enseignant) **avec filtrage temps réel local**
 - **En tant qu'administrateur**, je veux voir des avatars colorés avec initiales pour identifier visuellement les utilisateurs
 - **En tant qu'administrateur**, je veux voir des badges colorés pour différencier les types d'utilisateurs
-- **En tant qu'administrateur**, je veux accéder rapidement aux actions (voir, modifier, supprimer) pour chaque utilisateur
-- **En tant qu'administrateur**, je veux créer un nouvel utilisateur depuis la liste
-- **En tant qu'administrateur**, je veux voir le nombre total d'utilisateurs filtrés
+- **En tant qu'administrateur**, je veux accéder rapidement aux actions (voir, modifier, supprimer) **fonctionnant offline avec sync différée**
+- **En tant qu'administrateur**, je veux créer un nouvel utilisateur **sauvegardé localement et synchronisé automatiquement**
+- **En tant qu'administrateur**, je veux voir le nombre total d'utilisateurs filtrés **calculé en temps réel**
+- **En tant qu'administrateur**, je veux voir les opérations en attente de synchronisation **avec indicateur visuel**
 
 ### 👑 Administrateur - Création d'Utilisateur (CreateUser)
-- **En tant qu'administrateur**, je veux créer des comptes avec nom, prénom, email, téléphone et mot de passe
-- **En tant qu'administrateur**, je veux sélectionner le type d'utilisateur (Élève, Parent, Enseignant, Admin)
-- **En tant qu'administrateur**, je veux valider le format email et la longueur du mot de passe
+- **En tant qu'administrateur**, je veux créer des comptes **sauvegardés immédiatement en local** avec nom, prénom, email, téléphone et mot de passe
+- **En tant qu'administrateur**, je veux sélectionner le type d'utilisateur (Élève, Parent, Enseignant, Admin) **avec validation locale**
+- **En tant qu'administrateur**, je veux valider le format email et la longueur du mot de passe **instantanément côté client**
 - **En tant qu'administrateur**, je veux voir les champs obligatoires clairement marqués
-- **En tant qu'administrateur**, je veux être redirigé vers la liste après création réussie
-- **En tant qu'administrateur**, je veux voir des messages d'erreur clairs en cas de problème
+- **En tant qu'administrateur**, je veux être redirigé vers la liste après création réussie **même hors ligne**
+- **En tant qu'administrateur**, je veux voir des messages d'erreur clairs **pour les conflits locaux et de synchronisation**
+- **En tant qu'administrateur**, je veux que la création fonctionne offline **avec synchronisation automatique au retour en ligne**
 
 ### 👑 Administrateur - Détail d'Utilisateur (UserDetail)
 - **En tant qu'administrateur**, je veux voir toutes les informations détaillées de l'utilisateur
@@ -388,30 +400,40 @@
 ## Module Administration
 
 ### 👑 Administrateur - Gestionnaire de Données (DataManager)
-- **En tant qu'administrateur**, je veux exporter toutes les données de l'application en JSON
-- **En tant qu'administrateur**, je veux importer des données depuis un fichier JSON avec validation
-- **En tant qu'administrateur**, je veux voir les statistiques de la base de données (nombre d'enregistrements par table)
-- **En tant qu'administrateur**, je veux initialiser la base avec des données de test réalistes
+- **En tant qu'administrateur**, je veux exporter toutes les données **depuis IndexedDB local** en JSON
+- **En tant qu'administrateur**, je veux importer des données depuis un fichier JSON **avec validation et sauvegarde locale**
+- **En tant qu'administrateur**, je veux voir les statistiques **des deux bases de données** (IndexedDB local + Supabase cloud)
+- **En tant qu'administrateur**, je veux initialiser la base **locale et cloud** avec des données de test réalistes
+- **En tant qu'administrateur**, je veux synchroniser manuellement **les données locales vers le cloud**
+- **En tant qu'administrateur**, je veux résoudre les conflits **entre données locales et cloud**
 
 ### 👑 Administrateur - Statut Système (SystemStatus)
-- **En tant qu'administrateur**, je veux surveiller l'utilisation du stockage IndexedDB
-- **En tant qu'administrateur**, je veux voir les métriques de performance du système
-- **En tant qu'administrateur**, je veux vérifier l'intégrité des relations entre tables
-- **En tant qu'administrateur**, je veux voir les indicateurs de santé générale du système
+- **En tant qu'administrateur**, je veux surveiller l'utilisation du stockage **IndexedDB local et Supabase cloud**
+- **En tant qu'administrateur**, je veux voir les métriques de performance **des opérations offline et sync**
+- **En tant qu'administrateur**, je veux vérifier l'intégrité des relations **dans les deux bases de données**
+- **En tant qu'administrateur**, je veux voir les indicateurs de santé **du système hybride offline-first**
+- **En tant qu'administrateur**, je veux monitorer **le statut de synchronisation en temps réel**
+- **En tant qu'administrateur**, je veux voir **la queue des opérations en attente**
+- **En tant qu'administrateur**, je veux diagnostiquer **les problèmes de connectivité et sync**
 
 ### 👑 Administrateur - Gestionnaire de Sauvegarde (BackupManager)
-- **En tant qu'administrateur**, je veux configurer des sauvegardes automatiques (quotidienne, hebdomadaire, mensuelle)
-- **En tant qu'administrateur**, je veux créer des sauvegardes manuelles à tout moment
-- **En tant qu'administrateur**, je veux restaurer le système depuis une sauvegarde existante
-- **En tant qu'administrateur**, je veux gérer l'espace de stockage avec rotation automatique des sauvegardes
-- **En tant qu'administrateur**, je veux télécharger des sauvegardes pour stockage externe
+- **En tant qu'administrateur**, je veux configurer des sauvegardes automatiques **des données IndexedDB locales** (quotidienne, hebdomadaire, mensuelle)
+- **En tant qu'administrateur**, je veux créer des sauvegardes manuelles **complètes (local + cloud)** à tout moment
+- **En tant qu'administrateur**, je veux restaurer le système **depuis une sauvegarde locale ou cloud**
+- **En tant qu'administrateur**, je veux gérer l'espace de stockage **local avec rotation automatique**
+- **En tant qu'administrateur**, je veux télécharger des sauvegardes **JSON pour stockage externe**
+- **En tant qu'administrateur**, je veux que les sauvegardes **fonctionnent même hors ligne**
+- **En tant qu'administrateur**, je veux synchroniser les sauvegardes **avec le cloud quand disponible**
 
-### 👑 Administrateur - Gestionnaire de Synchronisation (SyncManager)
-- **En tant qu'administrateur**, je veux configurer la synchronisation avec Supabase (URL, clés API)
-- **En tant qu'administrateur**, je veux tester la connexion cloud avant activation
-- **En tant qu'administrateur**, je veux voir le statut de synchronisation en temps réel
-- **En tant qu'administrateur**, je veux gérer les conflits de synchronisation
-- **En tant qu'administrateur**, je veux voir l'historique des synchronisations réussies/échouées
+### 👑 Administrateur - Gestionnaire de Synchronisation (OfflineService)
+- **En tant qu'administrateur**, je veux configurer la synchronisation **automatique avec Supabase** (URL, clés API)
+- **En tant qu'administrateur**, je veux tester la connexion cloud **avant activation de la sync**
+- **En tant qu'administrateur**, je veux voir le statut de synchronisation **en temps réel dans l'interface**
+- **En tant qu'administrateur**, je veux gérer les conflits **avec résolution automatique ou manuelle**
+- **En tant qu'administrateur**, je veux voir l'historique **des synchronisations et opérations en attente**
+- **En tant qu'administrateur**, je veux forcer une synchronisation **complète bidirectionnelle**
+- **En tant qu'administrateur**, je veux configurer **la fréquence de synchronisation automatique**
+- **En tant qu'administrateur**, je veux voir **les métriques de performance de sync**
 
 ---
 
@@ -556,25 +578,66 @@
 
 ---
 
+## Module Offline & Synchronisation
+
+### 🔄 Service Offline (OfflineService)
+- **En tant qu'utilisateur**, je veux que toutes mes actions **fonctionnent immédiatement même hors ligne**
+- **En tant qu'utilisateur**, je veux voir **l'indicateur de statut réseau** (online/offline) dans le header
+- **En tant qu'utilisateur**, je veux que mes modifications **soient mises en queue automatiquement** quand hors ligne
+- **En tant qu'utilisateur**, je veux que la synchronisation **se fasse automatiquement** au retour en ligne
+- **En tant qu'utilisateur**, je veux voir **les opérations en attente de synchronisation**
+- **En tant qu'utilisateur**, je veux être notifié **des conflits de synchronisation**
+- **En tant qu'utilisateur**, je veux que les données **se synchronisent en temps réel** entre navigateurs
+
+### 💾 Cache Local (IndexedDBService)
+- **En tant qu'utilisateur**, je veux que mes données **soient toujours disponibles localement**
+- **En tant qu'utilisateur**, je veux des **performances ultra-rapides** pour toutes les opérations
+- **En tant qu'utilisateur**, je veux que le cache local **soit intelligent et optimisé**
+- **En tant qu'utilisateur**, je veux que les relations **soient maintenues en local**
+- **En tant qu'utilisateur**, je veux que les recherches **soient instantanées**
+- **En tant qu'utilisateur**, je veux que le stockage local **soit géré automatiquement**
+
+### ☁️ Synchronisation Cloud (Supabase)
+- **En tant qu'utilisateur**, je veux accéder à mes données **depuis plusieurs appareils**
+- **En tant qu'utilisateur**, je veux que mes données **soient sauvegardées dans le cloud**
+- **En tant qu'utilisateur**, je veux collaborer **en temps réel avec d'autres utilisateurs**
+- **En tant qu'utilisateur**, je veux que la synchronisation **soit transparente et automatique**
+- **En tant qu'utilisateur**, je veux être informé **des mises à jour d'autres utilisateurs**
+- **En tant qu'utilisateur**, je veux que mes données **soient sécurisées dans le cloud**
+
+### 📱 Indicateur Offline (OfflineIndicator)
+- **En tant qu'utilisateur**, je veux voir **clairement mon statut de connexion**
+- **En tant qu'utilisateur**, je veux voir **le nombre d'opérations en attente**
+- **En tant qu'utilisateur**, je veux voir **l'état de la synchronisation**
+- **En tant qu'utilisateur**, je veux être alerté **des problèmes de connexion**
+- **En tant qu'utilisateur**, je veux pouvoir **forcer une synchronisation manuelle**
+
+---
+
 ## Stories Transversales
 
 ### Authentification et Sécurité
-- **En tant qu'utilisateur**, je veux me connecter de manière sécurisée via Supabase pour accéder à mes données
-- **En tant qu'utilisateur**, je veux me déconnecter pour protéger ma session
-- **En tant qu'utilisateur**, je veux que mes données soient sécurisées dans le cloud Supabase
-- **En tant qu'utilisateur**, je veux récupérer mon mot de passe via l'administrateur
+- **En tant qu'utilisateur**, je veux me connecter de manière sécurisée **avec authentification hybride locale/cloud**
+- **En tant qu'utilisateur**, je veux me déconnecter pour protéger ma session **avec nettoyage du cache local**
+- **En tant qu'utilisateur**, je veux que mes données soient sécurisées **localement et dans le cloud Supabase**
+- **En tant qu'utilisateur**, je veux récupérer mon mot de passe via l'administrateur **même hors ligne**
+- **En tant qu'utilisateur**, je veux que mes permissions **soient respectées offline et online**
 
 ### Interface et Expérience Utilisateur
-- **En tant qu'utilisateur**, je veux une interface adaptée à mon appareil (mobile/desktop)
-- **En tant qu'utilisateur**, je veux choisir entre le thème clair et sombre selon mes préférences
-- **En tant qu'utilisateur**, je veux naviguer facilement dans l'application
-- **En tant qu'utilisateur**, je veux recevoir des confirmations pour les actions importantes
+- **En tant qu'utilisateur**, je veux une interface adaptée à mon appareil **avec performance offline optimale**
+- **En tant qu'utilisateur**, je veux choisir entre le thème clair et sombre **sauvegardé localement**
+- **En tant qu'utilisateur**, je veux naviguer facilement **même sans connexion internet**
+- **En tant qu'utilisateur**, je veux recevoir des confirmations **pour les actions importantes et la synchronisation**
+- **En tant qu'utilisateur**, je veux voir **l'état de synchronisation de mes actions**
+- **En tant qu'utilisateur**, je veux une **expérience fluide identique online/offline**
 
 ### Notifications et Rappels
-- **En tant qu'utilisateur**, je veux recevoir des notifications cross-browser générées automatiquement depuis les rappels
-- **En tant qu'utilisateur**, je veux que les notifications soient synchronisées en temps réel via Supabase
-- **En tant qu'utilisateur**, je veux voir l'historique de mes notifications dans le centre de notifications
-- **En tant qu'utilisateur**, je veux tester les notifications pour vérifier qu'elles fonctionnent
+- **En tant qu'utilisateur**, je veux recevoir des notifications **générées localement et synchronisées** cross-browser
+- **En tant qu'utilisateur**, je veux que les notifications **fonctionnent même hors ligne** via Service Worker
+- **En tant qu'utilisateur**, je veux voir l'historique **complet local et synchronisé** dans le centre de notifications
+- **En tant qu'utilisateur**, je veux tester les notifications **avec système offline-first**
+- **En tant qu'utilisateur**, je veux que les notifications **se synchronisent automatiquement** entre appareils
+- **En tant qu'utilisateur**, je veux que le planificateur **fonctionne en mode offline**
 - **En tant qu'utilisateur**, je veux que les notifications fonctionnent sur tous mes appareils connectés
 
 ### Performance et Fiabilité

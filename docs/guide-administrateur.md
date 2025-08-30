@@ -13,15 +13,16 @@
 
 ## Vue d'Ensemble
 
-En tant qu'administrateur de l'Application GAI Rappels d'Hygiène, vous disposez d'un accès complet à toutes les fonctionnalités du système. Ce guide détaille vos responsabilités et les outils à votre disposition.
+En tant qu'administrateur de l'Application GAI Rappels d'Hygiène, vous disposez d'un accès complet à toutes les fonctionnalités du système hybride offline-first. Ce guide détaille vos responsabilités et les outils à votre disposition.
 
 ### Responsabilités Principales
 - Gestion complète des comptes utilisateurs
-- Administration de la base de données
+- Administration de la base de données hybride (IndexedDB + Supabase)
 - Configuration des sauvegardes automatiques
-- Monitoring des performances système
+- Monitoring des performances système et synchronisation
 - Maintenance et mises à jour
 - Support utilisateur de niveau 2
+- Gestion de la synchronisation offline/online
 
 ### Accès Administrateur
 - **Email** : `admin@gai.cd`
@@ -145,16 +146,18 @@ permissions: {
 Accédez via **Administration > Base de données** pour :
 
 #### Gestionnaire de Données (DataManager)
-- **Export complet** : Téléchargement de toutes les données en JSON depuis Supabase
-- **Import de données** : Import vers Supabase depuis un fichier JSON
+- **Export complet** : Téléchargement de toutes les données en JSON (IndexedDB + Supabase)
+- **Import de données** : Import vers IndexedDB et synchronisation Supabase
 - **Validation** : Vérification de l'intégrité des données importées
-- **Statistiques** : Vue d'ensemble des données stockées dans le cloud
+- **Statistiques** : Vue d'ensemble des données locales et cloud
 
 #### Statut Système (SystemStatus)
+- **Statut IndexedDB** : État du stockage local
 - **Connexion Supabase** : État de la connexion cloud
-- **Performance** : Temps de réponse des requêtes Supabase
+- **Synchronisation** : Statut des opérations en attente
+- **Performance** : Temps de réponse local vs cloud
 - **Intégrité** : Vérification des relations entre tables
-- **Santé générale** : Indicateurs de bon fonctionnement du système
+- **Santé générale** : Indicateurs offline-first + cloud sync
 
 ### Structure de la Base de Données Supabase
 
@@ -232,17 +235,19 @@ CREATE TABLE notifications (
 );
 ```
 
-### Maintenance de la Base de Données
+### Maintenance de la Base de Données Hybride
 
 #### Nettoyage Périodique
-- **Notifications anciennes** : Suppression automatique après 30 jours via Supabase
+- **Notifications anciennes** : Suppression automatique IndexedDB + Supabase
+- **Opérations en attente** : Nettoyage des opérations synchronisées
+- **Cache local** : Optimisation de l'espace IndexedDB
 - **Logs système** : Gestion via Supabase Dashboard
-- **Cache navigateur** : Nettoyage des données temporaires locales
 
 #### Optimisation des Performances
-- **Index Supabase** : Optimisation des requêtes PostgreSQL
-- **Requêtes** : Utilisation efficace de l'API Supabase
-- **Cache** : Mise en cache intelligente côté client
+- **IndexedDB** : Optimisation des index locaux
+- **Supabase** : Optimisation des requêtes PostgreSQL
+- **Synchronisation** : Gestion intelligente des conflits
+- **Cache hybride** : Stratégie offline-first optimisée
 
 ---
 
@@ -299,36 +304,44 @@ backupConfig: {
 
 ## Synchronisation Cloud
 
-### Configuration Supabase
+### Architecture Hybride Offline-First
+
+#### Configuration Automatique
+L'application utilise automatiquement :
+- **IndexedDB** : Stockage local principal (offline-first)
+- **Supabase** : Synchronisation cloud automatique
+- **File d'attente** : Opérations en attente de synchronisation
 
 #### Paramètres de Connexion
-Accédez via **Administration > Gestionnaire de Synchronisation**
-
 ```typescript
-supabaseConfig: {
-  url: string // URL de votre instance Supabase
-  anonKey: string // Clé publique Supabase
-  serviceRoleKey: string // Clé de service (admin)
+offlineConfig: {
+  indexedDBEnabled: true,
+  supabaseURL: string,
+  supabaseKey: string,
+  syncInterval: number, // Intervalle de synchronisation
+  offlineMode: boolean // Mode hors ligne forcé
 }
 ```
 
-#### Activation de la Synchronisation
-1. **Configuration** : Saisie des paramètres Supabase
-2. **Test de connexion** : Vérification de la connectivité
-3. **Synchronisation initiale** : Upload des données locales
-4. **Activation** : Démarrage de la sync bidirectionnelle
+#### Processus de Synchronisation
+1. **Opérations locales** : Toujours exécutées en premier
+2. **File d'attente** : Opérations mises en queue si hors ligne
+3. **Synchronisation auto** : Dès que la connexion est rétablie
+4. **Résolution conflits** : Priorité aux données locales
 
-### Gestion des Conflits
+### Gestion Offline-First
 
-#### Stratégies de Résolution
-- **Local First** : Priorité aux données locales en cas de conflit
-- **Timestamp** : Résolution basée sur la date de modification
-- **Manuel** : Interface de résolution manuelle des conflits
+#### Stratégies de Fonctionnement
+- **Offline-First** : Toutes les opérations fonctionnent hors ligne
+- **Synchronisation transparente** : Sync automatique en arrière-plan
+- **File d'attente intelligente** : Opérations mises en queue automatiquement
+- **Résilience** : Aucune interruption de service
 
 #### Monitoring de la Synchronisation
-- **Statut en temps réel** : Indicateur de connexion cloud
+- **Indicateur de statut** : En ligne/Hors ligne dans l'interface
+- **Opérations en attente** : Nombre d'opérations à synchroniser
 - **Historique des syncs** : Log des synchronisations réussies/échouées
-- **Métriques** : Nombre d'enregistrements synchronisés
+- **Métriques hybrides** : Performance locale vs cloud
 
 ### Sécurité Cloud
 
@@ -387,14 +400,15 @@ supabaseConfig: {
 **Lenteur de l'Application**
 ```bash
 # Diagnostic
-1. Vérifier l'utilisation du stockage
-2. Analyser les requêtes lentes
+1. Vérifier l'utilisation IndexedDB
+2. Analyser les opérations en attente
 3. Nettoyer le cache navigateur
-4. Optimiser les index de base de données
+4. Optimiser les index locaux et cloud
 
 # Solutions
-- Nettoyage des données anciennes
-- Optimisation des requêtes
+- Nettoyage des données anciennes (local + cloud)
+- Optimisation des requêtes hybrides
+- Synchronisation manuelle forcée
 - Mise à jour du navigateur
 ```
 
@@ -403,13 +417,14 @@ supabaseConfig: {
 # Diagnostic
 1. Vérifier la connectivité internet
 2. Contrôler les paramètres Supabase
-3. Analyser les logs d'erreur
-4. Tester l'authentification
+3. Analyser la file d'attente des opérations
+4. Vérifier l'intégrité IndexedDB
 
 # Solutions
-- Reconfiguration des paramètres
-- Réinitialisation de la connexion
-- Synchronisation manuelle
+- Les opérations continuent hors ligne
+- Synchronisation automatique au retour en ligne
+- Nettoyage de la file d'attente si nécessaire
+- Réinitialisation IndexedDB en dernier recours
 ```
 
 **Corruption de Données**

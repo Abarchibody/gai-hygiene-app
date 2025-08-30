@@ -6,7 +6,7 @@
 3. [Configuration Production](#configuration-production)
 4. [Déploiement](#déploiement)
 5. [Configuration PWA](#configuration-pwa)
-6. [Synchronisation Cloud](#synchronisation-cloud)
+6. [Architecture Hybride Offline-First](#architecture-hybride-offline-first)
 7. [Maintenance](#maintenance)
 
 ---
@@ -43,10 +43,15 @@ git --version
 - **Compression** : Gzip/Brotli recommandé
 
 #### Navigateurs Supportés
-- **Chrome** : 90+
-- **Firefox** : 88+
-- **Safari** : 14+
-- **Edge** : 90+
+- **Chrome** : 90+ (IndexedDB + Service Worker)
+- **Firefox** : 88+ (IndexedDB + Service Worker)
+- **Safari** : 14+ (IndexedDB + Service Worker)
+- **Edge** : 90+ (IndexedDB + Service Worker)
+
+#### Support Offline
+- **IndexedDB** : Stockage local pour fonctionnement hors ligne
+- **Service Worker** : Cache et notifications en arrière-plan
+- **PWA** : Installation et fonctionnement comme app native
 
 ---
 
@@ -386,8 +391,10 @@ Le fichier `public/manifest.json` est automatiquement généré :
 
 Le Service Worker est automatiquement configuré pour :
 - **Cache offline** : Mise en cache des ressources statiques
-- **Notifications** : Gestion des notifications push
+- **Notifications** : Gestion des notifications push offline
+- **Synchronisation** : Gestion des opérations en attente
 - **Mise à jour** : Gestion des mises à jour de l'application
+- **IndexedDB** : Accès aux données locales en arrière-plan
 
 ### 3. Installation PWA
 
@@ -403,9 +410,16 @@ Le Service Worker est automatiquement configuré pour :
 
 ---
 
-## Synchronisation Cloud
+## Architecture Hybride Offline-First
 
-### 1. Configuration Supabase
+### 1. Vue d'Ensemble
+
+L'application utilise une architecture hybride :
+- **IndexedDB** : Stockage local principal (offline-first)
+- **Supabase** : Synchronisation cloud automatique
+- **File d'attente** : Opérations en attente de synchronisation
+
+### 2. Configuration Supabase (Optionnelle)
 
 #### Création du Projet Supabase
 1. Créer un compte sur [supabase.com](https://supabase.com)
@@ -424,21 +438,15 @@ ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reminders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reminder_assignments ENABLE ROW LEVEL SECURITY;
 
--- Politiques de sécurité (exemples)
-CREATE POLICY "Users can view own data" ON users
-  FOR SELECT USING (auth.uid()::text = id::text);
-
-CREATE POLICY "Admins can manage all data" ON users
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM users 
-      WHERE id::text = auth.uid()::text 
-      AND type_utilisateur = 'Admin'
-    )
-  );
+-- Politique simple pour démarrage rapide
+CREATE POLICY "Enable all operations" ON users FOR ALL USING (true);
+CREATE POLICY "Enable all operations" ON classes FOR ALL USING (true);
+CREATE POLICY "Enable all operations" ON students FOR ALL USING (true);
+CREATE POLICY "Enable all operations" ON reminders FOR ALL USING (true);
+CREATE POLICY "Enable all operations" ON reminder_assignments FOR ALL USING (true);
 ```
 
-### 2. Configuration de l'Application
+### 3. Configuration de l'Application
 
 #### Variables d'Environnement
 ```bash
@@ -447,12 +455,27 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-#### Configuration Automatique
-L'application utilise directement Supabase comme base de données principale :
-1. Toutes les données sont stockées dans Supabase
-2. Authentification gérée par les services
-3. Synchronisation temps réel automatique
-4. Pas de configuration supplémentaire requise
+#### Fonctionnement Automatique
+L'application fonctionne automatiquement :
+1. **Offline-First** : Toutes les opérations fonctionnent hors ligne
+2. **IndexedDB** : Stockage local automatiquement initialisé
+3. **Synchronisation** : Automatique quand Supabase est configuré
+4. **File d'attente** : Opérations mises en queue si hors ligne
+5. **Résilience** : Aucune interruption de service
+
+### 4. Avantages de l'Architecture
+
+#### Offline-First
+- **Fonctionnement complet hors ligne**
+- **Réponse instantanée** (données locales)
+- **Aucune interruption** de service
+- **Synchronisation transparente** en arrière-plan
+
+#### Cloud Sync (Optionnel)
+- **Multi-appareils** : Synchronisation entre appareils
+- **Sauvegarde cloud** : Protection des données
+- **Collaboration** : Partage en temps réel
+- **Scalabilité** : Gestion de grandes quantités de données
 
 ---
 
@@ -563,6 +586,23 @@ curl -I https://votre-domaine.com/sw.js
 curl https://your-project.supabase.co/rest/v1/
 
 # Vérifier les clés API dans la configuration
+
+# Note: L'application continue de fonctionner hors ligne
+# Les opérations sont mises en queue automatiquement
+```
+
+**Problèmes IndexedDB**
+```bash
+# Diagnostic
+1. Vérifier le support IndexedDB du navigateur
+2. Contrôler l'espace de stockage disponible
+3. Analyser les erreurs de quota
+4. Tester la création de base de données
+
+# Solutions
+- Nettoyage des données anciennes
+- Augmentation du quota navigateur
+- Réinitialisation IndexedDB si nécessaire
 ```
 
 ---
@@ -576,8 +616,11 @@ Ce guide d'installation vous fournit toutes les informations nécessaires pour d
 - [ ] Build de production créé
 - [ ] Serveur web configuré (HTTPS)
 - [ ] PWA fonctionnelle
+- [ ] IndexedDB fonctionnel (offline-first)
+- [ ] Service Worker actif
 - [ ] Synchronisation cloud configurée (optionnel)
-- [ ] Sauvegardes automatiques activées
+- [ ] File d'attente opérationnelle
+- [ ] Tests offline/online réussis
 - [ ] Monitoring en place
 
 ### 🔧 Maintenance Régulière

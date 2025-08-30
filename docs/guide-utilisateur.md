@@ -14,21 +14,22 @@
 
 ## Introduction
 
-L'Application GAI Rappels d'Hygiène est une solution moderne développée pour automatiser et améliorer les pratiques d'hygiène au Complexe Scolaire GAI. Cette application web progressive (PWA) utilise une architecture cloud-first avec Supabase pour une synchronisation en temps réel entre tous les appareils.
+L'Application GAI Rappels d'Hygiène est une solution moderne développée pour automatiser et améliorer les pratiques d'hygiène au Complexe Scolaire GAI. Cette application web progressive (PWA) utilise une architecture hybride offline-first avec synchronisation cloud Supabase pour une expérience optimale.
 
 ### Objectifs
 - Automatiser les rappels d'hygiène quotidiens
 - Améliorer le suivi des pratiques d'hygiène
 - Faciliter la communication entre enseignants, parents et élèves
 - Fournir des rapports et statistiques détaillés
-- Synchroniser les données en temps réel entre appareils
+- Fonctionner parfaitement hors ligne avec synchronisation automatique
 
 ### Avantages
-- **Synchronisation cloud** : Données partagées en temps réel via Supabase
-- **Multi-appareils** : Accès depuis n'importe quel navigateur
+- **Offline-First** : Fonctionne complètement hors ligne avec IndexedDB
+- **Synchronisation cloud** : Sync automatique avec Supabase quand en ligne
+- **Multi-appareils** : Données synchronisées entre tous vos appareils
 - **Interface moderne** : Design responsive adapté mobile/desktop
 - **Notifications automatiques** : Rappels programmés intelligents cross-browser
-- **Sécurité** : Authentification et permissions par rôle
+- **Résilience** : Aucune interruption de service même sans internet
 
 ---
 
@@ -473,10 +474,10 @@ R:
 3. Saisissez l'ancien et le nouveau mot de passe
 
 #### **Q: L'application fonctionne-t-elle sans internet ?**
-R: L'application nécessite une connexion internet pour accéder aux données Supabase. Cependant, les notifications peuvent fonctionner temporairement hors ligne grâce au Service Worker.
+R: Oui, parfaitement ! L'application utilise une architecture offline-first avec IndexedDB. Toutes les fonctionnalités (CRUD, notifications, rapports) fonctionnent hors ligne. Les données se synchronisent automatiquement avec Supabase dès que la connexion est rétablie.
 
 #### **Q: Comment sauvegarder mes données ?**
-R: Les sauvegardes automatiques sont configurées par défaut. Pour une sauvegarde manuelle, utilisez la fonction Export dans l'administration.
+R: Vos données sont automatiquement sauvegardées localement dans IndexedDB et synchronisées avec Supabase cloud. Pour une sauvegarde manuelle, utilisez la fonction Export JSON dans l'administration.
 
 ### Problèmes Courants
 
@@ -506,9 +507,10 @@ R: Les sauvegardes automatiques sont configurées par défaut. Pour une sauvegar
 - **Communauté** : Partagez vos expériences avec les autres utilisateurs
 
 #### Informations Système
-- **Version** : React 19 + TypeScript + Supabase
+- **Version** : React 19 + TypeScript + IndexedDB + Supabase
 - **Navigateurs supportés** : Chrome 90+, Firefox 88+, Safari 14+
-- **Stockage** : Supabase PostgreSQL cloud
+- **Stockage** : IndexedDB local + Supabase PostgreSQL cloud (hybride)
+- **Architecture** : Offline-first avec synchronisation automatique
 - **Sécurité** : Authentification par rôle, données chiffrées en transit
 
 ---
