@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Suite de tests End-to-End organisée en modules pour valider toutes les fonctionnalités de l'application GAI Hygiène avec Playwright.
+Suite de tests End-to-End organisée en modules pour valider toutes les fonctionnalités de l'application GAI Hygiène avec Playwright. Tests adaptés à l'architecture Supabase cloud-first.
 
 ## Architecture des Tests
 
@@ -43,14 +43,17 @@ npm run test:e2e
 - Créer Enseignant (Pierre Kabongo)
 - Créer Parent (Marie Mukendi)
 - Créer Élève (Jean Mukendi)
+- Validation synchronisation Supabase
 
 ### 🏫 Phase 3: Classes
 - Créer Classe "6ème Primaire A"
 - Assigner enseignant responsable
+- Vérifier données dans Supabase
 
 ### 🔔 Phase 4: Rappels
 - Créer rappel "Lavage des mains avant le repas"
 - Configuration récurrence quotidienne
+- Test génération notifications automatiques
 
 ### ✅ Phase 5: Validation
 - Vérification statistiques dashboard
@@ -81,12 +84,13 @@ npm run test:e2e
 📈 Taux: 100%
 
 🎉 FLUX UTILISATEUR COMPLET RÉUSSI !
-📄 Données créées:
+📄 Données créées (Supabase):
    👨🏫 Enseignant: Pierre Kabongo
    👨👩👧👦 Parent: Marie Mukendi
    🎓 Élève: Jean Mukendi
    🏫 Classe: 6ème Primaire A
    🔔 Rappel: Lavage des mains avant le repas
+   📬 Notifications: Générées automatiquement
 ```
 
 ## Avantages de l'Architecture Modulaire

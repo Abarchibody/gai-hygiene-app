@@ -82,7 +82,7 @@ touch .env
 # Contenu du fichier .env
 VITE_APP_NAME="GAI Rappels d'Hygiène"
 VITE_APP_VERSION="1.0.0"
-VITE_SUPABASE_URL="your-supabase-url"
+VITE_SUPABASE_URL="https://your-project.supabase.co"
 VITE_SUPABASE_ANON_KEY="your-supabase-anon-key"
 ```
 
@@ -447,12 +447,12 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-#### Activation dans l'Interface
-1. Connexion en tant qu'administrateur
-2. Administration → Gestionnaire de Synchronisation
-3. Saisie des paramètres Supabase
-4. Test de connexion
-5. Activation de la synchronisation
+#### Configuration Automatique
+L'application utilise directement Supabase comme base de données principale :
+1. Toutes les données sont stockées dans Supabase
+2. Authentification gérée par les services
+3. Synchronisation temps réel automatique
+4. Pas de configuration supplémentaire requise
 
 ---
 

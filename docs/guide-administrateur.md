@@ -25,7 +25,7 @@ En tant qu'administrateur de l'Application GAI Rappels d'Hygiène, vous disposez
 
 ### Accès Administrateur
 - **Email** : `admin@gai.cd`
-- **Mot de passe** : `admin123`
+- **Mot de passe** : `admin`
 - **Permissions** : Accès complet (canAccessAdmin: true)
 
 ---
@@ -145,87 +145,104 @@ permissions: {
 Accédez via **Administration > Base de données** pour :
 
 #### Gestionnaire de Données (DataManager)
-- **Export complet** : Téléchargement de toutes les données en JSON
-- **Import de données** : Restauration depuis un fichier JSON
+- **Export complet** : Téléchargement de toutes les données en JSON depuis Supabase
+- **Import de données** : Import vers Supabase depuis un fichier JSON
 - **Validation** : Vérification de l'intégrité des données importées
-- **Statistiques** : Vue d'ensemble des données stockées
+- **Statistiques** : Vue d'ensemble des données stockées dans le cloud
 
 #### Statut Système (SystemStatus)
-- **Utilisation du stockage** : Espace occupé par IndexedDB
-- **Performance** : Temps de réponse des requêtes
+- **Connexion Supabase** : État de la connexion cloud
+- **Performance** : Temps de réponse des requêtes Supabase
 - **Intégrité** : Vérification des relations entre tables
-- **Santé générale** : Indicateurs de bon fonctionnement
+- **Santé générale** : Indicateurs de bon fonctionnement du système
 
-### Structure de la Base de Données
+### Structure de la Base de Données Supabase
 
-#### Tables Principales
-```typescript
-// Utilisateurs
-users: {
-  id: number (auto-increment)
-  nom: string
-  prenom: string
-  email: string (unique)
-  telephone?: string
-  type_utilisateur: 'Élève' | 'Parent' | 'Enseignant'
-  password_hash: string
-  created_at: Date
-  updated_at: Date
-}
+#### Tables Principales (PostgreSQL)
+```sql
+-- Utilisateurs
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  nom VARCHAR NOT NULL,
+  prenom VARCHAR NOT NULL,
+  email VARCHAR UNIQUE NOT NULL,
+  telephone VARCHAR,
+  password VARCHAR NOT NULL,
+  type_utilisateur VARCHAR CHECK (type_utilisateur IN ('Élève', 'Parent', 'Enseignant', 'Admin')),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
 
-// Classes
-classes: {
-  id: number (auto-increment)
-  nom_classe: string
-  niveau: string
-  enseignant_id: number (FK users)
-  created_at: Date
-  updated_at: Date
-}
+-- Classes
+CREATE TABLE classes (
+  id SERIAL PRIMARY KEY,
+  nom_classe VARCHAR NOT NULL,
+  niveau VARCHAR NOT NULL,
+  enseignant_id INTEGER REFERENCES users(id),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
 
-// Relations élève-classe-parent
-students: {
-  id: number (auto-increment)
-  utilisateur_id: number (FK users)
-  classe_id: number (FK classes)
-  parent_id: number (FK users)
-  created_at: Date
-}
+-- Relations élève-classe-parent
+CREATE TABLE students (
+  id SERIAL PRIMARY KEY,
+  utilisateur_id INTEGER REFERENCES users(id),
+  classe_id INTEGER REFERENCES classes(id),
+  parent_id INTEGER REFERENCES users(id),
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
-// Rappels d'hygiène
-reminders: {
-  id: number (auto-increment)
-  titre: string
-  description?: string
-  categorie: 'Lavage mains' | 'Brossage dents' | 'Hygiène corporelle' | 'Personnalisé'
-  recurrence: 'Quotidien' | 'Hebdomadaire' | 'Mensuel' | 'Unique'
-  date_debut: Date
-  heure: string
-  statut: 'Actif' | 'Inactif' | 'Terminé'
-  createur_id: number (FK users)
-  created_at: Date
-}
+-- Rappels d'hygiène
+CREATE TABLE reminders (
+  id SERIAL PRIMARY KEY,
+  titre VARCHAR NOT NULL,
+  description TEXT,
+  categorie VARCHAR CHECK (categorie IN ('Lavage mains', 'Brossage dents', 'Hygiène corporelle', 'Personnalisé')),
+  recurrence VARCHAR CHECK (recurrence IN ('Quotidien', 'Hebdomadaire', 'Mensuel', 'Unique')),
+  date_debut DATE NOT NULL,
+  heure TIME NOT NULL,
+  statut VARCHAR CHECK (statut IN ('Actif', 'Inactif', 'Terminé')),
+  createur_id INTEGER REFERENCES users(id),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
 
-// Assignations de rappels
-reminderAssignments: {
-  id: number (auto-increment)
-  rappel_id: number (FK reminders)
-  utilisateur_id: number (FK users)
-  created_at: Date
-}
+-- Assignations de rappels
+CREATE TABLE reminder_assignments (
+  id SERIAL PRIMARY KEY,
+  rappel_id INTEGER REFERENCES reminders(id),
+  utilisateur_id INTEGER REFERENCES users(id),
+  classe_id INTEGER REFERENCES classes(id),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Notifications
+CREATE TABLE notifications (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR NOT NULL,
+  message TEXT NOT NULL,
+  type VARCHAR DEFAULT 'reminder',
+  status VARCHAR DEFAULT 'pending',
+  recipient_id INTEGER REFERENCES users(id),
+  reminder_id INTEGER REFERENCES reminders(id),
+  scheduled_at TIMESTAMP NOT NULL,
+  sent_at TIMESTAMP,
+  read_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
 ### Maintenance de la Base de Données
 
 #### Nettoyage Périodique
-- **Notifications anciennes** : Suppression automatique après 30 jours
-- **Logs système** : Rotation des fichiers de log
-- **Cache obsolète** : Nettoyage des données temporaires
+- **Notifications anciennes** : Suppression automatique après 30 jours via Supabase
+- **Logs système** : Gestion via Supabase Dashboard
+- **Cache navigateur** : Nettoyage des données temporaires locales
 
 #### Optimisation des Performances
-- **Indexation** : Vérification des index sur les clés étrangères
-- **Requêtes** : Optimisation des jointures complexes
-- **Stockage** : Compression des données anciennes
+- **Index Supabase** : Optimisation des requêtes PostgreSQL
+- **Requêtes** : Utilisation efficace de l'API Supabase
+- **Cache** : Mise en cache intelligente côté client
 
 ---
 

@@ -504,7 +504,7 @@
 ## Module Authentification & Profil
 
 ### 🔐 Connexion (Login.tsx)
-- **En tant qu'utilisateur**, je veux me connecter avec email et mot de passe de manière sécurisée
+- **En tant qu'utilisateur**, je veux me connecter avec email et mot de passe via Supabase de manière sécurisée
 - **En tant qu'utilisateur**, je veux voir/masquer mon mot de passe avec une icône d'œil
 - **En tant qu'utilisateur**, je veux voir des messages d'erreur clairs en cas d'échec de connexion
 - **En tant qu'utilisateur**, je veux voir un indicateur de chargement pendant la connexion
@@ -512,6 +512,7 @@
 - **En tant qu'utilisateur**, je veux voir le logo et la description de l'application GAI
 - **En tant qu'utilisateur**, je veux être redirigé vers le tableau de bord après connexion réussie
 - **En tant qu'utilisateur**, je veux que la page de connexion soit responsive (mobile/desktop)
+- **En tant qu'utilisateur**, je veux que ma session soit persistée dans localStorage
 
 ### 👤 Profil Utilisateur (ProfilePage.tsx)
 - **En tant qu'utilisateur**, je veux voir mes informations personnelles (nom, prénom, email, type)
@@ -558,10 +559,10 @@
 ## Stories Transversales
 
 ### Authentification et Sécurité
-- **En tant qu'utilisateur**, je veux me connecter de manière sécurisée pour accéder à mes données
+- **En tant qu'utilisateur**, je veux me connecter de manière sécurisée via Supabase pour accéder à mes données
 - **En tant qu'utilisateur**, je veux me déconnecter pour protéger ma session
-- **En tant qu'utilisateur**, je veux que mes données restent privées et locales
-- **En tant qu'utilisateur**, je veux récupérer mon mot de passe en cas d'oubli
+- **En tant qu'utilisateur**, je veux que mes données soient sécurisées dans le cloud Supabase
+- **En tant qu'utilisateur**, je veux récupérer mon mot de passe via l'administrateur
 
 ### Interface et Expérience Utilisateur
 - **En tant qu'utilisateur**, je veux une interface adaptée à mon appareil (mobile/desktop)
@@ -570,16 +571,17 @@
 - **En tant qu'utilisateur**, je veux recevoir des confirmations pour les actions importantes
 
 ### Notifications et Rappels
-- **En tant qu'utilisateur**, je veux recevoir des notifications même quand l'application est fermée
-- **En tant qu'utilisateur**, je veux personnaliser mes préférences de notification
-- **En tant qu'utilisateur**, je veux voir l'historique de mes notifications
+- **En tant qu'utilisateur**, je veux recevoir des notifications cross-browser générées automatiquement depuis les rappels
+- **En tant qu'utilisateur**, je veux que les notifications soient synchronisées en temps réel via Supabase
+- **En tant qu'utilisateur**, je veux voir l'historique de mes notifications dans le centre de notifications
 - **En tant qu'utilisateur**, je veux tester les notifications pour vérifier qu'elles fonctionnent
+- **En tant qu'utilisateur**, je veux que les notifications fonctionnent sur tous mes appareils connectés
 
 ### Performance et Fiabilité
-- **En tant qu'utilisateur**, je veux que l'application fonctionne hors ligne
+- **En tant qu'utilisateur**, je veux que l'application fonctionne avec une connexion internet pour accéder aux données Supabase
 - **En tant qu'utilisateur**, je veux que l'application se charge rapidement
-- **En tant qu'utilisateur**, je veux que mes données soient sauvegardées automatiquement
-- **En tant qu'utilisateur**, je veux pouvoir installer l'application sur mon appareil
+- **En tant qu'utilisateur**, je veux que mes données soient sauvegardées automatiquement dans Supabase
+- **En tant qu'utilisateur**, je veux pouvoir installer l'application PWA sur mon appareil
 
 ### Accessibilité et Inclusion
 - **En tant qu'utilisateur malvoyant**, je veux que l'application soit compatible avec les lecteurs d'écran
@@ -588,10 +590,10 @@
 - **En tant qu'utilisateur débutant**, je veux des guides et de l'aide contextuelle
 
 ### Données et Synchronisation
-- **En tant qu'utilisateur**, je veux exporter mes données personnelles
-- **En tant qu'utilisateur**, je veux synchroniser mes données entre plusieurs appareils
-- **En tant qu'utilisateur**, je veux restaurer mes données en cas de problème
-- **En tant qu'utilisateur**, je veux contrôler quelles données sont synchronisées
+- **En tant qu'utilisateur**, je veux exporter mes données personnelles depuis Supabase
+- **En tant qu'utilisateur**, je veux que mes données soient automatiquement synchronisées entre tous mes appareils
+- **En tant qu'utilisateur**, je veux accéder à mes données depuis n'importe quel navigateur
+- **En tant qu'utilisateur**, je veux que toutes mes données soient stockées de manière sécurisée dans le cloud
 
 ---
 

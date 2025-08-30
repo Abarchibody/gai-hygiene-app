@@ -14,19 +14,21 @@
 
 ## Introduction
 
-L'Application GAI Rappels d'Hygiène est une solution moderne développée pour automatiser et améliorer les pratiques d'hygiène au Complexe Scolaire GAI. Cette application web progressive (PWA) fonctionne entièrement hors ligne et permet de gérer efficacement les rappels d'hygiène pour tous les membres de la communauté scolaire.
+L'Application GAI Rappels d'Hygiène est une solution moderne développée pour automatiser et améliorer les pratiques d'hygiène au Complexe Scolaire GAI. Cette application web progressive (PWA) utilise une architecture cloud-first avec Supabase pour une synchronisation en temps réel entre tous les appareils.
 
 ### Objectifs
 - Automatiser les rappels d'hygiène quotidiens
 - Améliorer le suivi des pratiques d'hygiène
 - Faciliter la communication entre enseignants, parents et élèves
 - Fournir des rapports et statistiques détaillés
+- Synchroniser les données en temps réel entre appareils
 
 ### Avantages
-- **100% Hors ligne** : Fonctionne sans connexion internet
-- **Données privées** : Toutes les données restent locales
+- **Synchronisation cloud** : Données partagées en temps réel via Supabase
+- **Multi-appareils** : Accès depuis n'importe quel navigateur
 - **Interface moderne** : Design responsive adapté mobile/desktop
-- **Notifications automatiques** : Rappels programmés intelligents
+- **Notifications automatiques** : Rappels programmés intelligents cross-browser
+- **Sécurité** : Authentification et permissions par rôle
 
 ---
 
@@ -46,19 +48,19 @@ Pour découvrir l'application, utilisez ces comptes de démonstration :
 
 **Administrateur :**
 - Email : `admin@gai.cd`
-- Mot de passe : `admin123`
+- Mot de passe : `admin`
 
 **Enseignant :**
-- Email : `marie.mukendi@gai.cd`
-- Mot de passe : `teacher123`
+- Email : `jp.mukendi@gai.cd`
+- Mot de passe : `Password123!`
 
 **Parent :**
-- Email : `jean.kabongo@gmail.com`
-- Mot de passe : `parent123`
+- Email : `f.mbuyi@gai.cd`
+- Mot de passe : `Password123!`
 
 **Élève :**
-- Email : `grace.mukendi@gai.cd`
-- Mot de passe : `student123`
+- Email : `grace.mbuyi@gai.cd`
+- Mot de passe : `Password123!`
 
 ---
 
@@ -219,11 +221,17 @@ L'application s'adapte automatiquement :
 - **Événements** : Activités spéciales et sensibilisation
 - **Administratives** : Messages du système
 
+#### Système Cross-Browser
+- **Génération automatique** : Notifications créées depuis les rappels actifs
+- **Multi-appareils** : Visibles sur tous les navigateurs connectés
+- **Temps réel** : Synchronisation instantanée via Supabase
+
 #### Gestion
 - **Historique complet** : 50 dernières notifications
 - **Statuts** : En attente, Envoyée, Lue, Échec
 - **Test manuel** : Envoi de notifications de test
 - **Statistiques** : Taux de réussite et engagement
+- **Permissions** : Autorisation navigateur requise
 
 ### 📅 Programmation d'Événements
 
@@ -465,7 +473,7 @@ R:
 3. Saisissez l'ancien et le nouveau mot de passe
 
 #### **Q: L'application fonctionne-t-elle sans internet ?**
-R: Oui, complètement ! L'application est conçue pour fonctionner 100% hors ligne. Toutes les données sont stockées localement.
+R: L'application nécessite une connexion internet pour accéder aux données Supabase. Cependant, les notifications peuvent fonctionner temporairement hors ligne grâce au Service Worker.
 
 #### **Q: Comment sauvegarder mes données ?**
 R: Les sauvegardes automatiques sont configurées par défaut. Pour une sauvegarde manuelle, utilisez la fonction Export dans l'administration.
@@ -498,10 +506,10 @@ R: Les sauvegardes automatiques sont configurées par défaut. Pour une sauvegar
 - **Communauté** : Partagez vos expériences avec les autres utilisateurs
 
 #### Informations Système
-- **Version** : React 19 + TypeScript
+- **Version** : React 19 + TypeScript + Supabase
 - **Navigateurs supportés** : Chrome 90+, Firefox 88+, Safari 14+
-- **Stockage** : IndexedDB (illimité)
-- **Sécurité** : Données 100% locales et privées
+- **Stockage** : Supabase PostgreSQL cloud
+- **Sécurité** : Authentification par rôle, données chiffrées en transit
 
 ---
 
