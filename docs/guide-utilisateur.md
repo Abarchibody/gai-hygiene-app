@@ -49,7 +49,7 @@ Pour découvrir l'application, utilisez ces comptes de démonstration :
 
 **Administrateur :**
 - Email : `admin@gai.cd`
-- Mot de passe : `admin`
+- Mot de passe : `Password123!`
 
 **Enseignant :**
 - Email : `jp.mukendi@gai.cd`
