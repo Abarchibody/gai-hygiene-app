@@ -148,12 +148,12 @@ export class ReminderService {
     const { data, error } = await supabase
       .from('reminder_assignments')
       .select(`
-        reminder:reminders(*)
+        reminders(*)
       `)
       .or(`utilisateur_id.eq.${userId},classe_id.in.(${classIds.join(',')})`);
 
     if (error) throw error;
-    return data?.map(item => item.reminder).filter(Boolean) || [];
+    return data?.map((item: any) => item.reminders).filter(Boolean) || [];
   }
 }
 

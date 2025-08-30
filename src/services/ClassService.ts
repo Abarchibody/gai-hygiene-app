@@ -1,4 +1,6 @@
 import { supabase } from '../utils/supabaseClient';
+import { indexedDBService } from './IndexedDBService';
+import { offlineService } from './OfflineService';
 import type { Class } from '../types';
 
 export class ClassService {
@@ -14,18 +16,30 @@ export class ClassService {
   }
 
   async getList(): Promise<Class[]> {
-    const { data, error } = await supabase
-      .from('classes')
-      .select(
-        `
-        *,
-        enseignant:users!classes_enseignant_id_fkey(id, nom, prenom)
-      `
-      )
-      .order('nom_classe', { ascending: true });
+    const cachedClasses = await indexedDBService.getCachedClasses();
+    
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { data, error } = await supabase
+          .from('classes')
+          .select(
+            `
+            *,
+            enseignant:users!classes_enseignant_id_fkey(id, nom, prenom)
+          `
+          )
+          .order('nom_classe', { ascending: true });
 
-    if (error) throw error;
-    return data || [];
+        if (!error && data) {
+          await indexedDBService.cacheClasses(data);
+          return data;
+        }
+      } catch (error) {
+        console.warn('Background sync failed:', error);
+      }
+    }
+    
+    return cachedClasses;
   }
 
   async getOne(id: number): Promise<Class | null> {
@@ -47,39 +61,120 @@ export class ClassService {
   async create(
     classData: Omit<Class, 'id' | 'created_at' | 'updated_at'>
   ): Promise<Class> {
-    const { data, error } = await supabase
-      .from('classes')
-      .insert({
-        ...classData,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
+    const tempId = Date.now();
+    const newClass: Class = {
+      ...classData,
+      id: tempId,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
 
-    if (error) throw error;
-    return data;
+    await indexedDBService.put('classes', newClass);
+
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { data, error } = await supabase
+          .from('classes')
+          .insert({
+            ...classData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .select()
+          .single();
+
+        if (!error && data) {
+          await indexedDBService.delete('classes', tempId);
+          await indexedDBService.put('classes', data);
+          return data;
+        }
+      } catch (error) {
+        await offlineService.queueOperation({
+          table: 'classes',
+          operation: 'create',
+          data: classData
+        });
+      }
+    } else {
+      await offlineService.queueOperation({
+        table: 'classes',
+        operation: 'create',
+        data: classData
+      });
+    }
+
+    return newClass;
   }
 
   async update(id: number, updates: Partial<Class>): Promise<Class> {
-    const { data, error } = await supabase
-      .from('classes')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', id)
-      .select()
-      .single();
+    const currentClass = await indexedDBService.getById<Class>('classes', id);
+    if (!currentClass) throw new Error('Class not found');
 
-    if (error) throw error;
-    return data;
+    const updatedClass = {
+      ...currentClass,
+      ...updates,
+      updated_at: new Date()
+    };
+
+    await indexedDBService.put('classes', updatedClass);
+
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { data, error } = await supabase
+          .from('classes')
+          .update({
+            ...updates,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (!error && data) {
+          await indexedDBService.put('classes', data);
+          return data;
+        }
+      } catch (error) {
+        await offlineService.queueOperation({
+          table: 'classes',
+          operation: 'update',
+          data: updates,
+          recordId: id
+        });
+      }
+    } else {
+      await offlineService.queueOperation({
+        table: 'classes',
+        operation: 'update',
+        data: updates,
+        recordId: id
+      });
+    }
+
+    return updatedClass;
   }
 
   async delete(id: number): Promise<void> {
-    const { error } = await supabase.from('classes').delete().eq('id', id);
+    await indexedDBService.delete('classes', id);
 
-    if (error) throw error;
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { error } = await supabase.from('classes').delete().eq('id', id);
+        if (error) throw error;
+      } catch (error) {
+        await offlineService.queueOperation({
+          table: 'classes',
+          operation: 'delete',
+          recordId: id
+        });
+      }
+    } else {
+      await offlineService.queueOperation({
+        table: 'classes',
+        operation: 'delete',
+        recordId: id
+      });
+    }
   }
 
   async getStudents(classId: number) {

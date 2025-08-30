@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import NotificationManager from './components/NotificationManager';
 import { pwaService } from './utils/pwaService';
+import { indexedDBService, offlineService } from './services';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UsersList from './pages/Users/UsersList';
@@ -37,10 +38,25 @@ import ProfilePage from './pages/ProfilePage';
 
 function App() {
   useEffect(() => {
-    // Enregistrer le Service Worker au démarrage
-    pwaService.registerServiceWorker();
+    // Initialiser IndexedDB et Service Worker au démarrage
+    const initApp = async () => {
+      try {
+        await indexedDBService.init();
+        console.log('💾 IndexedDB initialisé');
+        
+        // Start background sync after a delay to ensure DB is ready
+        setTimeout(() => {
+          offlineService.syncPendingOperations();
+        }, 1000);
+        
+        pwaService.registerServiceWorker();
+        console.log('🚀 Application initialisée (Offline-First)');
+      } catch (error) {
+        console.error('Erreur initialisation:', error);
+      }
+    };
     
-    console.log('🚀 Application initialisée');
+    initApp();
   }, []);
 
   return (

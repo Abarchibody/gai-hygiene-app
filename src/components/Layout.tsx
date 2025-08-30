@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Users, School, Bell, Calendar, Database, Clock, LogOut, User, BarChart3, Menu, X, MessageSquare } from 'lucide-react';
 import { authService } from '../services';
 import ThemeToggle from './ui/ThemeToggle';
+import OfflineIndicator from './OfflineIndicator';
 
 interface LayoutProps {
   children: ReactNode;
@@ -224,6 +225,7 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
                 </div>
               </div>
               <div className="flex items-center space-x-2 lg:space-x-4">
+                <OfflineIndicator />
                 <ThemeToggle />
                 <div className="hidden md:flex items-center text-xs lg:text-sm text-gray-500 dark:text-gray-400">
                   <Clock className="w-3 lg:w-4 h-3 lg:h-4 mr-1 lg:mr-2" />

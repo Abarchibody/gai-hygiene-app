@@ -4,3 +4,5 @@ export { ClassService, classService } from './ClassService';
 export { ReminderService, reminderService } from './ReminderService';
 export { NotificationService, notificationService } from './NotificationService';
 export { NotificationScheduler, notificationScheduler } from './NotificationScheduler';
+export { indexedDBService } from './IndexedDBService';
+export { OfflineService, offlineService } from './OfflineService';

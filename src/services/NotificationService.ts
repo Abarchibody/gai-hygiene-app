@@ -1,4 +1,6 @@
 import { supabase } from '../utils/supabaseClient';
+import { indexedDBService } from './IndexedDBService';
+import { offlineService } from './OfflineService';
 import type { Notification } from '../types';
 
 export class NotificationService {
@@ -14,13 +16,25 @@ export class NotificationService {
   }
 
   async getList(): Promise<Notification[]> {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .order('scheduled_at', { ascending: false });
+    const cachedNotifications = await indexedDBService.getCachedNotifications();
+    
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .order('scheduled_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+        if (!error && data) {
+          await indexedDBService.cacheNotifications(data);
+          return data;
+        }
+      } catch (error) {
+        console.warn('Background sync failed:', error);
+      }
+    }
+    
+    return cachedNotifications;
   }
 
   async getOne(id: number): Promise<Notification | null> {
@@ -35,38 +49,118 @@ export class NotificationService {
   }
 
   async create(notification: Omit<Notification, 'id' | 'created_at'>): Promise<Notification> {
-    const { data, error } = await supabase
-      .from('notifications')
-      .insert({
-        ...notification,
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single();
+    const tempId = Date.now();
+    const newNotification: Notification = {
+      ...notification,
+      id: tempId,
+      created_at: new Date()
+    };
 
-    if (error) throw error;
-    return data;
+    await indexedDBService.put('notifications', newNotification);
+
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { data, error } = await supabase
+          .from('notifications')
+          .insert({
+            ...notification,
+            created_at: new Date().toISOString()
+          })
+          .select()
+          .single();
+
+        if (!error && data) {
+          await indexedDBService.delete('notifications', tempId);
+          await indexedDBService.put('notifications', data);
+          return data;
+        }
+      } catch (error) {
+        await offlineService.queueOperation({
+          table: 'notifications',
+          operation: 'create',
+          data: notification
+        });
+      }
+    } else {
+      await offlineService.queueOperation({
+        table: 'notifications',
+        operation: 'create',
+        data: notification
+      });
+    }
+
+    return newNotification;
   }
 
   async update(id: number, updates: Partial<Notification>): Promise<Notification> {
-    const { data, error } = await supabase
-      .from('notifications')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+    const currentNotification = await indexedDBService.getById<Notification>('notifications', id);
+    if (!currentNotification) throw new Error('Notification not found');
 
-    if (error) throw error;
-    return data;
+    const updatedNotification = {
+      ...currentNotification,
+      ...updates
+    };
+
+    await indexedDBService.put('notifications', updatedNotification);
+
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { data, error } = await supabase
+          .from('notifications')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (!error && data) {
+          await indexedDBService.put('notifications', data);
+          return data;
+        }
+      } catch (error) {
+        await offlineService.queueOperation({
+          table: 'notifications',
+          operation: 'update',
+          data: updates,
+          recordId: id
+        });
+      }
+    } else {
+      await offlineService.queueOperation({
+        table: 'notifications',
+        operation: 'update',
+        data: updates,
+        recordId: id
+      });
+    }
+
+    return updatedNotification;
   }
 
   async delete(id: number): Promise<void> {
-    const { error } = await supabase
-      .from('notifications')
-      .delete()
-      .eq('id', id);
+    await indexedDBService.delete('notifications', id);
 
-    if (error) throw error;
+    if (offlineService.getOnlineStatus()) {
+      try {
+        const { error } = await supabase
+          .from('notifications')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+      } catch (error) {
+        await offlineService.queueOperation({
+          table: 'notifications',
+          operation: 'delete',
+          recordId: id
+        });
+      }
+    } else {
+      await offlineService.queueOperation({
+        table: 'notifications',
+        operation: 'delete',
+        recordId: id
+      });
+    }
   }
 
   async getForUser(userId: number): Promise<Notification[]> {

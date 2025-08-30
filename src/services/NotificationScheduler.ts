@@ -1,4 +1,6 @@
 import { reminderService, notificationService } from './index';
+import { indexedDBService } from './IndexedDBService';
+import { offlineService } from './OfflineService';
 import type { Reminder, Notification } from '../types';
 
 export class NotificationScheduler {
@@ -15,10 +17,11 @@ export class NotificationScheduler {
 
   async generateNotificationsFromReminders(): Promise<void> {
     try {
-      const activeReminders = await reminderService.getList();
-      const filteredReminders = activeReminders.filter(r => r.statut === 'Actif');
+      // Use cached reminders for offline-first approach
+      const cachedReminders = await indexedDBService.getCachedReminders();
+      const activeReminders = cachedReminders.filter(r => r.statut === 'Actif');
 
-      for (const reminder of filteredReminders) {
+      for (const reminder of activeReminders) {
         await this.createNotificationsForReminder(reminder);
       }
     } catch (error) {
@@ -38,8 +41,8 @@ export class NotificationScheduler {
     // Clean up old pending notifications for this reminder
     await this.cleanupOldNotifications(reminder.id);
 
-    // Check if notification already exists for this exact time
-    const existingNotifications = await notificationService.getList();
+    // Check if notification already exists for this exact time (use cached data)
+    const existingNotifications = await indexedDBService.getCachedNotifications();
     const alreadyExists = existingNotifications.some(n => 
       n.reminder_id === reminder.id &&
       n.status === 'pending' &&
@@ -67,7 +70,8 @@ export class NotificationScheduler {
 
   private async cleanupOldNotifications(reminderId: number): Promise<void> {
     try {
-      const allNotifications = await notificationService.getList();
+      // Use cached notifications for cleanup
+      const allNotifications = await indexedDBService.getCachedNotifications();
       const oldPendingNotifications = allNotifications.filter(n => 
         n.reminder_id === reminderId && 
         n.status === 'pending' &&
