@@ -35,8 +35,8 @@ pipeline {
   agent any
 
   environment {
-    AWS_DEFAULT_REGION = 'us-east-1'
-    S3_BUCKET = 'your-s3-bucket-name'
+    AWS_DEFAULT_REGION = 'eu-west-2'
+    S3_BUCKET = 'static.nevolut.com'
     S3_PATH = 'gai-hygiene-app'
   }
 
