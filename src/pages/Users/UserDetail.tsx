@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, Mail, Phone, Calendar, Heart, School, Lock } from 'lucide-react';
-import { db } from '../../db/schema';
+import { UserService } from '../../services';
 import type { User } from '../../types';
 import Button from '../../components/ui/Button';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -23,7 +23,7 @@ export default function UserDetail() {
 
   const loadUser = async (userId: number) => {
     try {
-      const userData = await db.users.get(userId);
+      const userData = await UserService.getInstance().getOne(userId);
       setUser(userData || null);
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
@@ -35,7 +35,7 @@ export default function UserDetail() {
   const handleDelete = async () => {
     if (!user) return;
     try {
-      await db.users.delete(user.id!);
+      await UserService.getInstance().delete(user.id!);
       navigate('/users?deleted=1');
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
@@ -45,7 +45,7 @@ export default function UserDetail() {
   const handleResetPassword = async () => {
     if (!user) return;
     try {
-      await db.users.update(user.id!, { password: 'Password123!', updated_at: new Date() });
+      await UserService.getInstance().update(user.id!, { password: 'Password123!', updated_at: new Date() });
       setResetSuccess(true);
       setTimeout(() => setResetSuccess(false), 3000);
     } catch (error) {

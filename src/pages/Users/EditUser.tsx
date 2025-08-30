@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import { db } from '../../db/schema';
+import { UserService } from '../../services';
 import type { User, UserType } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -36,7 +36,7 @@ export default function EditUser() {
 
   const loadUser = async (userId: number) => {
     try {
-      const user = await db.users.get(userId);
+      const user = await UserService.getInstance().getOne(userId);
       if (user) {
         setFormData({
           nom: user.nom,
@@ -86,7 +86,7 @@ export default function EditUser() {
         updated_at: new Date()
       };
 
-      await db.users.update(parseInt(id), updatedUser);
+      await UserService.getInstance().update(parseInt(id), updatedUser);
       navigate(`/users/${id}?updated=1`);
     } catch (error) {
       console.error('Erreur lors de la modification:', error);

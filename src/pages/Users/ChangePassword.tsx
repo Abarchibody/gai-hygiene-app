@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Lock, Eye, EyeOff } from 'lucide-react';
-import { db } from '../../db/schema';
+import { UserService } from '../../services';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 
@@ -40,7 +40,7 @@ export default function ChangePassword() {
 
     try {
       const userId = parseInt(id!);
-      const user = await db.users.get(userId);
+      const user = await UserService.getInstance().getOne(userId);
       
       if (!user) {
         setError('Utilisateur introuvable');
@@ -54,7 +54,7 @@ export default function ChangePassword() {
         return;
       }
 
-      await db.users.update(userId, {
+      await UserService.getInstance().update(userId, {
         password: formData.newPassword,
         updated_at: new Date()
       });

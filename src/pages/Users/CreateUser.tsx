@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import { db } from '../../db/schema';
+import { UserService } from '../../services';
 import type { User, UserType } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -69,7 +69,7 @@ export default function CreateUser() {
         updated_at: new Date()
       };
 
-      await db.users.add(newUser);
+      await UserService.getInstance().create(newUser);
       navigate('/users?created=1');
     } catch (error) {
       console.error('Erreur lors de la création:', error);

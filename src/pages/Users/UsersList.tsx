@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Users, Eye, Edit, Trash2 } from 'lucide-react';
-import { db } from '../../db/schema';
+import { UserService } from '../../services';
 import type { User } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -16,7 +16,7 @@ export default function UsersList() {
 
   const loadUsers = async () => {
     try {
-      const allUsers = await db.users.orderBy('nom').toArray();
+      const allUsers = await UserService.getInstance().getList();
       setUsers(allUsers);
     } catch (error) {
       console.error('Erreur lors du chargement des utilisateurs:', error);
