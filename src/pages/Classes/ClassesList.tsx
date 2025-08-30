@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, School, Eye, Edit, Trash2, Users } from 'lucide-react';
-import { db } from '../../db/schema';
+import { classService, userService } from '../../services';
 import type { Class, User } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -17,7 +17,7 @@ export default function ClassesList() {
 
   const loadClasses = async () => {
     try {
-      const allClasses = await db.classes.orderBy('nom_classe').toArray();
+      const allClasses = await classService.getList();
       setClasses(allClasses);
     } catch (error) {
       console.error('Erreur lors du chargement des classes:', error);
@@ -26,7 +26,7 @@ export default function ClassesList() {
 
   const loadTeachers = async () => {
     try {
-      const allTeachers = await db.users.where('type_utilisateur').equals('Enseignant').toArray();
+      const allTeachers = await userService.getByType('Enseignant');
       setTeachers(allTeachers);
     } catch (error) {
       console.error('Erreur lors du chargement des enseignants:', error);

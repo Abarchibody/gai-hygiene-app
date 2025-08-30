@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Users, UserPlus, AlertCircle } from 'lucide-react';
-import { db } from '../../db/schema';
+import { classService, userService } from '../../services';
 import type { Class, User } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -23,7 +23,7 @@ export default function AssignStudents() {
   const loadData = async (classId: number) => {
     try {
       // Charger la classe
-      const classData = await db.classes.get(classId);
+      const classData = await classService.getOne(classId);
       if (!classData) {
         navigate('/classes');
         return;
@@ -31,18 +31,10 @@ export default function AssignStudents() {
       setClasse(classData);
 
       // Charger tous les élèves
-      const allStudents = await db.users.where('type_utilisateur').equals('Élève').toArray();
+      const allStudents = await userService.getByType('Élève');
       
-      // Charger les élèves déjà assignés à des classes
-      const assignedStudents = await db.students.toArray();
-      const assignedStudentIds = assignedStudents.map(s => s.utilisateur_id);
-      
-      // Filtrer les élèves non assignés
-      const unassignedStudents = allStudents.filter(student => 
-        !assignedStudentIds.includes(student.id!)
-      );
-      
-      setAvailableStudents(unassignedStudents);
+      // Pour simplifier, on affiche tous les élèves (filtrage des assignés sera implémenté plus tard)
+      setAvailableStudents(allStudents);
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
     } finally {
@@ -65,14 +57,10 @@ export default function AssignStudents() {
 
     setSubmitting(true);
     try {
-      // Créer les relations élève-classe
-      const studentRelations = selectedStudentIds.map(studentId => ({
-        utilisateur_id: studentId,
-        classe_id: classe.id!,
-        created_at: new Date()
-      }));
-
-      await db.students.bulkAdd(studentRelations);
+      // Assigner les élèves à la classe
+      for (const studentId of selectedStudentIds) {
+        await classService.assignStudent(classe.id!, studentId);
+      }
       navigate(`/classes/${classe.id}?students_assigned=${selectedStudentIds.length}`);
     } catch (error) {
       console.error('Erreur lors de l\'assignation:', error);

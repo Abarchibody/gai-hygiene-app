@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, Users, UserPlus, User } from 'lucide-react';
-import { db } from '../../db/schema';
+import { classService, userService } from '../../services';
 import type { Class, User as UserType } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -21,19 +21,17 @@ export default function ClassDetail() {
 
   const loadClass = async (classId: number) => {
     try {
-      const classData = await db.classes.get(classId);
-      setClasse(classData || null);
+      const classData = await classService.getOne(classId);
+      setClasse(classData);
 
       if (classData?.enseignant_id) {
-        const teacherData = await db.users.get(classData.enseignant_id);
-        setTeacher(teacherData || null);
+        const teacherData = await userService.getOne(classData.enseignant_id);
+        setTeacher(teacherData);
       }
 
       // Charger les élèves de cette classe
-      const studentRelations = await db.students.where('classe_id').equals(classId).toArray();
-      const studentIds = studentRelations.map(s => s.utilisateur_id);
-      const studentsData = await db.users.bulkGet(studentIds);
-      setStudents(studentsData.filter(Boolean) as UserType[]);
+      const studentsData = await classService.getStudents(classId);
+      setStudents(studentsData.map(s => s.utilisateur).filter(Boolean));
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
     } finally {
@@ -47,7 +45,7 @@ export default function ClassDetail() {
     }
 
     try {
-      await db.classes.delete(classe.id!);
+      await classService.delete(classe.id!);
       navigate('/classes?deleted=1');
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);

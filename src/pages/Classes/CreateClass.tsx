@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import { db } from '../../db/schema';
+import { classService, userService } from '../../services';
 import type { Class, User } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -24,7 +24,7 @@ export default function CreateClass() {
 
   const loadTeachers = async () => {
     try {
-      const teachersData = await db.users.where('type_utilisateur').equals('Enseignant').toArray();
+      const teachersData = await userService.getByType('Enseignant');
       setTeachers(teachersData);
     } catch (error) {
       console.error('Erreur lors du chargement des enseignants:', error);
@@ -60,15 +60,13 @@ export default function CreateClass() {
 
     setLoading(true);
     try {
-      const newClass: Omit<Class, 'id'> = {
+      const newClass = {
         nom_classe: formData.nom_classe,
         niveau: formData.niveau,
-        enseignant_id: formData.enseignant_id ? parseInt(formData.enseignant_id) : undefined,
-        created_at: new Date(),
-        updated_at: new Date()
+        enseignant_id: formData.enseignant_id ? parseInt(formData.enseignant_id) : undefined
       };
 
-      await db.classes.add(newClass);
+      await classService.create(newClass);
       navigate('/classes?created=1');
     } catch (error) {
       console.error('Erreur lors de la création:', error);
