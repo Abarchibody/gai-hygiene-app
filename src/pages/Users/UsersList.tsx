@@ -43,16 +43,18 @@ export default function UsersList() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-gray-600 dark:text-gray-400">Gestion des utilisateurs du système</p>
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-gray-600 dark:text-gray-400">Gestion des utilisateurs du système</p>
+          </div>
+          <Link to="/users/create">
+            <Button className="w-full sm:w-auto">
+              <Plus className="w-4 h-4 mr-2" />
+              Nouvel utilisateur
+            </Button>
+          </Link>
         </div>
-        <Link to="/users/create">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Nouvel utilisateur
-          </Button>
-        </Link>
       </div>
 
       {/* Filtres */}

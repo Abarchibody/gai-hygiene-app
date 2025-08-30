@@ -90,27 +90,29 @@ export default function RemindersList() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-gray-600 dark:text-gray-400">
-            {user?.type_utilisateur === 'Admin'
-              ? 'Gestion des rappels d\'hygiène automatisés'
-              : user?.type_utilisateur === 'Enseignant'
-              ? 'Mes rappels d\'hygiène créés'
-              : user?.type_utilisateur === 'Parent'
-              ? 'Rappels d\'hygiène de mes enfants'
-              : 'Mes rappels d\'hygiène personnels'
-            }
-          </p>
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-gray-600 dark:text-gray-400">
+              {user?.type_utilisateur === 'Admin'
+                ? 'Gestion des rappels d\'hygiène automatisés'
+                : user?.type_utilisateur === 'Enseignant'
+                ? 'Mes rappels d\'hygiène créés'
+                : user?.type_utilisateur === 'Parent'
+                ? 'Rappels d\'hygiène de mes enfants'
+                : 'Mes rappels d\'hygiène personnels'
+              }
+            </p>
+          </div>
+          {(user?.type_utilisateur === 'Admin' || user?.type_utilisateur === 'Enseignant') && (
+            <Link to="/reminders/create">
+              <Button className="w-full sm:w-auto">
+                <Plus className="w-4 h-4 mr-2" />
+                Nouveau rappel
+              </Button>
+            </Link>
+          )}
         </div>
-        {(user?.type_utilisateur === 'Admin' || user?.type_utilisateur === 'Enseignant') && (
-          <Link to="/reminders/create">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Nouveau rappel
-            </Button>
-          </Link>
-        )}
       </div>
 
       {/* Filtres */}

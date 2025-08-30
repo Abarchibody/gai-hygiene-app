@@ -63,16 +63,18 @@ export default function ClassesList() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-gray-600 dark:text-gray-400">Gestion des classes et assignations</p>
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-gray-600 dark:text-gray-400">Gestion des classes et assignations</p>
+          </div>
+          <Link to="/classes/create">
+            <Button className="w-full sm:w-auto">
+              <Plus className="w-4 h-4 mr-2" />
+              Nouvelle classe
+            </Button>
+          </Link>
         </div>
-        <Link to="/classes/create">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Nouvelle classe
-          </Button>
-        </Link>
       </div>
 
       {/* Filtres */}
