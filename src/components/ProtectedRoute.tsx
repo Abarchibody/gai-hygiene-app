@@ -15,14 +15,15 @@ export default function ProtectedRoute({ children, requiredPermission }: Protect
 
   // Simple permission check based on user type
   if (requiredPermission) {
+    const userType = user.type_utilisateur;
     const hasPermission = 
-      user.type_utilisateur === 'Admin' || 
-      (requiredPermission.includes('Users') && (user.type_utilisateur === 'Admin' || user.type_utilisateur === 'Enseignant')) ||
-      (requiredPermission.includes('Classes') && (user.type_utilisateur === 'Admin' || user.type_utilisateur === 'Enseignant')) ||
-      (requiredPermission.includes('Reminders') && (user.type_utilisateur === 'Admin' || user.type_utilisateur === 'Enseignant')) ||
-      (requiredPermission.includes('Reports') && (user.type_utilisateur === 'Admin' || user.type_utilisateur === 'Enseignant')) ||
-      (requiredPermission.includes('Events') && (user.type_utilisateur === 'Admin' || user.type_utilisateur === 'Enseignant')) ||
-      (requiredPermission.includes('Admin') && user.type_utilisateur === 'Admin');
+      userType === 'Admin' || 
+      (requiredPermission.includes('Users') && (userType === 'Admin' || userType === 'Enseignant')) ||
+      (requiredPermission.includes('Classes') && (userType === 'Admin' || userType === 'Enseignant')) ||
+      (requiredPermission.includes('Reminders') && (userType === 'Admin' || userType === 'Enseignant')) ||
+      (requiredPermission.includes('Reports') && (userType === 'Admin' || userType === 'Enseignant')) ||
+      (requiredPermission.includes('Events') && (userType === 'Admin' || userType === 'Enseignant')) ||
+      (requiredPermission.includes('Admin') && userType === 'Admin');
 
     if (!hasPermission) {
       return (

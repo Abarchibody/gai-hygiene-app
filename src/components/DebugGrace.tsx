@@ -21,7 +21,7 @@ export default function DebugGrace() {
       setDebugInfo(info);
     } catch (error) {
       console.error('Debug error:', error);
-      setDebugInfo({ error: error.message });
+      setDebugInfo({ error: (error as Error).message });
     }
   };
 

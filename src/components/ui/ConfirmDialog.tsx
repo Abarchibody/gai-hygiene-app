@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+
 import { AlertTriangle, CheckCircle, X } from 'lucide-react';
 import Button from './Button';
 

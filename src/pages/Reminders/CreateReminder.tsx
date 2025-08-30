@@ -104,7 +104,8 @@ export default function CreateReminder() {
         date_debut: new Date(formData.date_debut),
         heure: formData.heure,
         statut: 'Actif' as const,
-        createur_id: parseInt(formData.createur_id)
+        createur_id: parseInt(formData.createur_id),
+        updated_at: new Date()
       };
 
       await reminderService.create(newReminder);

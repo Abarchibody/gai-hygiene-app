@@ -1,7 +1,6 @@
 import { reminderService, notificationService } from './index';
 import { indexedDBService } from './IndexedDBService';
-import { offlineService } from './OfflineService';
-import type { Reminder, Notification } from '../types';
+import type { Reminder } from '../types';
 
 export class NotificationScheduler {
   private static instance: NotificationScheduler;
@@ -62,7 +61,7 @@ export class NotificationScheduler {
           recipient_id: assignment.utilisateur_id,
           reminder_id: reminder.id,
           scheduled_at: scheduledTime,
-          created_at: now
+
         });
       }
     }
