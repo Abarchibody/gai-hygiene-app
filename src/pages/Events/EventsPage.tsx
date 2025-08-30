@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Plus, Filter, Search, Clock, MapPin, User } from 'lucide-react';
-import { db } from '../../db/schema';
+import { userService } from '../../services';
 import type { Event, User as UserType } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -22,8 +22,8 @@ export default function EventsPage() {
 
   const loadEvents = async () => {
     try {
-      const allEvents = await db.events.orderBy('date_debut').toArray();
-      setEvents(allEvents);
+      // Placeholder - will implement event service
+      setEvents([]);
     } catch (error) {
       console.error('Erreur lors du chargement des événements:', error);
     }
@@ -31,7 +31,7 @@ export default function EventsPage() {
 
   const loadUsers = async () => {
     try {
-      const allUsers = await db.users.toArray();
+      const allUsers = await userService.getList();
       setUsers(allUsers);
     } catch (error) {
       console.error('Erreur lors du chargement des utilisateurs:', error);

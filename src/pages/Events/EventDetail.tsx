@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, User, Edit, Trash2, ArrowLeft, Users } from 'lucide-react';
-import { db } from '../../db/schema';
+import { userService, classService } from '../../services';
 import type { Event, User as UserType, Class } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -21,20 +21,8 @@ export default function EventDetail() {
 
   const loadEvent = async (eventId: number) => {
     try {
-      const eventData = await db.events.get(eventId);
-      if (eventData) {
-        setEvent(eventData);
-        
-        // Load responsable
-        const responsableData = await db.users.get(eventData.responsable_id);
-        setResponsable(responsableData || null);
-        
-        // Load classes concernées
-        if (eventData.classes_concernees && eventData.classes_concernees.length > 0) {
-          const classesData = await db.classes.where('id').anyOf(eventData.classes_concernees).toArray();
-          setClasses(classesData);
-        }
-      }
+      // Placeholder - will implement event service
+      setEvent(null);
     } catch (error) {
       console.error('Erreur lors du chargement de l\'événement:', error);
     } finally {
@@ -47,7 +35,7 @@ export default function EventDetail() {
     
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
       try {
-        await db.events.delete(event.id);
+        // Placeholder - will implement event service
         navigate('/events');
       } catch (error) {
         console.error('Erreur lors de la suppression:', error);

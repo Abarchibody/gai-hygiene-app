@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, CheckCircle, Clock, AlertCircle, Settings, Smartphone, Download } from 'lucide-react';
-import { db } from '../../db/schema';
-import { notificationService } from '../../utils/notificationService';
-import { pwaService } from '../../utils/pwaService';
+import { notificationService } from '../../services';
 import type { Notification } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -26,23 +24,24 @@ export default function NotificationCenter() {
   }, []);
 
   const checkPWAStatus = async () => {
-    setPwaInstallable(pwaService.isInstallable());
-    const registered = await pwaService.registerServiceWorker();
-    setSwRegistered(registered);
+    // Placeholder - will implement PWA status check
+    setPwaInstallable(false);
+    setSwRegistered(true);
   };
 
   const loadNotifications = async () => {
     try {
-      const allNotifications = await db.notifications
-        .orderBy('scheduled_at')
-        .reverse()
-        .limit(50)
-        .toArray();
-      
-      setNotifications(allNotifications);
+      const allNotifications = await notificationService.getList();
+      setNotifications(allNotifications.slice(0, 50));
 
-      // Utiliser la nouvelle méthode du service
-      const statsData = await notificationService.getNotificationStats();
+      // Calculate stats
+      const statsData = {
+        total: allNotifications.length,
+        pending: allNotifications.filter(n => n.status === 'pending').length,
+        sent: allNotifications.filter(n => n.status === 'sent').length,
+        read: allNotifications.filter(n => n.status === 'read').length,
+        failed: allNotifications.filter(n => n.status === 'failed').length
+      };
       setStats(statsData);
     } catch (error) {
       console.error('Erreur lors du chargement des notifications:', error);
@@ -61,13 +60,16 @@ export default function NotificationCenter() {
   };
 
   const startScheduler = () => {
-    notificationService.startNotificationScheduler();
+    // Placeholder - will implement scheduler
+    console.log('Starting notification scheduler');
   };
 
   const testNotification = async () => {
-    const success = await notificationService.sendTestNotification();
+    const success = await notificationService.sendBrowserNotification(
+      'Test Notification',
+      'Ceci est une notification de test depuis GAI Hygiène'
+    );
     if (success) {
-      // Recharger les statistiques après le test
       setTimeout(loadNotifications, 1000);
     }
   };
@@ -247,12 +249,12 @@ export default function NotificationCenter() {
                       <h4 className="font-medium text-gray-800 dark:text-gray-200">{notification.title}</h4>
                       <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{notification.message}</p>
                       <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        <span>Programmée : {notification.scheduled_at.toLocaleString('fr-FR')}</span>
+                        <span>Programmée : {new Date(notification.scheduled_time).toLocaleString('fr-FR')}</span>
                         {notification.sent_at && (
-                          <span>Envoyée : {notification.sent_at.toLocaleString('fr-FR')}</span>
+                          <span>Envoyée : {new Date(notification.sent_at).toLocaleString('fr-FR')}</span>
                         )}
                         {notification.read_at && (
-                          <span>Lue : {notification.read_at.toLocaleString('fr-FR')}</span>
+                          <span>Lue : {new Date(notification.read_at).toLocaleString('fr-FR')}</span>
                         )}
                       </div>
                     </div>

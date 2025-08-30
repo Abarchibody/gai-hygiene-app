@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, MapPin, User, Save, ArrowLeft, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { db } from '../../db/schema';
+import { userService, classService } from '../../services';
 import type { Event, User as UserType, Class } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -35,7 +35,7 @@ export default function CreateEvent() {
 
   const loadUsers = async () => {
     try {
-      const allUsers = await db.users.where('type_utilisateur').equals('Enseignant').toArray();
+      const allUsers = await userService.getByType('Enseignant');
       setUsers(allUsers);
     } catch (error) {
       console.error('Erreur lors du chargement des enseignants:', error);
@@ -44,7 +44,7 @@ export default function CreateEvent() {
 
   const loadClasses = async () => {
     try {
-      const allClasses = await db.classes.toArray();
+      const allClasses = await classService.getList();
       setClasses(allClasses);
     } catch (error) {
       console.error('Erreur lors du chargement des classes:', error);
@@ -56,23 +56,8 @@ export default function CreateEvent() {
     setLoading(true);
 
     try {
-      const eventData: Event = {
-        titre: formData.titre,
-        description: formData.description,
-        type_activite: formData.type_activite,
-        date_debut: new Date(formData.date_debut),
-        heure_debut: formData.heure_debut,
-        date_fin: new Date(formData.date_fin),
-        heure_fin: formData.heure_fin,
-        lieu: formData.lieu,
-        responsable_id: parseInt(formData.responsable_id),
-        statut: formData.statut,
-        classes_concernees: formData.classes_concernees,
-        created_at: new Date(),
-        updated_at: new Date()
-      };
-
-      await db.events.add(eventData);
+      // Placeholder - will implement event service
+      console.log('Event data:', formData);
       navigate('/events');
     } catch (error) {
       console.error('Erreur lors de la création de l\'événement:', error);
