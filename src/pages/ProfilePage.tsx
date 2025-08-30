@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { db } from '../db/schema';
+import { authService, userService } from '../services';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const user = authService.getCurrentUser();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPasswords, setShowPasswords] = useState({
@@ -41,23 +40,21 @@ export default function ProfilePage() {
     }
 
     try {
-      if (user?.id === 0) {
-        setSuccess('Mot de passe administrateur modifié avec succès');
-      } else {
-        const dbUser = await db.users.get(user!.id);
+      if (user?.id && user.id > 0) {
+        const dbUser = await userService.getOne(user.id);
         if (!dbUser || dbUser.password !== formData.currentPassword) {
           setError('Mot de passe actuel incorrect');
           setLoading(false);
           return;
         }
 
-        await db.users.update(user!.id, {
+        await userService.update(user.id, {
           password: formData.newPassword,
           updated_at: new Date()
         });
-        setSuccess('Mot de passe modifié avec succès');
       }
-
+      
+      setSuccess('Mot de passe modifié avec succès');
       setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       setShowPasswordForm(false);
     } catch (error) {
@@ -152,7 +149,7 @@ export default function ProfilePage() {
                   </div>
                 )}
 
-                {user.id !== 0 && (
+                {user.id && user.id > 0 && (
                   <div className="relative">
                     <Input
                       label="Mot de passe actuel"

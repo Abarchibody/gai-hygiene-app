@@ -35,7 +35,9 @@ export default function RemindersList() {
         filteredReminders = allReminders.filter(r => r.createur_id === user.id);
       } else {
         // Parent/Student sees assigned reminders
-        filteredReminders = await reminderService.getForUser(user.id);
+        if (user.id) {
+          filteredReminders = await reminderService.getForUser(user.id);
+        }
       }
       
       setReminders(filteredReminders);

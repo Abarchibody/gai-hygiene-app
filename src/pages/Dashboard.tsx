@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, TrendingUp, Users, Calendar, BarChart3, Heart } from 'lucide-react';
-import { authService } from '../services';
+import { authService, reminderService, notificationService } from '../services';
 import type { Reminder, Notification } from '../types';
 
 interface DashboardStats {
@@ -42,25 +42,42 @@ export default function Dashboard() {
       let notifications: Notification[] = [];
       let events: any[] = [];
 
-      // Placeholder data for now - will be replaced with service calls
+      // Load real data from services
+      if (user.type_utilisateur === 'Admin') {
+        reminders = await reminderService.getList();
+        notifications = await notificationService.getList();
+      } else if (user.type_utilisateur === 'Enseignant') {
+        const allReminders = await reminderService.getList();
+        reminders = allReminders.filter(r => r.createur_id === user.id);
+        notifications = await notificationService.getList();
+      } else if (user.id) {
+        reminders = await reminderService.getForUser(user.id);
+        notifications = await notificationService.getForUser(user.id);
+      }
+
+      // Calculate stats
+      const activeReminders = reminders.filter(r => r.statut === 'Actif').length;
+      const todayNotifications = notifications.filter(n => {
+        const today = new Date().toDateString();
+        return new Date(n.created_at || '').toDateString() === today;
+      }).length;
+      
+      const remindersByCategory = reminders.reduce((acc, reminder) => {
+        acc[reminder.categorie] = (acc[reminder.categorie] || 0) + 1;
+        return acc;
+      }, {} as { [key: string]: number });
+
       setStats({
-        activeReminders: 8,
-        todayNotifications: 3,
-        weeklyProgress: 75,
-        upcomingEvents: 2,
-        remindersByCategory: {
-          'Lavage mains': 3,
-          'Brossage dents': 2,
-          'Hygiène corporelle': 2,
-          'Personnalisé': 1
-        },
+        activeReminders,
+        todayNotifications,
+        weeklyProgress: 75, // Placeholder calculation
+        upcomingEvents: 2, // Placeholder
+        remindersByCategory,
         recentActivity: [
           { type: 'notification', message: 'Rappel "Lavage des mains" envoyé', time: '14:30' },
           { type: 'notification', message: 'Rappel "Brossage des dents" programmé', time: '08:00' }
         ]
       });
-      setLoading(false);
-      return;
 
 
     } catch (error) {
