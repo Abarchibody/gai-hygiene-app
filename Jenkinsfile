@@ -64,10 +64,10 @@ pipeline {
 
     stage('Deploy to S3') {
       steps {
-        withAWS(credentials: 'aws-s3-deployment-credentials', region: env.AWS_DEFAULT_REGION) {
+        withCredentials([aws(credentialsId: 'aws-s3-deployment-credentials')]) {
           sh """
-            aws s3 sync dist/ s3://${S3_BUCKET}/${S3_PATH}/ --delete
-            aws s3 cp dist/index.html s3://${S3_BUCKET}/${S3_PATH}/index.html --cache-control 'no-cache'
+            aws s3 sync dist/ s3://${S3_BUCKET}/${S3_PATH}/ --delete --region ${AWS_DEFAULT_REGION}
+            aws s3 cp dist/index.html s3://${S3_BUCKET}/${S3_PATH}/index.html --cache-control 'no-cache' --region ${AWS_DEFAULT_REGION}
           """
         }
       }
@@ -75,9 +75,9 @@ pipeline {
 
     stage('Invalidate CloudFront') {
       steps {
-        withAWS(credentials: 'aws-s3-deployment-credentials', region: env.AWS_DEFAULT_REGION) {
+        withCredentials([aws(credentialsId: 'aws-s3-deployment-credentials')]) {
           sh """
-            aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths '/${S3_PATH}/*'
+            aws cloudfront create-invalidation --distribution-id E1234567890ABC --paths '/${S3_PATH}/*' --region ${AWS_DEFAULT_REGION}
           """
         }
       }
