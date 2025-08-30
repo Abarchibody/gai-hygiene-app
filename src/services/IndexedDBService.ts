@@ -4,7 +4,7 @@ class IndexedDBService {
   private static instance: IndexedDBService;
   public db: IDBDatabase | null = null;
   private dbName = 'gai_hygiene_db';
-  private version = 1;
+  private version = 2;
 
   private constructor() {}
 
@@ -54,6 +54,14 @@ class IndexedDBService {
           notificationStore.createIndex('recipient_id', 'recipient_id');
           notificationStore.createIndex('status', 'status');
           notificationStore.createIndex('scheduled_at', 'scheduled_at');
+        }
+
+        // Events store
+        if (!db.objectStoreNames.contains('events')) {
+          const eventStore = db.createObjectStore('events', { keyPath: 'id' });
+          eventStore.createIndex('responsable_id', 'responsable_id');
+          eventStore.createIndex('statut', 'statut');
+          eventStore.createIndex('date_debut', 'date_debut');
         }
 
         // Pending operations store for offline sync

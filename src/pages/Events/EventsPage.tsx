@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Plus, Filter, Search, Clock, MapPin, User } from 'lucide-react';
-import { userService } from '../../services';
+import { userService, eventService } from '../../services';
 import type { Event, User as UserType } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -22,10 +22,13 @@ export default function EventsPage() {
 
   const loadEvents = async () => {
     try {
-      // Placeholder - will implement event service
-      setEvents([]);
+      console.log('Loading events...');
+      const allEvents = await eventService.getList();
+      console.log('Events loaded:', allEvents.length);
+      setEvents(allEvents);
     } catch (error) {
       console.error('Erreur lors du chargement des événements:', error);
+      setEvents([]); // Set empty array on error
     }
   };
 
