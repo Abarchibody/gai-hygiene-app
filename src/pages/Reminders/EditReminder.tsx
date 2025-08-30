@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import { db } from '../../db/schema';
+import { reminderService, userService } from '../../services';
 import type { Reminder, ReminderCategory, ReminderRecurrence, ReminderStatus, User } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -34,7 +34,7 @@ export default function EditReminder() {
 
   const loadReminder = async (reminderId: number) => {
     try {
-      const reminder = await db.reminders.get(reminderId);
+      const reminder = await reminderService.getOne(reminderId);
       if (reminder) {
         const dateDebut = reminder.date_debut instanceof Date 
           ? reminder.date_debut.toISOString().split('T')[0]
@@ -64,7 +64,7 @@ export default function EditReminder() {
 
   const loadTeachers = async () => {
     try {
-      const teachersData = await db.users.where('type_utilisateur').equals('Enseignant').toArray();
+      const teachersData = await userService.getByType('Enseignant');
       setTeachers(teachersData);
     } catch (error) {
       console.error('Erreur lors du chargement des enseignants:', error);
@@ -150,7 +150,7 @@ export default function EditReminder() {
         updated_at: new Date()
       };
 
-      await db.reminders.update(parseInt(id), updatedReminder);
+      await reminderService.update(parseInt(id), updatedReminder);
       navigate(`/reminders/${id}?updated=1`);
     } catch (error) {
       console.error('Erreur lors de la modification:', error);

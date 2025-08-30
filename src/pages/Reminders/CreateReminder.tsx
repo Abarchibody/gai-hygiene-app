@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import { db } from '../../db/schema';
-import { dbWrapper } from '../../utils/dbWrapper';
+import { reminderService, userService } from '../../services';
 import type { Reminder, ReminderCategory, ReminderRecurrence, User } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -29,7 +28,7 @@ export default function CreateReminder() {
 
   const loadTeachers = async () => {
     try {
-      const teachersData = await db.users.where('type_utilisateur').equals('Enseignant').toArray();
+      const teachersData = await userService.getByType('Enseignant');
       setTeachers(teachersData);
       // Sélectionner le premier enseignant par défaut
       if (teachersData.length > 0) {
@@ -97,29 +96,18 @@ export default function CreateReminder() {
 
     setLoading(true);
     try {
-      const newReminder: Omit<Reminder, 'id'> = {
+      const newReminder = {
         titre: formData.titre,
         description: formData.description || undefined,
         categorie: formData.categorie as ReminderCategory,
         recurrence: formData.recurrence as ReminderRecurrence,
         date_debut: new Date(formData.date_debut),
         heure: formData.heure,
-        statut: 'Actif',
-        createur_id: parseInt(formData.createur_id),
-        created_at: new Date(),
-        updated_at: new Date()
+        statut: 'Actif' as const,
+        createur_id: parseInt(formData.createur_id)
       };
 
-      const reminderId = await dbWrapper.createReminder(newReminder);
-      
-      // Programmer automatiquement les notifications si le rappel est actif
-      if (newReminder.statut === 'Actif') {
-        // Importer le service de notifications
-        const { notificationService } = await import('../../utils/notificationService');
-        const reminderWithId = { ...newReminder, id: reminderId };
-        await notificationService.scheduleReminderNotifications(reminderWithId);
-      }
-      
+      await reminderService.create(newReminder);
       navigate('/reminders?created=1');
     } catch (error) {
       console.error('Erreur lors de la création:', error);

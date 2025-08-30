@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Bell, Eye, Edit, Trash2, Clock, User } from 'lucide-react';
-import { db } from '../../db/schema';
-import { useAuth } from '../../contexts/AuthContext';
+import { reminderService, userService, authService } from '../../services';
 import type { Reminder, User as UserType } from '../../types';
 import Button from '../../components/ui/Button';
 
 export default function RemindersList() {
-  const { user } = useAuth();
+  const user = authService.getCurrentUser();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [users, setUsers] = useState<UserType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,77 +26,16 @@ export default function RemindersList() {
     try {
       let filteredReminders: Reminder[] = [];
       
-      if (user.role.canAccessAdmin) {
+      if (user.type_utilisateur === 'Admin') {
         // Admin sees all reminders
-        filteredReminders = await db.reminders.orderBy('created_at').reverse().toArray();
+        filteredReminders = await reminderService.getList();
       } else if (user.type_utilisateur === 'Enseignant') {
         // Teacher sees only their created reminders
-        filteredReminders = await db.reminders
-          .where('createur_id')
-          .equals(user.id)
-          .reverse()
-          .sortBy('created_at');
-      } else if (user.type_utilisateur === 'Parent') {
-        // Parent sees reminders assigned to their children (individual + class assignments)
-        const children = await db.students.where('parent_id').equals(user.id).toArray();
-        const childIds = children.map(c => c.utilisateur_id);
-        const classIds = children.map(c => c.classe_id).filter(Boolean);
-        
-        const reminderIds = new Set<number>();
-        
-        // Individual assignments to children
-        if (childIds.length > 0) {
-          const userAssignments = await db.reminderAssignments
-            .where('utilisateur_id')
-            .anyOf(childIds)
-            .toArray();
-          userAssignments.forEach(a => reminderIds.add(a.rappel_id));
-        }
-        
-        // Class assignments for children's classes
-        if (classIds.length > 0) {
-          const classAssignments = await db.reminderAssignments
-            .where('classe_id')
-            .anyOf(classIds)
-            .toArray();
-          classAssignments.forEach(a => reminderIds.add(a.rappel_id));
-        }
-        
-        if (reminderIds.size > 0) {
-          filteredReminders = await db.reminders
-            .where('id')
-            .anyOf(Array.from(reminderIds))
-            .reverse()
-            .sortBy('created_at');
-        }
-      } else if (user.type_utilisateur === 'Élève') {
-        // Student sees reminders assigned to them (individual + class assignments)
-        const student = await db.students.where('utilisateur_id').equals(user.id).first();
-        const reminderIds = new Set<number>();
-        
-        // Individual assignments
-        const userAssignments = await db.reminderAssignments
-          .where('utilisateur_id')
-          .equals(user.id)
-          .toArray();
-        userAssignments.forEach(a => reminderIds.add(a.rappel_id));
-        
-        // Class assignments
-        if (student?.classe_id) {
-          const classAssignments = await db.reminderAssignments
-            .where('classe_id')
-            .equals(student.classe_id)
-            .toArray();
-          classAssignments.forEach(a => reminderIds.add(a.rappel_id));
-        }
-        
-        if (reminderIds.size > 0) {
-          filteredReminders = await db.reminders
-            .where('id')
-            .anyOf(Array.from(reminderIds))
-            .reverse()
-            .sortBy('created_at');
-        }
+        const allReminders = await reminderService.getList();
+        filteredReminders = allReminders.filter(r => r.createur_id === user.id);
+      } else {
+        // Parent/Student sees assigned reminders
+        filteredReminders = await reminderService.getForUser(user.id);
       }
       
       setReminders(filteredReminders);
@@ -108,7 +46,7 @@ export default function RemindersList() {
 
   const loadUsers = async () => {
     try {
-      const allUsers = await db.users.toArray();
+      const allUsers = await userService.getList();
       setUsers(allUsers);
     } catch (error) {
       console.error('Erreur lors du chargement des utilisateurs:', error);
@@ -153,7 +91,7 @@ export default function RemindersList() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-gray-600 dark:text-gray-400">
-            {user?.role.canAccessAdmin
+            {user?.type_utilisateur === 'Admin'
               ? 'Gestion des rappels d\'hygiène automatisés'
               : user?.type_utilisateur === 'Enseignant'
               ? 'Mes rappels d\'hygiène créés'
@@ -163,7 +101,7 @@ export default function RemindersList() {
             }
           </p>
         </div>
-        {user?.role.canCreateReminders && (
+        {(user?.type_utilisateur === 'Admin' || user?.type_utilisateur === 'Enseignant') && (
           <Link to="/reminders/create">
             <Button>
               <Plus className="w-4 h-4 mr-2" />
@@ -317,7 +255,7 @@ export default function RemindersList() {
                         <Link to={`/reminders/${reminder.id}`} className="text-gai-blue hover:text-blue-600">
                           <Eye className="w-4 h-4" />
                         </Link>
-                        {(user?.role.canAccessAdmin || reminder.createur_id === user?.id) && (
+                        {(user?.type_utilisateur === 'Admin' || reminder.createur_id === user?.id) && (
                           <>
                             <Link to={`/reminders/${reminder.id}/edit`} className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
                               <Edit className="w-4 h-4" />

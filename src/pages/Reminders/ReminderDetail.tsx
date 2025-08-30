@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, Bell, Clock, User, Users, Calendar, School } from 'lucide-react';
-import { db } from '../../db/schema';
+import { reminderService, userService } from '../../services';
 import type { Reminder, User as UserType, Class, ReminderAssignment } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -23,31 +23,24 @@ export default function ReminderDetail() {
 
   const loadReminder = async (reminderId: number) => {
     try {
-      const reminderData = await db.reminders.get(reminderId);
-      setReminder(reminderData || null);
+      const reminderData = await reminderService.getOne(reminderId);
+      setReminder(reminderData);
 
       if (reminderData?.createur_id) {
-        const creatorData = await db.users.get(reminderData.createur_id);
-        setCreator(creatorData || null);
+        const creatorData = await userService.getOne(reminderData.createur_id);
+        setCreator(creatorData);
       }
 
       // Charger les assignations
-      const assignmentData = await db.reminderAssignments.where('rappel_id').equals(reminderId).toArray();
+      const assignmentData = await reminderService.getAssignments(reminderId);
       setAssignments(assignmentData);
 
-      // Charger les utilisateurs assignés
-      const userIds = assignmentData.filter(a => a.utilisateur_id).map(a => a.utilisateur_id!);
-      if (userIds.length > 0) {
-        const users = await db.users.where('id').anyOf(userIds).toArray();
-        setAssignedUsers(users);
-      }
-
-      // Charger les classes assignées
-      const classIds = assignmentData.filter(a => a.classe_id).map(a => a.classe_id!);
-      if (classIds.length > 0) {
-        const classes = await db.classes.where('id').anyOf(classIds).toArray();
-        setAssignedClasses(classes);
-      }
+      // Extraire utilisateurs et classes des assignations
+      const users = assignmentData.filter(a => a.utilisateur).map(a => a.utilisateur).filter(Boolean);
+      const classes = assignmentData.filter(a => a.classe).map(a => a.classe).filter(Boolean);
+      
+      setAssignedUsers(users);
+      setAssignedClasses(classes);
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
     } finally {
@@ -61,7 +54,7 @@ export default function ReminderDetail() {
     }
 
     try {
-      await db.reminders.delete(reminder.id!);
+      await reminderService.delete(reminder.id!);
       navigate('/reminders?deleted=1');
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);

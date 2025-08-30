@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart3, PieChart, TrendingUp, Download, Calendar, Users, Bell } from 'lucide-react';
-import { db } from '../../db/schema';
-import { useAuth } from '../../contexts/AuthContext';
+import { reminderService, userService, notificationService, authService } from '../../services';
 import type { Reminder, User, Class, Notification } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -18,7 +17,7 @@ interface ReportStats {
 }
 
 export default function ReportsPage() {
-  const { user } = useAuth();
+  const user = authService.getCurrentUser();
   const [stats, setStats] = useState<ReportStats>({
     totalReminders: 0,
     activeReminders: 0,
@@ -48,66 +47,24 @@ export default function ReportsPage() {
       let notifications: Notification[] = [];
 
       // Filter data based on user role and context
-      if (user.role.canAccessAdmin) {
+      if (user.type_utilisateur === 'Admin') {
         // Admin sees all data
         [reminders, users, notifications] = await Promise.all([
-          db.reminders.toArray(),
-          db.users.toArray(),
-          db.notifications.toArray()
+          reminderService.getList(),
+          userService.getList(),
+          notificationService.getList()
         ]);
       } else if (user.type_utilisateur === 'Enseignant') {
         // Teacher sees their created reminders and related data
-        const teacherClasses = await db.classes.where('enseignant_id').equals(user.id).toArray();
-        const classIds = teacherClasses.map(c => c.id!);
+        const allReminders = await reminderService.getList();
+        reminders = allReminders.filter(r => r.createur_id === user.id);
         
-        // Get students from their classes
-        const classStudents = await db.students.where('classe_id').anyOf(classIds).toArray();
-        const studentIds = classStudents.map(s => s.utilisateur_id);
-        
-        [reminders, notifications] = await Promise.all([
-          db.reminders.where('createur_id').equals(user.id).toArray(),
-          db.notifications.where('destinataire_id').anyOf([user.id, ...studentIds]).toArray()
-        ]);
-        
-        // Get users related to teacher (their students + parents)
-        const studentUsers = await db.users.where('id').anyOf(studentIds).toArray();
-        const parentIds = classStudents.map(s => s.parent_id).filter(Boolean);
-        const parentUsers = parentIds.length > 0 ? await db.users.where('id').anyOf(parentIds).toArray() : [];
-        
-        users = [user, ...studentUsers, ...parentUsers];
-      } else if (user.type_utilisateur === 'Parent') {
-        // Parent sees data related to their children
-        const children = await db.students.where('parent_id').equals(user.id).toArray();
-        const childIds = children.map(c => c.utilisateur_id);
-        
-        [notifications] = await Promise.all([
-          db.notifications.where('destinataire_id').anyOf([user.id, ...childIds]).toArray()
-        ]);
-        
-        // Get reminders assigned to their children
-        const assignments = await db.reminder_assignments.where('utilisateur_id').anyOf(childIds).toArray();
-        const reminderIds = assignments.map(a => a.rappel_id);
-        
-        if (reminderIds.length > 0) {
-          reminders = await db.reminders.where('id').anyOf(reminderIds).toArray();
-        }
-        
-        // Get users (parent + children)
-        const childUsers = await db.users.where('id').anyOf(childIds).toArray();
-        users = [user, ...childUsers];
-      } else if (user.type_utilisateur === 'Élève') {
-        // Student sees only their own data
-        [notifications] = await Promise.all([
-          db.notifications.where('destinataire_id').equals(user.id).toArray()
-        ]);
-        
-        const assignments = await db.reminder_assignments.where('utilisateur_id').equals(user.id).toArray();
-        const reminderIds = assignments.map(a => a.rappel_id);
-        
-        if (reminderIds.length > 0) {
-          reminders = await db.reminders.where('id').anyOf(reminderIds).toArray();
-        }
-        
+        notifications = await notificationService.getForUser(user.id);
+        users = await userService.getList();
+      } else {
+        // Parent/Student sees assigned reminders and notifications
+        reminders = await reminderService.getForUser(user.id);
+        notifications = await notificationService.getForUser(user.id);
         users = [user];
       }
 
@@ -189,7 +146,7 @@ export default function ReportsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <p className="text-gray-600 dark:text-gray-400">
-            {user?.role.canAccessAdmin
+            {user?.type_utilisateur === 'Admin'
               ? 'Analyse des données d\'hygiène et performance du système'
               : user?.type_utilisateur === 'Enseignant'
               ? 'Analyse de vos rappels et de l\'activité de vos élèves'
@@ -419,7 +376,7 @@ export default function ReportsPage() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
           {user?.type_utilisateur === 'Enseignant' ? 'Conseils pour vos élèves'
            : user?.type_utilisateur === 'Parent' ? 'Conseils pour vos enfants'
-           : user?.role.canAccessAdmin ? 'Recommandations d\'amélioration'
+           : user?.type_utilisateur === 'Admin' ? 'Recommandations d\'amélioration'
            : 'Conseils personnalisés'}
         </h3>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
