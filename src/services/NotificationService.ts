@@ -17,7 +17,7 @@ export class NotificationService {
     const { data, error } = await supabase
       .from('notifications')
       .select('*')
-      .order('scheduled_time', { ascending: false });
+      .order('scheduled_at', { ascending: false });
 
     if (error) throw error;
     return data || [];
@@ -73,8 +73,8 @@ export class NotificationService {
     const { data, error } = await supabase
       .from('notifications')
       .select('*')
-      .eq('user_id', userId)
-      .order('scheduled_time', { ascending: false });
+      .eq('recipient_id', userId)
+      .order('scheduled_at', { ascending: false });
 
     if (error) throw error;
     return data || [];
@@ -85,8 +85,8 @@ export class NotificationService {
       .from('notifications')
       .select('*')
       .eq('status', 'pending')
-      .lte('scheduled_time', new Date().toISOString())
-      .order('scheduled_time', { ascending: true });
+      .lte('scheduled_at', new Date().toISOString())
+      .order('scheduled_at', { ascending: true });
 
     if (error) throw error;
     return data || [];

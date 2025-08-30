@@ -21,10 +21,8 @@ class PWAService {
 
   private handleSWMessage = (event: MessageEvent) => {
     if (event.data?.type === 'PROCESS_NOTIFICATIONS') {
-      // Traiter les notifications en attente
-      import('./notificationService').then(({ notificationService }) => {
-        notificationService.processPendingNotifications();
-      });
+      // Note: Notification processing would be handled by NotificationService
+      console.log('Notification processing requested by Service Worker');
     }
   };
 

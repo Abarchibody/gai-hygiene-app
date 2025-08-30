@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button';
 export default function ClassesList() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [teachers, setTeachers] = useState<User[]>([]);
+  const [studentCounts, setStudentCounts] = useState<Record<number, number>>({});
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -19,6 +20,21 @@ export default function ClassesList() {
     try {
       const allClasses = await classService.getList();
       setClasses(allClasses);
+      
+      // Load student counts for each class
+      const counts: Record<number, number> = {};
+      for (const classe of allClasses) {
+        if (classe.id) {
+          try {
+            const students = await classService.getStudents(classe.id);
+            counts[classe.id] = students.length;
+          } catch (error) {
+            console.error(`Erreur lors du chargement des élèves pour la classe ${classe.id}:`, error);
+            counts[classe.id] = 0;
+          }
+        }
+      }
+      setStudentCounts(counts);
     } catch (error) {
       console.error('Erreur lors du chargement des classes:', error);
     }
@@ -145,7 +161,7 @@ export default function ClassesList() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex items-center">
                         <Users className="w-4 h-4 mr-1" />
-                        0 élèves
+                        {studentCounts[classe.id!] || 0} élève{(studentCounts[classe.id!] || 0) > 1 ? 's' : ''}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">

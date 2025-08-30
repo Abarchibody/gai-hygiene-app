@@ -8,12 +8,12 @@ export default function SyncButton() {
   const handleSync = async () => {
     setSyncing(true);
     try {
-      const { syncService } = await import('../utils/syncService');
-      await syncService.syncFromCloud();
-      window.location.reload(); // Refresh to show new data
+      // Note: Sync functionality removed with IndexedDB migration
+      console.log('Sync requested - data is now directly from Supabase');
+      window.location.reload(); // Refresh to show current data
     } catch (error) {
-      console.error('Sync failed:', error);
-      alert('Synchronisation échouée. Vérifiez votre connexion.');
+      console.error('Refresh failed:', error);
+      alert('Actualisation échouée.');
     } finally {
       setSyncing(false);
     }

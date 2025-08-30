@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { db } from '../db/schema';
-import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services';
 
 export default function DebugGrace() {
-  const { user } = useAuth();
+  const user = authService.getCurrentUser();
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
@@ -14,41 +13,10 @@ export default function DebugGrace() {
 
   const checkGraceData = async () => {
     try {
-      const info: any = {};
-      
-      // Get Grace's user record
-      info.user = await db.users.where('email').equals('grace.mbuyi@gai-school.cd').first();
-      
-      // Get Grace's student record
-      if (info.user) {
-        info.studentRecord = await db.students.where('utilisateur_id').equals(info.user.id).first();
-        
-        // Get individual assignments
-        info.userAssignments = await db.reminderAssignments.where('utilisateur_id').equals(info.user.id).toArray();
-        
-        // Get class assignments if student record exists
-        if (info.studentRecord?.classe_id) {
-          info.classAssignments = await db.reminderAssignments.where('classe_id').equals(info.studentRecord.classe_id).toArray();
-        } else {
-          info.classAssignments = [];
-        }
-        
-        // Get all reminder IDs that should be visible
-        const reminderIds = new Set<number>();
-        info.userAssignments.forEach((a: any) => reminderIds.add(a.rappel_id));
-        info.classAssignments.forEach((a: any) => reminderIds.add(a.rappel_id));
-        
-        // Get the actual reminders
-        if (reminderIds.size > 0) {
-          info.visibleReminders = await db.reminders.where('id').anyOf(Array.from(reminderIds)).toArray();
-        } else {
-          info.visibleReminders = [];
-        }
-      }
-      
-      // Get all reminders for comparison
-      info.allReminders = await db.reminders.toArray();
-      info.allAssignments = await db.reminderAssignments.toArray();
+      const info: any = {
+        message: 'Debug component disabled - IndexedDB removed',
+        user: user
+      };
       
       setDebugInfo(info);
     } catch (error) {

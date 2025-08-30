@@ -5,7 +5,30 @@ export class AuthService {
   private static instance: AuthService;
   private currentUser: User | null = null;
 
-  private constructor() {}
+  private constructor() {
+    // Load user from localStorage on initialization
+    this.loadUserFromStorage();
+  }
+
+  private loadUserFromStorage(): void {
+    try {
+      const savedUser = localStorage.getItem('gai_auth_user');
+      if (savedUser) {
+        this.currentUser = JSON.parse(savedUser);
+      }
+    } catch (error) {
+      console.error('Error loading user from storage:', error);
+      localStorage.removeItem('gai_auth_user');
+    }
+  }
+
+  private saveUserToStorage(user: User | null): void {
+    if (user) {
+      localStorage.setItem('gai_auth_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('gai_auth_user');
+    }
+  }
 
   static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -31,6 +54,7 @@ export class AuthService {
       }
 
       this.currentUser = user;
+      this.saveUserToStorage(user);
       return { user, error: null };
     } catch (error) {
       console.error('Login error:', error);
@@ -40,6 +64,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     this.currentUser = null;
+    this.saveUserToStorage(null);
   }
 
   getCurrentUser(): User | null {
@@ -48,6 +73,7 @@ export class AuthService {
 
   setCurrentUser(user: User | null): void {
     this.currentUser = user;
+    this.saveUserToStorage(user);
   }
 
   isAuthenticated(): boolean {
@@ -100,6 +126,7 @@ export class AuthService {
 
       // Update current user
       this.currentUser.password = newPassword;
+      this.saveUserToStorage(this.currentUser);
       return { success: true, error: null };
     } catch (error) {
       console.error('Change password error:', error);
@@ -126,6 +153,7 @@ export class AuthService {
 
       // Update current user
       this.currentUser = { ...this.currentUser, ...updates };
+      this.saveUserToStorage(this.currentUser);
       return { success: true, error: null };
     } catch (error) {
       console.error('Update profile error:', error);

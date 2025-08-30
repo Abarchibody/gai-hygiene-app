@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, CheckCircle, Clock, AlertCircle, Settings, Smartphone, Download } from 'lucide-react';
-import { notificationService } from '../../services';
+import { notificationService, notificationScheduler } from '../../services';
 import type { Notification } from '../../types';
 import Button from '../../components/ui/Button';
 
@@ -59,9 +59,14 @@ export default function NotificationCenter() {
     setPermission(granted ? 'granted' : 'denied');
   };
 
-  const startScheduler = () => {
-    // Placeholder - will implement scheduler
-    console.log('Starting notification scheduler');
+  const startScheduler = async () => {
+    try {
+      await notificationScheduler.generateNotificationsFromReminders();
+      await loadNotifications();
+      console.log('Notification scheduler executed successfully');
+    } catch (error) {
+      console.error('Error running scheduler:', error);
+    }
   };
 
   const testNotification = async () => {
@@ -249,7 +254,7 @@ export default function NotificationCenter() {
                       <h4 className="font-medium text-gray-800 dark:text-gray-200">{notification.title}</h4>
                       <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{notification.message}</p>
                       <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        <span>Programmée : {new Date(notification.scheduled_time).toLocaleString('fr-FR')}</span>
+                        <span>Programmée : {new Date(notification.scheduled_at).toLocaleString('fr-FR')}</span>
                         {notification.sent_at && (
                           <span>Envoyée : {new Date(notification.sent_at).toLocaleString('fr-FR')}</span>
                         )}

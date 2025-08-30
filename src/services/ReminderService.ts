@@ -83,7 +83,7 @@ export class ReminderService {
         utilisateur:users!reminder_assignments_utilisateur_id_fkey(id, nom, prenom, type_utilisateur),
         classe:classes!reminder_assignments_classe_id_fkey(id, nom_classe, niveau)
       `)
-      .eq('reminder_id', reminderId);
+      .eq('rappel_id', reminderId);
 
     if (error) throw error;
     return data || [];
@@ -93,7 +93,7 @@ export class ReminderService {
     const { data, error } = await supabase
       .from('reminder_assignments')
       .insert({
-        reminder_id: reminderId,
+        rappel_id: reminderId,
         utilisateur_id: userId,
         created_at: new Date().toISOString()
       })
@@ -108,7 +108,7 @@ export class ReminderService {
     const { data, error } = await supabase
       .from('reminder_assignments')
       .insert({
-        reminder_id: reminderId,
+        rappel_id: reminderId,
         classe_id: classId,
         created_at: new Date().toISOString()
       })
@@ -123,7 +123,7 @@ export class ReminderService {
     let query = supabase
       .from('reminder_assignments')
       .delete()
-      .eq('reminder_id', reminderId);
+      .eq('rappel_id', reminderId);
 
     if (userId) {
       query = query.eq('utilisateur_id', userId);
