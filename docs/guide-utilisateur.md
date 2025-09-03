@@ -338,7 +338,7 @@ Ce guide détaille comment tester le système de rappels d'hygiène, incluant la
 
 #### Pour Créer des Rappels
 - **Enseignant** : `jp.mukendi@gai.cd` / `Password123!`
-- **Admin** : `admin@gai.cd` / `admin`
+- **Admin** : `admin@gai.cd` / `Password123!`
 
 #### Pour Recevoir des Rappels
 - **Élève (Recommandé)** : `grace.mbuyi@gai.cd` / `Password123!`
@@ -468,7 +468,7 @@ R: Vérifiez que :
 - L'application est installée en PWA pour les notifications hors ligne
 
 #### **Q: Comment changer mon mot de passe ?**
-R: 
+R:
 1. Accédez à votre profil (icône utilisateur en haut à droite)
 2. Cliquez sur "Changer le mot de passe"
 3. Saisissez l'ancien et le nouveau mot de passe

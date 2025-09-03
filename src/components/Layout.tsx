@@ -200,6 +200,18 @@ export default function Layout({ children, pageTitle = 'Tableau de bord', breadc
             </>
           )}
         </nav>
+        
+        {/* Footer with developer name */}
+        <div className="mt-auto p-4 lg:p-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Développé par
+            </p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-1">
+              Mweko Bongela Audrey
+            </p>
+          </div>
+        </div>
       </div>
       
       {/* Main Content */}
